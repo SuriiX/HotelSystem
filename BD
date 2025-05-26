@@ -1,0 +1,1262 @@
+CREATE DATABASE HotelManagementSystem;
+USE HotelManagementSystem;
+
+
+CREATE TABLE Ciudad (
+    ciudad_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre_ciudad VARCHAR(100) NOT NULL,
+    departamento_estado VARCHAR(100),
+    pais VARCHAR(100) NOT NULL
+);
+
+
+CREATE TABLE Cadena_Hotelera (
+    cadena_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre_cadena VARCHAR(100) NOT NULL UNIQUE,
+    descripcion NVARCHAR(MAX) 
+);
+
+CREATE TABLE Hotel (
+    hotel_id INT PRIMARY KEY IDENTITY(1,1),
+    cadena_id INT,
+    nombre VARCHAR(100) NOT NULL,
+    direccion VARCHAR(200) NOT NULL,
+    ciudad_id INT NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    estrellas INT CHECK (estrellas BETWEEN 1 AND 5),
+    fecha_apertura DATE NOT NULL,
+    estado_operativo VARCHAR(20) DEFAULT 'activo',
+    politica_cancelacion NVARCHAR(MAX), 
+    FOREIGN KEY (cadena_id) REFERENCES Cadena_Hotelera(cadena_id) ON DELETE SET NULL,
+    FOREIGN KEY (ciudad_id) REFERENCES Ciudad(ciudad_id),
+    CONSTRAINT CK_Hotel_EstadoOperativo CHECK (estado_operativo IN ('activo', 'inactivo', 'en_construccion')) 
+);
+
+CREATE TABLE Tipo_Habitacion (
+    tipo_habitacion_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(50) NOT NULL UNIQUE,
+    descripcion NVARCHAR(MAX), 
+    precio_base DECIMAL(10,2) NOT NULL,
+    capacidad INT NOT NULL,
+    comodidades NVARCHAR(MAX) 
+);
+
+CREATE TABLE Habitacion (
+    habitacion_id INT PRIMARY KEY IDENTITY(1,1),
+    hotel_id INT NOT NULL,
+    tipo_habitacion_id INT NOT NULL,
+    numero VARCHAR(10) NOT NULL,
+    piso INT NOT NULL,
+    estado VARCHAR(30) DEFAULT 'disponible', 
+    vista VARCHAR(50),
+    descripcion NVARCHAR(MAX),
+    FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
+    FOREIGN KEY (tipo_habitacion_id) REFERENCES Tipo_Habitacion(tipo_habitacion_id),
+    CONSTRAINT unique_room_per_hotel UNIQUE (hotel_id, numero),
+    CONSTRAINT CK_Habitacion_Estado CHECK (estado IN ('disponible', 'ocupada', 'mantenimiento', 'limpieza_pendiente')) 
+);
+
+CREATE TABLE Cliente (
+    cliente_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    tipo_documento VARCHAR(20) NOT NULL,
+    numero_documento VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    telefono VARCHAR(20),
+    direccion VARCHAR(200),
+    ciudad_residencia_id INT,
+    fecha_nacimiento DATE,
+    fecha_registro DATETIME DEFAULT GETDATE(), 
+    FOREIGN KEY (ciudad_residencia_id) REFERENCES Ciudad(ciudad_id),
+    CONSTRAINT CK_Cliente_TipoDocumento CHECK (tipo_documento IN ('DNI', 'Pasaporte', 'Cédula', 'Otro')) 
+);
+
+CREATE TABLE Cargo (
+    cargo_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre_cargo VARCHAR(50) NOT NULL UNIQUE,
+    descripcion NVARCHAR(MAX) 
+);
+
+CREATE TABLE Empleado (
+    empleado_id INT PRIMARY KEY IDENTITY(1,1),
+    hotel_id INT NOT NULL,
+    cargo_id INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    apellido VARCHAR(100) NOT NULL,
+    tipo_documento VARCHAR(20) NOT NULL, 
+    numero_documento VARCHAR(20) NOT NULL UNIQUE,
+    email VARCHAR(100) UNIQUE,
+    telefono VARCHAR(20),
+    direccion VARCHAR(200),
+    fecha_nacimiento DATE,
+    fecha_contratacion DATE NOT NULL,
+    salario DECIMAL(10,2) NOT NULL,
+    estado VARCHAR(20) DEFAULT 'activo', 
+    FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
+    FOREIGN KEY (cargo_id) REFERENCES Cargo(cargo_id),
+    CONSTRAINT CK_Empleado_TipoDocumento CHECK (tipo_documento IN ('DNI', 'Pasaporte', 'Cédula', 'Otro')), 
+    CONSTRAINT CK_Empleado_Estado CHECK (estado IN ('activo', 'inactivo', 'vacaciones')) 
+);
+
+ALTER TABLE Hotel
+ADD gerente_id INT; 
+
+
+ALTER TABLE Hotel
+ADD CONSTRAINT FK_Hotel_Gerente FOREIGN KEY (gerente_id) REFERENCES Empleado(empleado_id) ON DELETE SET NULL;
+
+CREATE TABLE Reserva (
+    reserva_id INT PRIMARY KEY IDENTITY(1,1),
+    cliente_id INT NOT NULL,
+    hotel_id INT NOT NULL,
+    fecha_reserva DATETIME DEFAULT GETDATE(), 
+    fecha_entrada DATE NOT NULL,
+    fecha_salida DATE NOT NULL,
+    estado VARCHAR(20) DEFAULT 'pendiente',
+    numero_huespedes INT NOT NULL,
+    notas NVARCHAR(MAX), 
+    empleado_registro_id INT,
+    FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id),
+    FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id),
+    FOREIGN KEY (empleado_registro_id) REFERENCES Empleado(empleado_id),
+    CONSTRAINT valid_dates_reserva CHECK (fecha_salida > fecha_entrada),
+    CONSTRAINT check_huespedes_positivos CHECK (numero_huespedes > 0),
+    CONSTRAINT CK_Reserva_Estado CHECK (estado IN ('confirmada', 'cancelada', 'completada', 'pendiente', 'no_show')) 
+);
+
+CREATE TABLE Reserva_Habitacion (
+    reserva_habitacion_id INT PRIMARY KEY IDENTITY(1,1),
+    reserva_id INT NOT NULL,
+    habitacion_id INT NOT NULL,
+    precio_noche_cobrado DECIMAL(10,2) NOT NULL,
+    estado_asignacion VARCHAR(20) DEFAULT 'asignada', 
+    FOREIGN KEY (reserva_id) REFERENCES Reserva(reserva_id) ON DELETE CASCADE,
+    FOREIGN KEY (habitacion_id) REFERENCES Habitacion(habitacion_id),
+    CONSTRAINT unique_room_reserva_period UNIQUE (habitacion_id, reserva_id),
+    CONSTRAINT CK_ReservaHabitacion_EstadoAsignacion CHECK (estado_asignacion IN ('asignada', 'cambiada', 'cancelada'))
+);
+
+CREATE TABLE Tipo_Servicio (
+    tipo_servicio_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre_tipo VARCHAR(50) NOT NULL UNIQUE,
+    descripcion NVARCHAR(MAX) 
+);
+
+CREATE TABLE Servicio (
+    servicio_id INT PRIMARY KEY IDENTITY(1,1),
+    hotel_id INT NOT NULL,
+    tipo_servicio_id INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    descripcion NVARCHAR(MAX), 
+    precio_base DECIMAL(10,2) NOT NULL,
+    horario VARCHAR(100),
+    capacidad INT,
+    FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
+    FOREIGN KEY (tipo_servicio_id) REFERENCES Tipo_Servicio(tipo_servicio_id)
+);
+
+CREATE TABLE Consumo_Servicio (
+    consumo_servicio_id INT PRIMARY KEY IDENTITY(1,1),
+    reserva_id INT NOT NULL,
+    servicio_id INT NOT NULL,
+    fecha_hora_consumo DATETIME DEFAULT GETDATE(),
+    cantidad INT NOT NULL DEFAULT 1,
+    precio_unitario_cobrado DECIMAL(10,2) NOT NULL,
+    empleado_registro_id INT,
+    FOREIGN KEY (reserva_id) REFERENCES Reserva(reserva_id) ON DELETE CASCADE,
+    FOREIGN KEY (servicio_id) REFERENCES Servicio(servicio_id),
+    FOREIGN KEY (empleado_registro_id) REFERENCES Empleado(empleado_id)
+);
+
+CREATE TABLE Paquete (
+    paquete_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion NVARCHAR(MAX), 
+    precio DECIMAL(12,2) NOT NULL,
+    duracion_dias INT NOT NULL,
+    valido_desde DATE NOT NULL,
+    valido_hasta DATE NOT NULL,
+    estado VARCHAR(20) DEFAULT 'activo',
+    CONSTRAINT valid_package_dates CHECK (valido_hasta >= valido_desde),
+    CONSTRAINT CK_Paquete_Estado CHECK (estado IN ('activo', 'inactivo', 'promocion'))
+);
+
+CREATE TABLE Detalle_Paquete_Servicio (
+    paquete_servicio_id INT PRIMARY KEY IDENTITY(1,1),
+    paquete_id INT NOT NULL,
+    servicio_id INT NOT NULL,
+    cantidad_incluida INT NOT NULL DEFAULT 1,
+    FOREIGN KEY (paquete_id) REFERENCES Paquete(paquete_id) ON DELETE CASCADE,
+    FOREIGN KEY (servicio_id) REFERENCES Servicio(servicio_id) ON DELETE CASCADE,
+    CONSTRAINT unique_package_service_item UNIQUE (paquete_id, servicio_id)
+);
+
+CREATE TABLE Reserva_Paquete (
+    reserva_paquete_id INT PRIMARY KEY IDENTITY(1,1),
+    reserva_id INT NOT NULL,
+    paquete_id INT NOT NULL,
+    fecha_reserva_paquete DATETIME DEFAULT GETDATE(), 
+    precio_cobrado DECIMAL(12,2) NOT NULL,
+    estado VARCHAR(20) DEFAULT 'reservado',
+    FOREIGN KEY (reserva_id) REFERENCES Reserva(reserva_id) ON DELETE CASCADE,
+    FOREIGN KEY (paquete_id) REFERENCES Paquete(paquete_id),
+    CONSTRAINT CK_ReservaPaquete_Estado CHECK (estado IN ('reservado', 'cancelado', 'usado')) 
+);
+
+CREATE TABLE Tipo_Transporte (
+    tipo_transporte_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre_tipo VARCHAR(50) NOT NULL UNIQUE,
+    descripcion NVARCHAR(MAX) 
+);
+
+CREATE TABLE Transporte (
+    transporte_id INT PRIMARY KEY IDENTITY(1,1),
+    tipo_transporte_id INT NOT NULL,
+    descripcion NVARCHAR(200), 
+    compania VARCHAR(100) NOT NULL,
+    capacidad INT NOT NULL,
+    precio_base DECIMAL(10,2) NOT NULL,
+    notas NVARCHAR(MAX), 
+    FOREIGN KEY (tipo_transporte_id) REFERENCES Tipo_Transporte(tipo_transporte_id)
+);
+
+CREATE TABLE Detalle_Paquete_Transporte (
+    paquete_transporte_id INT PRIMARY KEY IDENTITY(1,1),
+    paquete_id INT NOT NULL,
+    transporte_id INT NOT NULL,
+    tipo_trayecto VARCHAR(20) NOT NULL, 
+    origen VARCHAR(100),
+    destino VARCHAR(100),
+    FOREIGN KEY (paquete_id) REFERENCES Paquete(paquete_id) ON DELETE CASCADE,
+    FOREIGN KEY (transporte_id) REFERENCES Transporte(transporte_id) ON DELETE CASCADE,
+    CONSTRAINT unique_package_transport_item UNIQUE (paquete_id, transporte_id, tipo_trayecto),
+    CONSTRAINT CK_DetallePaqueteTransporte_TipoTrayecto CHECK (tipo_trayecto IN ('ida', 'vuelta', 'ida_y_vuelta')) 
+);
+
+CREATE TABLE Restaurante (
+    restaurante_id INT PRIMARY KEY IDENTITY(1,1),
+    hotel_id INT NOT NULL,
+    nombre VARCHAR(100) NOT NULL,
+    tipo_cocina VARCHAR(100),
+    horario_apertura TIME,
+    horario_cierre TIME,
+    capacidad_mesas INT,
+    descripcion NVARCHAR(MAX), 
+    FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id) ON DELETE CASCADE
+);
+
+CREATE TABLE Reserva_Restaurante (
+    reserva_restaurante_id INT PRIMARY KEY IDENTITY(1,1),
+    cliente_id INT NOT NULL,
+    restaurante_id INT NOT NULL,
+    fecha_reserva DATE NOT NULL,
+    hora_reserva TIME NOT NULL,
+    numero_comensales INT NOT NULL,
+    estado VARCHAR(20) DEFAULT 'confirmada', 
+    notas NVARCHAR(MAX), 
+    empleado_registro_id INT,
+    FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id),
+    FOREIGN KEY (restaurante_id) REFERENCES Restaurante(restaurante_id),
+    FOREIGN KEY (empleado_registro_id) REFERENCES Empleado(empleado_id),
+    CONSTRAINT unique_restaurant_booking UNIQUE (restaurante_id, fecha_reserva, hora_reserva),
+    CONSTRAINT CK_ReservaRestaurante_Estado CHECK (estado IN ('confirmada', 'cancelada', 'atendida', 'no_show')) 
+);
+
+CREATE TABLE Proveedor (
+    proveedor_id INT PRIMARY KEY IDENTITY(1,1),
+    nombre VARCHAR(100) NOT NULL,
+    tipo VARCHAR(50) NOT NULL, 
+    contacto_nombre VARCHAR(100),
+    telefono VARCHAR(20) NOT NULL,
+    email VARCHAR(100) UNIQUE,
+    direccion VARCHAR(200),
+    identificacion_fiscal VARCHAR(30) UNIQUE,
+    CONSTRAINT CK_Proveedor_Tipo CHECK (tipo IN ('alimentos', 'limpieza', 'mantenimiento', 'textiles', 'otros', 'tecnologia')) 
+)
+
+CREATE TABLE Item_Suministro (
+    item_suministro_id INT PRIMARY KEY IDENTITY(1,1),
+    proveedor_id INT NOT NULL,
+    nombre_item VARCHAR(100) NOT NULL,
+    descripcion NVARCHAR(MAX),
+    unidad_medida VARCHAR(20) NOT NULL,
+    precio_unitario_proveedor DECIMAL(10,2) NOT NULL,
+    FOREIGN KEY (proveedor_id) REFERENCES Proveedor(proveedor_id), 
+    CONSTRAINT unique_item_per_supplier UNIQUE (proveedor_id, nombre_item)
+);
+
+CREATE TABLE Inventario_Hotel (
+    inventario_id INT PRIMARY KEY IDENTITY(1,1),
+    hotel_id INT NOT NULL,
+    item_suministro_id INT NOT NULL,
+    stock_actual INT DEFAULT 0,
+    stock_minimo INT DEFAULT 0,
+    fecha_ultima_actualizacion DATETIME DEFAULT GETDATE(), 
+    ubicacion_almacen VARCHAR(100),
+    FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_suministro_id) REFERENCES Item_Suministro(item_suministro_id),
+    CONSTRAINT unique_item_in_hotel_inventory UNIQUE (hotel_id, item_suministro_id)
+);
+
+CREATE TABLE Pedido_Suministro (
+    pedido_id INT PRIMARY KEY IDENTITY(1,1),
+    hotel_id INT NOT NULL,
+    proveedor_id INT NOT NULL,
+    empleado_id INT NOT NULL,
+    fecha_pedido DATETIME DEFAULT GETDATE(),
+    fecha_entrega_esperada DATE,
+    fecha_entrega_real DATE,
+    estado VARCHAR(30) DEFAULT 'pendiente', 
+    total DECIMAL(12,2),
+    notas NVARCHAR(MAX), 
+    FOREIGN KEY (hotel_id) REFERENCES Hotel(hotel_id) ON DELETE CASCADE,
+    FOREIGN KEY (proveedor_id) REFERENCES Proveedor(proveedor_id),
+    FOREIGN KEY (empleado_id) REFERENCES Empleado(empleado_id),
+    CONSTRAINT CK_PedidoSuministro_Estado CHECK (estado IN ('pendiente', 'entregado', 'cancelado', 'parcialmente_entregado')) -- Restricción CHECK para simular ENUM
+);
+
+CREATE TABLE Detalle_Pedido_Suministro (
+    detalle_pedido_id INT PRIMARY KEY IDENTITY(1,1),
+    pedido_id INT NOT NULL,
+    item_suministro_id INT NOT NULL,
+    cantidad_pedida INT NOT NULL,
+    cantidad_recibida INT DEFAULT 0,
+    precio_unitario_pedido DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(12,2) NOT NULL,
+    FOREIGN KEY (pedido_id) REFERENCES Pedido_Suministro(pedido_id) ON DELETE CASCADE,
+    FOREIGN KEY (item_suministro_id) REFERENCES Item_Suministro(item_suministro_id),
+    CONSTRAINT unique_item_per_supply_order UNIQUE (pedido_id, item_suministro_id)
+);
+
+CREATE TABLE CheckIn (
+    checkin_id INT PRIMARY KEY IDENTITY(1,1),
+    reserva_id INT NOT NULL UNIQUE,
+    empleado_id INT NOT NULL,
+    fecha_hora DATETIME DEFAULT GETDATE(), 
+    metodo_pago_adelanto VARCHAR(20), 
+    documentos_verificados BIT DEFAULT 0, 
+    observaciones NVARCHAR(MAX), 
+    FOREIGN KEY (reserva_id) REFERENCES Reserva(reserva_id) ON DELETE CASCADE,
+    FOREIGN KEY (empleado_id) REFERENCES Empleado(empleado_id),
+    CONSTRAINT CK_CheckIn_MetodoPagoAdelanto CHECK (metodo_pago_adelanto IN ('efectivo', 'tarjeta', 'transferencia', 'otro')) 
+);
+
+CREATE TABLE CheckOut (
+    checkout_id INT PRIMARY KEY IDENTITY(1,1),
+    reserva_id INT NOT NULL UNIQUE,
+    empleado_id INT NOT NULL,
+    fecha_hora DATETIME DEFAULT GETDATE(),
+    total_factura DECIMAL(12,2) NOT NULL,
+    metodo_pago_final VARCHAR(20) NOT NULL, 
+    observaciones NVARCHAR(MAX), 
+    FOREIGN KEY (reserva_id) REFERENCES Reserva(reserva_id) ON DELETE CASCADE,
+    FOREIGN KEY (empleado_id) REFERENCES Empleado(empleado_id),
+    CONSTRAINT CK_CheckOut_MetodoPagoFinal CHECK (metodo_pago_final IN ('efectivo', 'tarjeta', 'transferencia', 'otro')) 
+);
+
+CREATE TABLE Factura (
+    factura_id INT PRIMARY KEY IDENTITY(1,1),
+    reserva_id INT NOT NULL UNIQUE,
+    cliente_id INT NOT NULL,
+    fecha_emision DATETIME DEFAULT GETDATE(),
+    subtotal DECIMAL(12,2) NOT NULL,
+    impuestos DECIMAL(12,2) NOT NULL,
+    total DECIMAL(12,2) NOT NULL,
+    metodo_pago_factura VARCHAR(20) NOT NULL,
+    estado VARCHAR(20) DEFAULT 'pendiente', 
+    empleado_emisor_id INT,
+    FOREIGN KEY (reserva_id) REFERENCES Reserva(reserva_id) ON DELETE CASCADE,
+    FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id),
+    FOREIGN KEY (empleado_emisor_id) REFERENCES Empleado(empleado_id),
+    CONSTRAINT CK_Factura_MetodoPagoFactura CHECK (metodo_pago_factura IN ('efectivo', 'tarjeta', 'transferencia', 'otro', 'credito')), 
+    CONSTRAINT CK_Factura_Estado CHECK (estado IN ('pagada', 'pendiente', 'cancelada', 'anulada')) 
+);
+
+
+
+CREATE TABLE Detalle_Factura (
+    detalle_factura_id INT PRIMARY KEY IDENTITY(1,1),
+    factura_id INT NOT NULL,
+    tipo_concepto VARCHAR(30) NOT NULL, 
+    referencia_id INT,
+    descripcion_concepto NVARCHAR(255) NOT NULL,
+    cantidad INT NOT NULL DEFAULT 1,
+    precio_unitario DECIMAL(10,2) NOT NULL,
+    subtotal DECIMAL(12,2) NOT NULL,
+    FOREIGN KEY (factura_id) REFERENCES Factura(factura_id) ON DELETE CASCADE,
+    CONSTRAINT CK_DetalleFactura_TipoConcepto CHECK (tipo_concepto IN ('habitacion', 'servicio_consumido', 'paquete_reservado', 'transporte_asociado', 'otro')) -- Restricción CHECK para simular ENUM
+);
+
+CREATE INDEX idx_cliente_documento ON Cliente(numero_documento);
+
+CREATE INDEX idx_reserva_fechas ON Reserva(fecha_entrada, fecha_salida);
+
+CREATE INDEX idx_habitacion_hotel_estado ON Habitacion(hotel_id, estado);
+
+CREATE INDEX idx_servicio_hotel_tipo ON Servicio(hotel_id, tipo_servicio_id);
+
+CREATE INDEX idx_paquete_fechas ON Paquete(valido_desde, valido_hasta);
+
+CREATE INDEX idx_proveedor_tipo ON Proveedor(tipo);
+
+CREATE INDEX idx_empleado_hotel_cargo ON Empleado(hotel_id, cargo_id);
+
+CREATE INDEX idx_reserva_cliente ON Reserva(cliente_id);
+
+CREATE INDEX idx_consumo_reserva ON Consumo_Servicio(reserva_id);
+
+CREATE INDEX idx_reserva_habitacion_reserva ON Reserva_Habitacion(reserva_id);
+
+ALTER TABLE Hotel
+ADD CONSTRAINT FK_Hotel_Gerente FOREIGN KEY (gerente_id) REFERENCES Empleado(empleado_id) ON DELETE NO ACTION;
+
+USE HotelManagementSystem; 
+GO
+
+-- 1. Ciudad (20 Registros)
+INSERT INTO Ciudad (nombre_ciudad, departamento_estado, pais) VALUES
+('Medellín', 'Antioquia', 'Colombia'),
+('Cartagena', 'Bolívar', 'Colombia'),
+('Bogotá', 'Cundinamarca', 'Colombia'),
+('Cali', 'Valle del Cauca', 'Colombia'),
+('Santa Marta', 'Magdalena', 'Colombia'),
+('Barranquilla', 'Atlántico', 'Colombia'),
+('Pereira', 'Risaralda', 'Colombia'),
+('Manizales', 'Caldas', 'Colombia'),
+('Bucaramanga', 'Santander', 'Colombia'),
+('Armenia', 'Quindío', 'Colombia'),
+('Miami', 'Florida', 'Estados Unidos'),
+('Nueva York', 'Nueva York', 'Estados Unidos'),
+('Londres', 'Gran Londres', 'Reino Unido'),
+('París', 'Isla de Francia', 'Francia'),
+('Madrid', 'Comunidad de Madrid', 'España'),
+('Roma', 'Lazio', 'Italia'),
+('Cancún', 'Quintana Roo', 'México'),
+('Buenos Aires', 'CABA', 'Argentina'),
+('Río de Janeiro', 'Río de Janeiro', 'Brasil'),
+('Santiago', 'Región Metropolitana', 'Chile');
+GO
+
+-- 2. Cadena_Hotelera (20 Registros)
+INSERT INTO Cadena_Hotelera (nombre_cadena, descripcion) VALUES
+('Hilton Worldwide', 'Cadena hotelera global de lujo y servicio completo.'),
+('Marriott International', 'Compañía hotelera global, con diversas marcas.'),
+('AccorHotels', 'Grupo hotelero francés, líder en Europa.'),
+('Hyatt Hotels Corporation', 'Empresa hotelera estadounidense de lujo.'),
+('InterContinental Hotels Group (IHG)', 'Cadena multinacional de hoteles de origen británico.'),
+('Wyndham Hotels & Resorts', 'Gran franquiciador hotelero con numerosas marcas.'),
+('Radisson Hotel Group', 'Grupo hotelero internacional de origen estadounidense.'),
+('Meliá Hotels International', 'Cadena hotelera española con presencia global.'),
+('NH Hotel Group', 'Cadena hotelera española enfocada en hoteles urbanos.'),
+('Decameron Hotels & Resorts', 'Cadena hotelera con resorts todo incluido.'),
+('Estelar Hoteles', 'Cadena hotelera colombiana con hoteles urbanos y vacacionales.'),
+('GHL Hoteles', 'Grupo hotelero latinoamericano con presencia en varios países.'),
+('Hoteles Spiwak', 'Hoteles de lujo en Colombia.'),
+('Dann Carlton', 'Cadena hotelera colombiana con enfoque corporativo.'),
+('Four Seasons Hotels and Resorts', 'Cadena hotelera canadiense de lujo.'),
+('Ritz-Carlton', 'Cadena de hoteles de lujo, parte de Marriott.'),
+('Rosewood Hotels & Resorts', 'Grupo hotelero de lujo internacional.'),
+('Mandarin Oriental Hotel Group', 'Grupo de hoteles de lujo asiático.'),
+('Shangri-La Hotels and Resorts', 'Cadena de hoteles de lujo de Hong Kong.'),
+('The Peninsula Hotels', 'Grupo de hoteles de lujo con sede en Hong Kong.');
+GO
+
+-- 3. Hotel (20 Registros) - Asumo que hotel_id 1-20 se relacionarán con cadena_id 1-20 y ciudad_id 1-20
+INSERT INTO Hotel (cadena_id, nombre, direccion, ciudad_id, telefono, email, estrellas, fecha_apertura, estado_operativo, politica_cancelacion) VALUES
+(1, 'Hilton Medellín', 'Carrera 43A #1 Sur-50', 1, '6044445555', 'medellin@hilton.com', 5, '2018-03-15', 'activo', 'Cancelación gratuita hasta 24h antes.'),
+(2, 'Marriott Cartagena', 'Bocagrande, Av. San Martín #8-10', 2, '6056667777', 'cartagena@marriott.com', 4, '2015-07-20', 'activo', 'Cargos por cancelación tardía.'),
+(3, 'Sofitel Bogotá', 'Carrera 7 #115-60', 3, '6013334444', 'bogota@sofitel.com', 5, '2010-01-10', 'activo', 'Flexible con previo aviso.'),
+(4, 'Hyatt Regency Cali', 'Av. 4 Norte #15N-25', 4, '6025556666', 'cali@hyatt.com', 4, '2019-11-01', 'activo', 'Política de no reembolso en tarifas promocionales.'),
+(5, 'Holiday Inn Santa Marta', 'Carrera 1 #22-00', 5, '6054445555', 'santamarta@holidayinn.com', 3, '2012-09-01', 'activo', 'Cancelación gratuita hasta 48h antes.'),
+(6, 'Wyndham Garden Barranquilla', 'Calle 70 #53-40', 6, '6053332222', 'barranquilla@wyndham.com', 4, '2017-04-25', 'activo', 'Cargos por cancelación tardía.'),
+(7, 'Radisson Pereira', 'Carrera 13 #12-30', 7, '6063334444', 'pereira@radisson.com', 4, '2016-08-10', 'activo', 'Cancelación gratuita hasta 24h antes.'),
+(8, 'Meliá Manizales', 'Carrera 23 #65-10', 8, '6068889999', 'manizales@melia.com', 5, '2020-02-28', 'activo', 'Flexible con previo aviso.'),
+(9, 'NH Collection Bucaramanga', 'Carrera 29 #48-50', 9, '6076665555', 'bucaramanga@nh-hotels.com', 4, '2014-06-05', 'activo', 'Cargos por cancelación tardía.'),
+(10, 'Decameron Salinitas Armenia', 'Vía al Aeropuerto, Km 5', 10, '6067778888', 'armenia@decameron.com', 3, '2011-10-18', 'activo', 'Política de no reembolso.'),
+(11, 'Miami Beach Resort', 'Collins Ave 100', 11, '13051112222', 'miami@resort.com', 4, '2005-05-01', 'activo', 'Cancelación 7 días antes.'),
+(12, 'NYC Grand Hotel', 'Broadway 500', 12, '12123334444', 'nyc@grand.com', 5, '1998-09-01', 'activo', 'No reembolsable.'),
+(13, 'London Central Inn', 'Baker St 221B', 13, '442078889999', 'london@inn.com', 3, '2008-01-01', 'activo', 'Cancelación 24h.'),
+(14, 'Paris Eiffel View', 'Champ de Mars', 14, '33140102030', 'paris@eiffel.com', 4, '2010-04-01', 'activo', 'Flexible.'),
+(15, 'Madrid Plaza Suites', 'Gran Vía 10', 15, '34915556666', 'madrid@suites.com', 4, '2013-07-01', 'activo', 'Cargos si cancelas tarde.'),
+(16, 'Rome Colosseum Palace', 'Via Cavour 10', 16, '39061234567', 'rome@palace.com', 5, '2000-02-01', 'activo', 'No reembolsable.'),
+(17, 'Cancun Sunset Resort', 'Blvd Kukulcan Km 10', 17, '529987778888', 'cancun@sunset.com', 4, '2007-08-01', 'activo', 'Cancelación 3 días antes.'),
+(18, 'Buenos Aires Tango Suites', 'Florida St 900', 18, '541145556666', 'buenosaires@tango.com', 3, '2009-03-01', 'activo', 'Cancelación 48h antes.'),
+(19, 'Rio de Janeiro Copacabana', 'Av. Atlântica 500', 19, '552199998888', 'rio@copacabana.com', 4, '2014-12-01', 'activo', 'Flexible con previo aviso.'),
+(20, 'Santiago Andes View', 'Av. Vitacura 200', 20, '56223334444', 'santiago@andes.com', 4, '2016-01-01', 'activo', 'Cargos por cancelación tardía.');
+GO
+
+-- 4. Tipo_Habitacion (20 Registros)
+INSERT INTO Tipo_Habitacion (nombre, descripcion, precio_base, capacidad, comodidades) VALUES
+('Estándar Individual', 'Habitación sencilla con una cama individual.', 80.00, 1, 'Cama individual, TV, Baño privado.'),
+('Estándar Doble', 'Habitación con una cama doble o dos camas individuales.', 120.00, 2, 'Cama doble/2 camas individuales, TV, Baño privado, Wi-Fi.'),
+('Doble Superior', 'Habitación doble más espaciosa con mejores vistas.', 150.00, 2, 'Cama Queen, Balcón, Smart TV, Wi-Fi, Minibar.'),
+('Triple Estándar', 'Habitación con tres camas individuales o una doble y una individual.', 160.00, 3, '3 camas individuales/1 doble+1 individual, TV, Baño privado.'),
+('Suite Junior', 'Suite de un ambiente con área de sala de estar.', 250.00, 2, 'Cama King, Sala de estar, Baño con tina, Cafetera, Balcón.'),
+('Suite Presidencial', 'Suite de lujo con múltiples habitaciones y servicios premium.', 800.00, 4, '2 habitaciones, Sala de estar, Comedor, Jacuzzi, Mayordomo personal.'),
+('Habitación Familiar', 'Habitación grande para familias con varias camas.', 200.00, 4, '1 cama doble, 2 camas individuales, Área de juego.'),
+('Suite Ejecutiva', 'Ideal para viajeros de negocios con espacio de trabajo.', 300.00, 2, 'Cama King, Escritorio amplio, Impresora, Acceso a lounge ejecutivo.'),
+('Estudio', 'Habitación con pequeña cocina o kitchenette.', 130.00, 2, 'Cama doble, Kitchenette, Área de comedor pequeña.'),
+('Habitación Cuádruple', 'Habitación con capacidad para cuatro personas.', 180.00, 4, '2 camas dobles, TV, Baño privado.'),
+('Doble Económica', 'Habitación sencilla y compacta, ideal para bajo presupuesto.', 95.00, 2, 'Cama doble, TV, Baño básico.'),
+('Penthouse', 'Apartamento en la parte superior del hotel con vistas panorámicas.', 1200.00, 6, '3 habitaciones, Cocina completa, Piscina privada, Vista 360.'),
+('Conectada', 'Dos habitaciones con una puerta de conexión interna.', 280.00, 4, '2 camas dobles, 2 baños, Ideal para familias.'),
+('Accessible', 'Habitación adaptada para personas con movilidad reducida.', 120.00, 2, 'Accesos amplios, Baño adaptado, Barras de apoyo.'),
+('Deluxe King', 'Habitación con cama King-size y decoración premium.', 170.00, 2, 'Cama King, Decoración de lujo, Vistas al mar/ciudad.'),
+('Deluxe Twin', 'Habitación con dos camas Twin y decoración premium.', 170.00, 2, '2 camas Twin, Decoración de lujo, Vistas al mar/ciudad.'),
+('Junior Suite con Balcón', 'Suite Junior con un balcón privado adicional.', 280.00, 2, 'Cama King, Sala de estar, Baño con tina, Balcón privado.'),
+('Grand Suite', 'Suite de gran tamaño con sala de estar separada y comedor.', 600.00, 3, 'Cama King, Sala de estar, Comedor, Baño de lujo.'),
+('Bungalow', 'Alojamiento independiente tipo cabaña con acceso directo a la playa/jardín.', 350.00, 2, 'Cama King, Terraza privada, Acceso directo.'),
+('Loft Urbano', 'Espacio moderno con diseño abierto en el centro de la ciudad.', 220.00, 2, 'Cama King, Diseño industrial, Grandes ventanales, Zona de estar.');
+GO
+
+-- 5. Habitacion (20 Registros) - Asigno habitaciones a los primeros 10 hoteles.
+INSERT INTO Habitacion (hotel_id, tipo_habitacion_id, numero, piso, estado, vista, descripcion) VALUES
+(1, 2, '101', 1, 'disponible', 'Ciudad', 'Habitación doble en el primer piso.'),
+(1, 2, '102', 1, 'ocupada', 'Ciudad', 'Habitación doble en el primer piso.'),
+(1, 3, '201', 2, 'disponible', 'Piscina', 'Doble Superior con vista a la piscina.'),
+(2, 2, '301', 3, 'disponible', 'Mar', 'Habitación doble con vista al mar.'),
+(2, 5, '401', 4, 'mantenimiento', 'Mar', 'Suite Junior con vista al mar, en mantenimiento.'),
+(3, 2, '501', 5, 'disponible', 'Ciudad', 'Habitación doble ejecutiva.'),
+(3, 6, '601', 6, 'disponible', 'Panorámica', 'Suite Presidencial, la mejor del hotel.'),
+(4, 1, '1001', 10, 'disponible', 'Montaña', 'Habitación individual en piso alto.'),
+(4, 2, '1002', 10, 'ocupada', 'Montaña', 'Habitación doble con vista a la montaña.'),
+(5, 4, '701', 7, 'disponible', 'Playa', 'Habitación triple cerca de la playa.'),
+(5, 2, '702', 7, 'limpieza_pendiente', 'Playa', 'Habitación doble con vista a la playa.'),
+(6, 2, '801', 8, 'disponible', 'Ciudad', 'Habitación doble moderna.'),
+(6, 1, '802', 8, 'disponible', 'Ciudad', 'Habitación individual en piso alto.'),
+(7, 2, '901', 9, 'ocupada', 'Valle', 'Habitación doble con vista al valle.'),
+(7, 3, '902', 9, 'disponible', 'Valle', 'Doble Superior con vista al valle.'),
+(8, 2, '1101', 11, 'disponible', 'Volcán', 'Habitación doble con vista al volcán.'),
+(8, 5, '1201', 12, 'disponible', 'Panorámica', 'Suite Junior con las mejores vistas.'),
+(9, 2, '1301', 13, 'disponible', 'Parque', 'Habitación doble frente al parque.'),
+(9, 4, '1302', 13, 'ocupada', 'Parque', 'Habitación triple ocupada.'),
+(10, 2, '1401', 14, 'disponible', 'Jardín', 'Habitación doble en zona tranquila.');
+GO
+
+-- 6. Cliente (20 Registros)
+INSERT INTO Cliente (nombre, apellido, tipo_documento, numero_documento, email, telefono, direccion, ciudad_residencia_id, fecha_nacimiento, fecha_registro) VALUES
+('Juan', 'Pérez', 'DNI', '123456789', 'juan.perez@email.com', '3001234567', 'Calle 10 #20-30', 1, '1985-01-15', GETDATE()),
+('María', 'García', 'Pasaporte', 'PAS12345', 'maria.garcia@email.com', '3109876543', 'Av. Siempre Viva 123', 2, '1990-05-20', GETDATE()),
+('Carlos', 'Rodríguez', 'Cédula', '987654321', 'carlos.r@email.com', '3201112233', 'Carrera 50 #10-15', 3, '1978-11-01', GETDATE()),
+('Laura', 'Martínez', 'DNI', '543210987', 'laura.m@email.com', '3015556677', 'Diagonal 80 #5-20', 4, '1992-03-25', GETDATE()),
+('Andrés', 'González', 'Pasaporte', 'PAS67890', 'andres.g@email.com', '3157778899', 'Calle 7 #1-50', 5, '1980-07-10', GETDATE()),
+('Sofía', 'Hernández', 'Cédula', '102030405', 'sofia.h@email.com', '3052223344', 'Carrera 30 #2-10', 6, '1995-09-05', GETDATE()),
+('Daniel', 'Díaz', 'DNI', '678901234', 'daniel.d@email.com', '3114445566', 'Calle 90 #1-10', 7, '1988-12-12', GETDATE()),
+('Valentina', 'Torres', 'Pasaporte', 'PAS99887', 'valentina.t@email.com', '3176667788', 'Av. Las Palmas Km 3', 8, '1998-02-14', GETDATE()),
+('Javier', 'Ramírez', 'Cédula', '706050403', 'javier.r@email.com', '3009990011', 'Calle 40 #50-60', 9, '1975-04-30', GETDATE()),
+('Camila', 'Flores', 'DNI', '234567890', 'camila.f@email.com', '3121231234', 'Carrera 20 #1-1', 10, '1993-06-19', GETDATE()),
+('Roberto', 'Sánchez', 'Pasaporte', 'PAS11223', 'roberto.s@email.com', '3135554433', 'Calle 100 #20-50', 1, '1982-08-08', GETDATE()),
+('Isabel', 'Gómez', 'Cédula', '334455667', 'isabel.g@email.com', '3147778899', 'Diagonal 60 #10-10', 2, '1991-10-10', GETDATE()),
+('Ricardo', 'Ruiz', 'DNI', '876543210', 'ricardo.r@email.com', '3161112233', 'Av. 20 #1-10', 3, '1987-03-03', GETDATE()),
+('Fernanda', 'Castro', 'Pasaporte', 'PAS44556', 'fernanda.c@email.com', '3182223344', 'Carrera 70 #5-5', 4, '1996-01-22', GETDATE()),
+('Luis', 'Vargas', 'Cédula', '445566778', 'luis.v@email.com', '3193334455', 'Calle 5 #10-10', 5, '1979-09-09', GETDATE()),
+('Mariana', 'Silva', 'DNI', '998877665', 'mariana.s@email.com', '3024445566', 'Av. Principal 10', 6, '1986-04-04', GETDATE()),
+('Pablo', 'Mendoza', 'Pasaporte', 'PAS77889', 'pablo.m@email.com', '3035556677', 'Carrera 80 #1-20', 7, '1994-07-07', GETDATE()),
+('Alejandra', 'Paz', 'Cédula', '112233445', 'alejandra.p@email.com', '3046667788', 'Calle 30 #5-15', 8, '1983-02-02', GETDATE()),
+('Sergio', 'Ortega', 'DNI', '223344556', 'sergio.o@email.com', '3067778899', 'Diagonal 20 #3-10', 9, '1997-05-05', GETDATE()),
+('Natalia', 'Rojas', 'Pasaporte', 'PAS00112', 'natalia.r@email.com', '3078889900', 'Calle 60 #10-5', 10, '1989-11-11', GETDATE());
+GO
+
+-- 7. Cargo (20 Registros)
+INSERT INTO Cargo (nombre_cargo, descripcion) VALUES
+('Gerente General', 'Supervisa todas las operaciones del hotel.'),
+('Gerente de Recepción', 'Dirige el personal de recepción y check-in/out.'),
+('Recepcionista', 'Atiende a los huéspedes en la recepción.'),
+('Jefe de Mantenimiento', 'Coordina y supervisa el equipo de mantenimiento.'),
+('Personal de Mantenimiento', 'Realiza reparaciones y mantenimiento general.'),
+('Jefe de Limpieza', 'Supervisa al personal de limpieza y el estado de las habitaciones.'),
+('Personal de Limpieza', 'Realiza la limpieza de habitaciones y áreas comunes.'),
+('Chef Ejecutivo', 'Dirige la cocina y el personal de cocina.'),
+('Cocinero', 'Prepara los alimentos.'),
+('Mesero', 'Sirve alimentos y bebidas a los huéspedes.'),
+('Bartender', 'Prepara y sirve bebidas en el bar.'),
+('Gerente de Ventas', 'Encargado de la estrategia de ventas y relaciones con clientes.'),
+('Ejecutivo de Ventas', 'Vende servicios y paquetes del hotel.'),
+('Contador', 'Gestiona las finanzas y contabilidad del hotel.'),
+('Recursos Humanos', 'Encargado de la gestión del personal.'),
+('Jefe de Seguridad', 'Supervisa la seguridad de las instalaciones y huéspedes.'),
+('Guardia de Seguridad', 'Vela por la seguridad del hotel.'),
+('Bellboy', 'Asiste a los huéspedes con su equipaje y orientación.'),
+('Conductor', 'Ofrece servicios de transporte a los huéspedes.'),
+('Animador Turístico', 'Organiza actividades recreativas para los huéspedes.');
+GO
+
+-- 8. Empleado (20 Registros) - Asigno empleados a los primeros 10 hoteles.
+INSERT INTO Empleado (hotel_id, cargo_id, nombre, apellido, tipo_documento, numero_documento, email, telefono, direccion, fecha_nacimiento, fecha_contratacion, salario, estado) VALUES
+(1, 1, 'Marta', 'Duque', 'Cédula', '100100100', 'marta.duque@hotel.com', '3001002000', 'Calle 10A #34-25', '1975-03-10', '2017-01-01', 5000000.00, 'activo'),
+(1, 2, 'Pedro', 'Giraldo', 'DNI', '100100101', 'pedro.g@hotel.com', '3001002001', 'Carrera 43 #10-15', '1980-07-20', '2018-05-10', 2500000.00, 'activo'),
+(1, 3, 'Ana', 'López', 'Cédula', '100100102', 'ana.l@hotel.com', '3001002002', 'Diagonal 20 #5-30', '1992-01-05', '2019-02-15', 1800000.00, 'activo'),
+(2, 1, 'Ricardo', 'Vargas', 'Cédula', '100200200', 'ricardo.v@hotel.com', '3011002000', 'Av. San Martín 15', '1970-08-12', '2016-03-01', 5200000.00, 'activo'),
+(2, 6, 'Luisa', 'Mendoza', 'Cédula', '100200201', 'luisa.m@hotel.com', '3011002001', 'Bocagrande, Calle 10 #5-20', '1988-04-20', '2017-07-01', 2000000.00, 'activo'),
+(3, 1, 'Elena', 'Patiño', 'DNI', '100300300', 'elena.p@hotel.com', '3021002000', 'Carrera 7 #115-50', '1972-06-01', '2015-09-01', 5100000.00, 'activo'),
+(3, 8, 'Fernando', 'Correa', 'Cédula', '100300301', 'fernando.c@hotel.com', '3021002001', 'Calle 120 #1-10', '1985-11-11', '2018-03-20', 3500000.00, 'activo'),
+(4, 1, 'Gabriel', 'Ortega', 'Cédula', '100400400', 'gabriel.o@hotel.com', '3031002000', 'Av. 4N #15N-30', '1978-02-28', '2019-01-01', 4900000.00, 'activo'),
+(4, 3, 'Andrea', 'Soto', 'Cédula', '100400401', 'andrea.s@hotel.com', '3031002001', 'Calle 50 #12-12', '1990-10-10', '2020-04-01', 1850000.00, 'activo'),
+(5, 1, 'Manuel', 'Quintero', 'DNI', '100500500', 'manuel.q@hotel.com', '3041002000', 'Carrera 1 #22-10', '1973-05-15', '2018-02-01', 4800000.00, 'activo'),
+(5, 7, 'Paola', 'Ríos', 'Cédula', '100500501', 'paola.r@hotel.com', '3041002001', 'Av. del Río #5-50', '1993-09-09', '2019-06-01', 1700000.00, 'activo'),
+(6, 1, 'Natalia', 'Jaramillo', 'Cédula', '100600600', 'natalia.j@hotel.com', '3051002000', 'Calle 70 #53-50', '1976-12-05', '2017-08-01', 5050000.00, 'activo'),
+(6, 12, 'Juancho', 'Pérez', 'Cédula', '100600601', 'juancho.p@hotel.com', '3051002001', 'Carrera 51 #70-10', '1987-01-01', '2019-01-01', 3000000.00, 'activo'),
+(7, 1, 'Carlos', 'Mejía', 'Cédula', '100700700', 'carlos.m@hotel.com', '3061002000', 'Carrera 13 #12-40', '1974-04-04', '2016-10-01', 4950000.00, 'activo'),
+(7, 9, 'Felipe', 'Restrepo', 'DNI', '100700701', 'felipe.r@hotel.com', '3061002001', 'Calle 20 #1-1', '1989-03-03', '2018-11-01', 2800000.00, 'activo'),
+(8, 1, 'Sofía', 'Orozco', 'Cédula', '100800800', 'sofia.o@hotel.com', '3071002000', 'Carrera 23 #65-20', '1977-09-09', '2020-03-01', 5150000.00, 'activo'),
+(8, 10, 'Laura', 'Gómez', 'Cédula', '100800801', 'laura.g@hotel.com', '3071002001', 'Calle 60 #10-10', '1991-07-07', '2021-01-01', 2200000.00, 'activo'),
+(9, 1, 'Diego', 'Navarro', 'Cédula', '100900900', 'diego.n@hotel.com', '3081002000', 'Carrera 29 #48-60', '1971-11-11', '2015-05-01', 5000000.00, 'activo'),
+(9, 13, 'Carolina', 'Santos', 'Cédula', '100900901', 'carolina.s@hotel.com', '3081002001', 'Calle 50 #1-1', '1994-06-06', '2020-09-01', 2500000.00, 'activo'),
+(10, 1, 'Valeria', 'Sierra', 'DNI', '101001000', 'valeria.s@hotel.com', '3091002000', 'Vía al Aeropuerto, Km 5.5', '1979-01-01', '2019-07-01', 4900000.00, 'activo');
+GO
+
+-- Actualizar gerentes en Hotel (hotel_id 1 al 10 con empleado_id 1, 4, 6, 8, 10, 12, 14, 16, 18, 20)
+UPDATE Hotel SET gerente_id = 1 WHERE hotel_id = 1;
+UPDATE Hotel SET gerente_id = 4 WHERE hotel_id = 2;
+UPDATE Hotel SET gerente_id = 6 WHERE hotel_id = 3;
+UPDATE Hotel SET gerente_id = 8 WHERE hotel_id = 4;
+UPDATE Hotel SET gerente_id = 10 WHERE hotel_id = 5;
+UPDATE Hotel SET gerente_id = 12 WHERE hotel_id = 6;
+UPDATE Hotel SET gerente_id = 14 WHERE hotel_id = 7;
+UPDATE Hotel SET gerente_id = 16 WHERE hotel_id = 8;
+UPDATE Hotel SET gerente_id = 18 WHERE hotel_id = 9;
+UPDATE Hotel SET gerente_id = 20 WHERE hotel_id = 10;
+GO
+
+-- 9. Reserva (20 Registros) - Relacionadas con clientes 1-20 y hoteles 1-10
+INSERT INTO Reserva (cliente_id, hotel_id, fecha_reserva, fecha_entrada, fecha_salida, estado, numero_huespedes, notas, empleado_registro_id) VALUES
+(1, 1, GETDATE(), '2025-06-01', '2025-06-05', 'confirmada', 2, 'Cliente frecuente', 3),
+(2, 2, GETDATE(), '2025-07-10', '2025-07-15', 'pendiente', 3, 'Necesita cuna', 5),
+(3, 3, GETDATE(), '2025-08-20', '2025-08-22', 'confirmada', 1, 'Viaje de negocios', 7),
+(4, 4, GETDATE(), '2025-09-05', '2025-09-08', 'cancelada', 2, 'Canceló por cambio de planes', 9),
+(5, 5, GETDATE(), '2025-06-15', '2025-06-20', 'confirmada', 4, 'Familia con niños', 11),
+(6, 6, GETDATE(), '2025-10-01', '2025-10-03', 'pendiente', 2, 'Requiere early check-in', 13),
+(7, 7, GETDATE(), '2025-11-10', '2025-11-12', 'confirmada', 1, 'Conferencia', 15),
+(8, 8, GETDATE(), '2025-07-25', '2025-07-28', 'no_show', 2, 'No se presentó', 17),
+(9, 9, GETDATE(), '2025-12-01', '2025-12-05', 'confirmada', 3, 'Luna de miel', 19),
+(10, 10, GETDATE(), '2025-08-01', '2025-08-07', 'pendiente', 2, 'Reserva de último minuto', 1),
+(11, 1, GETDATE(), '2025-06-20', '2025-06-23', 'confirmada', 1, 'Solicita habitación silenciosa', 3),
+(12, 2, GETDATE(), '2025-07-01', '2025-07-03', 'confirmada', 2, 'Viaje corto', 5),
+(13, 3, GETDATE(), '2025-08-05', '2025-08-09', 'pendiente', 4, 'Vacaciones familiares', 7),
+(14, 4, GETDATE(), '2025-09-15', '2025-09-18', 'confirmada', 2, 'Reserva corporativa', 9),
+(15, 5, GETDATE(), '2025-10-20', '2025-10-22', 'cancelada', 1, 'Cambio de destino', 11),
+(16, 6, GETDATE(), '2025-11-01', '2025-11-04', 'confirmada', 3, 'Reserva con paquete', 13),
+(17, 7, GETDATE(), '2025-12-10', '2025-12-15', 'pendiente', 2, 'Estadía prolongada', 15),
+(18, 8, GETDATE(), '2025-06-25', '2025-06-27', 'confirmada', 1, 'Reserva personal', 17),
+(19, 9, GETDATE(), '2025-07-30', '2025-08-02', 'pendiente', 2, 'Solicita vista específica', 19),
+(20, 10, GETDATE(), '2025-09-01', '2025-09-05', 'confirmada', 3, 'Aniversario', 1);
+GO
+
+-- 10. Reserva_Habitacion (20 Registros) - Relacionado con Reservas 1-20 y Habitaciones 1-20
+INSERT INTO Reserva_Habitacion (reserva_id, habitacion_id, precio_noche_cobrado, estado_asignacion) VALUES
+(1, 1, 120.00, 'asignada'), 
+(2, 4, 120.00, 'asignada'), 
+(3, 6, 120.00, 'asignada'),
+(4, 8, 80.00, 'cancelada'), 
+(5, 10, 160.00, 'asignada'),
+(5, 11, 120.00, 'asignada'),
+(6, 12, 120.00, 'asignada'),
+(7, 14, 120.00, 'asignada'),
+(8, 16, 120.00, 'cancelada'), 
+(9, 18, 160.00, 'asignada'),
+(10, 20, 120.00, 'asignada'),
+(11, 2, 120.00, 'asignada'), 
+(12, 3, 150.00, 'asignada'),
+(13, 7, 800.00, 'asignada'),
+(13, 9, 120.00, 'asignada'),
+(14, 13, 80.00, 'asignada'),
+(15, 15, 150.00, 'cancelada'),
+(16, 17, 250.00, 'asignada'),
+(17, 19, 160.00, 'asignada'),
+(18, 5, 250.00, 'asignada'); 
+GO
+
+-- 11. Tipo_Servicio (20 Registros)
+INSERT INTO Tipo_Servicio (nombre_tipo, descripcion) VALUES
+('Restaurante', 'Servicios de alimentación y bebidas en el hotel.'),
+('Spa y Bienestar', 'Tratamientos de spa, masajes, sauna.'),
+('Gimnasio', 'Acceso a instalaciones de fitness.'),
+('Lavandería', 'Servicio de lavado y planchado de ropa.'),
+('Room Service', 'Entrega de alimentos y bebidas a la habitación.'),
+('Tour y Excursiones', 'Organización de tours turísticos locales.'),
+('Transporte', 'Servicio de traslado de/a aeropuerto o puntos turísticos.'),
+('Bar/Lounge', 'Servicio de bebidas y snacks en áreas comunes.'),
+('Piscina', 'Acceso a la piscina del hotel.'),
+('Centro de Negocios', 'Salas de reuniones, equipos de oficina, servicios de impresión.'),
+('Parqueo', 'Estacionamiento para huéspedes.'),
+('Guardería/Niñera', 'Cuidado de niños.'),
+('Alquiler de Vehículos', 'Servicio de renta de autos.'),
+('Peluquería', 'Servicios de salón de belleza.'),
+('Tienda de Regalos', 'Venta de souvenirs y artículos varios.'),
+('Clases de Cocina', 'Actividades de aprendizaje culinario.'),
+('Clases de Yoga', 'Sesiones de yoga y meditación.'),
+('Servicio de Concierge', 'Asistencia personalizada para reservas, información, etc.'),
+('Servicio de Traducción', 'Traducción simultánea o consecutiva.'),
+('Organización de Eventos', 'Asistencia en la planificación de eventos y conferencias.');
+GO
+
+-- 12. Servicio (20 Registros) - Asigno servicios a los primeros 5 hoteles
+INSERT INTO Servicio (hotel_id, tipo_servicio_id, nombre, descripcion, precio_base, horario, capacidad) VALUES
+(1, 1, 'Restaurante Central', 'Cocina internacional', 50.00, '7:00-22:00', 100),
+(1, 2, 'Spa Relax', 'Masajes y tratamientos', 80.00, '9:00-20:00', 10),
+(1, 5, 'Room Service 24h', 'Servicio de alimentos a la habitación', 10.00, '24 horas', NULL),
+(2, 1, 'Restaurante Fusión', 'Cocina caribeña y fusión', 60.00, '6:00-23:00', 80),
+(2, 3, 'Gimnasio Marriott', 'Gimnasio completo con entrenador', 20.00, '6:00-22:00', 30),
+(2, 4, 'Lavandería Express', 'Lavado y planchado rápido', 15.00, '8:00-18:00', NULL),
+(3, 1, 'La Cuisine', 'Alta cocina francesa', 75.00, '12:00-22:00', 70),
+(3, 7, 'Traslado Aeropuerto', 'Servicio de transporte privado', 40.00, '24 horas', 4),
+(3, 10, 'Centro de Negocios', 'Salas y equipos para reuniones', 30.00, '8:00-21:00', 20),
+(4, 1, 'Grill House', 'Carnes a la parrilla', 45.00, '18:00-23:00', 60),
+(4, 9, 'Piscina Panorámica', 'Piscina en la azotea', 0.00, '9:00-21:00', 50), 
+(4, 11, 'Parqueo Cubierto', 'Estacionamiento vigilado', 10.00, '24 horas', 150),
+(5, 1, 'Restaurante Buffet', 'Buffet internacional', 35.00, '7:00-22:00', 120),
+(5, 2, 'Masajes Terapéuticos', 'Masajes relajantes y descontracturantes', 70.00, '10:00-19:00', 5),
+(5, 6, 'City Tour', 'Tour guiado por la ciudad', 25.00, '9:00-17:00', 15),
+(1, 8, 'Lounge Bar', 'Bebidas y cocteles', 20.00, '17:00-01:00', 40),
+(2, 12, 'Kids Club', 'Actividades para niños', 25.00, '9:00-18:00', 20),
+(3, 13, 'Alquiler Carros', 'Renta de vehículos variados', 60.00, '8:00-20:00', NULL),
+(4, 14, 'Salón de Belleza', 'Peluquería y manicure', 40.00, '10:00-19:00', 5),
+(5, 15, 'Souvenirs Shop', 'Tienda de regalos del hotel', 0.00, '9:00-21:00', NULL);
+GO
+
+-- 13. Consumo_Servicio (20 Registros) - Relacionado con Reservas 1-10 y Servicios 1-20
+INSERT INTO Consumo_Servicio (reserva_id, servicio_id, fecha_hora_consumo, cantidad, precio_unitario_cobrado, empleado_registro_id) VALUES
+(1, 1, GETDATE(), 2, 50.00, 7), 
+(1, 3, GETDATE(), 1, 10.00, 3), 
+(2, 4, GETDATE(), 3, 60.00, 7),
+(2, 5, GETDATE(), 1, 20.00, 9),
+(3, 7, GETDATE(), 1, 75.00, 7),
+(4, 8, GETDATE(), 1, 40.00, 11),
+(5, 10, GETDATE(), 2, 45.00, 7),
+(5, 11, GETDATE(), 1, 0.00, 13), 
+(6, 12, GETDATE(), 1, 10.00, 15),
+(7, 13, GETDATE(), 1, 35.00, 17),
+(8, 14, GETDATE(), 1, 70.00, 19),
+(9, 15, GETDATE(), 2, 25.00, 1),
+(10, 16, GETDATE(), 1, 20.00, 3),
+(11, 17, GETDATE(), 1, 25.00, 5),
+(12, 18, GETDATE(), 1, 60.00, 7),
+(13, 19, GETDATE(), 1, 40.00, 9),
+(14, 20, GETDATE(), 1, 0.00, 11),
+(15, 1, GETDATE(), 1, 50.00, 13),
+(16, 4, GETDATE(), 2, 60.00, 15),
+(17, 7, GETDATE(), 1, 75.00, 17);
+GO
+
+-- 14. Paquete (20 Registros)
+INSERT INTO Paquete (nombre, descripcion, precio, duracion_dias, valido_desde, valido_hasta, estado) VALUES
+('Luna de Miel Romántica', 'Incluye suite de lujo, desayuno y cena romántica.', 700.00, 3, '2025-01-01', '2025-12-31', 'activo'),
+('Aventura en la Ciudad', 'Alojamiento, city tour y entradas a atracciones.', 450.00, 2, '2025-01-01', '2025-12-31', 'activo'),
+('Relax Total Spa', 'Estadía con acceso ilimitado al spa y masajes.', 600.00, 3, '2025-01-01', '2025-12-31', 'activo'),
+('Escapada Familiar', 'Alojamiento en habitación familiar, actividades para niños.', 550.00, 4, '2025-01-01', '2025-12-31', 'activo'),
+('Negocios Express', 'Alojamiento, desayuno, acceso a centro de negocios.', 300.00, 2, '2025-01-01', '2025-12-31', 'activo'),
+('Gastronómico Delight', 'Estadía con cenas degustación en restaurantes gourmet.', 800.00, 3, '2025-01-01', '2025-12-31', 'activo'),
+('Vacaciones de Playa', 'Todo incluido en resort de playa.', 1200.00, 5, '2025-01-01', '2025-12-31', 'activo'),
+('Deportes y Aventura', 'Incluye actividades deportivas al aire libre.', 750.00, 4, '2025-01-01', '2025-12-31', 'activo'),
+('Cultural Immersion', 'Visitas a museos y sitios históricos, guía incluido.', 400.00, 3, '2025-01-01', '2025-12-31', 'activo'),
+('Noche Romántica', 'Cena especial, botella de vino, detalles en la habitación.', 350.00, 1, '2025-01-01', '2025-12-31', 'activo'),
+('Aniversario Premium', 'Suite de lujo, cena especial, spa para dos, transporte.', 950.00, 2, '2025-01-01', '2025-12-31', 'activo'),
+('Fin de Semana Relax', 'Alojamiento 2 noches, desayuno, acceso a piscina y gimnasio.', 280.00, 2, '2025-01-01', '2025-12-31', 'activo'),
+('Viaje Corporativo VIP', 'Alojamiento en suite, desayuno, uso de sala de reuniones, transfer.', 400.00, 2, '2025-01-01', '2025-12-31', 'activo'),
+('Bienestar Total', 'Paquete de salud con acceso a gimnasio, spa y nutricionista.', 700.00, 5, '2025-01-01', '2025-12-31', 'activo'),
+('Explora la Montaña', 'Alojamiento, senderismo guiado, picnic campestre.', 500.00, 3, '2025-01-01', '2025-12-31', 'activo'),
+('Golf Getaway', 'Alojamiento, green fees en campo de golf, clases de golf.', 850.00, 3, '2025-01-01', '2025-12-31', 'activo'),
+('Shopping Experience', 'Alojamiento, traslados a centros comerciales, tarjeta de descuento.', 420.00, 2, '2025-01-01', '2025-12-31', 'activo'),
+('Fiesta de Cumpleaños', 'Decoración, pastel, bebidas, área privada para celebración.', 300.00, 1, '2025-01-01', '2025-12-31', 'activo'),
+('Retiro de Yoga', 'Alojamiento, sesiones diarias de yoga y meditación, comidas saludables.', 650.00, 4, '2025-01-01', '2025-12-31', 'activo'),
+('Experiencia Culinaria', 'Clase de cocina, degustación de vinos, cena especial.', 580.00, 2, '2025-01-01', '2025-12-31', 'activo');
+GO
+
+-- 15. Detalle_Paquete_Servicio (20 Registros) - Combinando Paquetes 1-10 y Servicios 1-20
+INSERT INTO Detalle_Paquete_Servicio (paquete_id, servicio_id, cantidad_incluida) VALUES
+(1, 1, 2), -- Luna de Miel incluye 2 cenas en Restaurante Central
+(1, 2, 1), -- Luna de Miel incluye 1 masaje
+(2, 6, 1), -- Aventura incluye City Tour
+(2, 11, 1), -- Aventura incluye Parqueo
+(3, 2, 3), -- Relax Total incluye 3 masajes
+(3, 3, 1), -- Relax Total incluye acceso a Gimnasio
+(4, 12, 1), -- Familiar incluye Kids Club
+(4, 11, 1), -- Familiar incluye Parqueo
+(5, 10, 1), -- Negocios Express incluye Centro de Negocios
+(5, 1, 1), -- Negocios Express incluye Restaurante (desayuno)
+(6, 1, 3), -- Gastronómico incluye 3 cenas
+(7, 9, 1), -- Playa incluye Piscina
+(7, 4, 1), -- Playa incluye Lavandería
+(8, 5, 1), -- Deportes incluye Room Service
+(8, 3, 1), -- Deportes incluye Gimnasio
+(9, 6, 1), -- Cultural incluye City Tour
+(10, 8, 1), -- Noche Romántica incluye Bar/Lounge
+(10, 3, 1), -- Noche Romántica puede incluir Gimnasio
+(11, 2, 2), -- Aniversario incluye 2 masajes
+(11, 7, 1); -- Aniversario incluye Traslado Aeropuerto
+GO
+
+-- 16. Reserva_Paquete (20 Registros) - Relacionado con Reservas 1-20 y Paquetes 1-20
+INSERT INTO Reserva_Paquete (reserva_id, paquete_id, fecha_reserva_paquete, precio_cobrado, estado) VALUES
+(1, 1, GETDATE(), 700.00, 'reservado'),
+(2, 2, GETDATE(), 450.00, 'reservado'),
+(3, 3, GETDATE(), 600.00, 'reservado'),
+(4, 4, GETDATE(), 550.00, 'cancelado'), 
+(5, 5, GETDATE(), 300.00, 'reservado'),
+(6, 6, GETDATE(), 800.00, 'reservado'),
+(7, 7, GETDATE(), 1200.00, 'reservado'),
+(8, 8, GETDATE(), 750.00, 'cancelado'), 
+(9, 9, GETDATE(), 400.00, 'reservado'),
+(10, 10, GETDATE(), 350.00, 'reservado'),
+(11, 11, GETDATE(), 950.00, 'reservado'),
+(12, 12, GETDATE(), 280.00, 'reservado'),
+(13, 13, GETDATE(), 400.00, 'reservado'),
+(14, 14, GETDATE(), 700.00, 'reservado'),
+(15, 15, GETDATE(), 500.00, 'cancelado'),
+(16, 16, GETDATE(), 850.00, 'reservado'),
+(17, 17, GETDATE(), 420.00, 'reservado'),
+(18, 18, GETDATE(), 300.00, 'reservado'),
+(19, 19, GETDATE(), 650.00, 'reservado'),
+(20, 20, GETDATE(), 580.00, 'reservado');
+GO
+
+-- 17. Tipo_Transporte (20 Registros)
+INSERT INTO Tipo_Transporte (nombre_tipo, descripcion) VALUES
+('Aéreo', 'Transporte por avión.'),
+('Terrestre', 'Transporte por carretera (autobús, coche).'),
+('Marítimo', 'Transporte por barco/yate.'),
+('Tren', 'Transporte por vía férrea.'),
+('Bicicleta', 'Alquiler o tours en bicicleta.'),
+('A pie', 'Tours a pie.'),
+('Subterráneo', 'Transporte en metro.'),
+('Teleférico', 'Transporte por cable.'),
+('Autobús Turístico', 'Recorridos turísticos en autobús.'),
+('Tuk-Tuk', 'Transporte en vehículos de tres ruedas (Asia).'),
+('Taxi', 'Servicio de taxi privado.'),
+('Vehículo Particular', 'Alquiler de vehículos sin conductor.'),
+('Limusina', 'Servicio de transporte de lujo.'),
+('Helicóptero', 'Tours o traslados en helicóptero.'),
+('Moto', 'Alquiler de motos.'),
+('Teleférico Panorámico', 'Teleférico con vistas especiales.'),
+('Ferry', 'Transporte marítimo de pasajeros y vehículos.'),
+('Coche de Caballos', 'Paseos turísticos en coche de caballos.'),
+('Scooter Eléctrico', 'Alquiler de scooters eléctricos.'),
+('Segway', 'Tours en Segway.');
+GO
+
+-- 18. Transporte (20 Registros) - Combinando Tipo_Transporte
+INSERT INTO Transporte (tipo_transporte_id, descripcion, compania, capacidad, precio_base, notas) VALUES
+(1, 'Vuelo comercial nacional', 'Avianca', 180, 150.00, 'Vuelos a principales ciudades.'),
+(1, 'Vuelo charter privado', 'AeroJets', 8, 1500.00, 'Servicio de lujo.'),
+(2, 'Bus turístico de lujo', 'TourBus Express', 40, 50.00, 'Aire acondicionado, asientos reclinables.'),
+(2, 'Sedán ejecutivo', 'Luxury Cars', 4, 120.00, 'Traslado de aeropuerto.'),
+(3, 'Yate de recreo', 'Blue Ocean Charters', 12, 800.00, 'Alquiler por día.'),
+(3, 'Ferry de pasajeros', 'Ferry del Sol', 200, 25.00, 'Ruta costera.'),
+(4, 'Tren turístico panorámico', 'Andes Rail', 50, 70.00, 'Vistas a la montaña.'),
+(4, 'Tren de alta velocidad', 'AVE Col', 300, 100.00, 'Conexiones rápidas entre ciudades.'),
+(5, 'Alquiler de bicicleta de montaña', 'Bike Adventures', 1, 20.00, 'Incluye casco.'),
+(6, 'Tour a pie por el centro histórico', 'Walking Tours', 15, 15.00, 'Guía bilingüe.'),
+(7, 'Metro de la ciudad', 'Metrocity', 1000, 2.50, 'Ticket de un día.'),
+(8, 'Teleférico urbano', 'SkyCable', 10, 5.00, 'Conexión a barrios altos.'),
+(9, 'Autobús turístico hop-on hop-off', 'City Sightseeing', 70, 30.00, '24 horas de validez.'),
+(10, 'Tuk-Tuk para tour local', 'TukTuk Express', 3, 10.00, 'Ruta de 1 hora.'),
+(11, 'Servicio de Taxi Premium', 'Taxi VIP', 4, 20.00, 'Por carrera mínima.'),
+(12, 'Alquiler de SUV', 'DriveEasy Rentals', 5, 80.00, 'Tarifa diaria.'),
+(13, 'Limusina de boda', 'Elegant Rides', 8, 300.00, 'Por hora, mínimo 2 horas.'),
+(14, 'Tour en helicóptero por la costa', 'HeliView Tours', 3, 500.00, '20 minutos de vuelo.'),
+(15, 'Alquiler de scooter', 'Scooter Fun', 1, 35.00, 'Requiere licencia de moto.'),
+(16, 'Teleférico para senderismo', 'Mountain Express', 6, 12.00, 'Acceso a rutas de senderismo.');
+GO
+
+-- 19. Detalle_Paquete_Transporte (20 Registros) - Combinando Paquetes 1-10 y Transportes 1-20
+INSERT INTO Detalle_Paquete_Transporte (paquete_id, transporte_id, tipo_trayecto, origen, destino) VALUES
+(1, 4, 'ida_y_vuelta', 'Aeropuerto', 'Hotel'), -- Luna de Miel incluye Traslado Ejecutivo
+(2, 9, 'ida', 'Hotel', 'Parque Nacional'), -- Aventura incluye Bicicleta
+(3, 11, 'ida_y_vuelta', 'Hotel', 'Centro Comercial'), -- Relax Total incluye Taxi
+(4, 13, 'ida', 'Hotel', 'Parque de Atracciones'), -- Familiar incluye Autobús Turístico
+(5, 4, 'ida_y_vuelta', 'Aeropuerto', 'Hotel'), -- Negocios Express incluye Traslado Ejecutivo
+(6, 7, 'ida_y_vuelta', 'Estación Central', 'Pueblo Cercano'), -- Gastronómico incluye Tren turístico
+(7, 1, 'ida_y_vuelta', 'Ciudad Origen', 'Ciudad Destino'), -- Vacaciones de Playa incluye Vuelo
+(8, 9, 'ida', 'Hotel', 'Ruta de Montaña'), -- Deportes y Aventura incluye Bicicleta
+(9, 6, 'ida_y_vuelta', 'Muelle Principal', 'Isla Histórica'), -- Cultural incluye Ferry
+(10, 11, 'ida_y_vuelta', 'Restaurante', 'Hotel'), -- Noche Romántica incluye Taxi
+(11, 4, 'ida_y_vuelta', 'Aeropuerto', 'Hotel'), -- Aniversario incluye Traslado Ejecutivo
+(12, 11, 'ida_y_vuelta', 'Hotel', 'Centro'), -- Fin de Semana incluye Taxi
+(13, 4, 'ida_y_vuelta', 'Aeropuerto', 'Hotel'), -- Viaje Corporativo incluye Traslado Ejecutivo
+(14, 9, 'ida', 'Hotel', 'Senderos Naturaleza'), -- Bienestar incluye Bicicleta
+(15, 9, 'ida', 'Hotel', 'Ruta Senderismo'), -- Explora Montaña incluye Bicicleta
+(16, 11, 'ida_y_vuelta', 'Hotel', 'Campo de Golf'), -- Golf Getaway incluye Taxi
+(17, 13, 'ida_y_vuelta', 'Hotel', 'Centro Comercial Lujo'), -- Shopping Experience incluye Limusina
+(18, 11, 'ida_y_vuelta', 'Hotel', 'Lugar Evento'), -- Fiesta Cumpleaños incluye Taxi
+(19, 9, 'ida', 'Hotel', 'Parque Urbano'), -- Retiro Yoga incluye Bicicleta
+(20, 11, 'ida_y_vuelta', 'Restaurante Exclusivo', 'Hotel'); -- Experiencia Culinaria incluye Taxi
+GO
+
+-- 20. Restaurante (20 Registros) - Combinando con hoteles 1-10 (cada hotel puede tener varios)
+INSERT INTO Restaurante (hotel_id, nombre, tipo_cocina, horario_apertura, horario_cierre, capacidad_mesas, descripcion) VALUES
+(1, 'El Fogón Paisa', 'Colombiana', '12:00:00', '22:00:00', 50, 'Restaurante de comida típica antioqueña.'),
+(1, 'Sushi House', 'Japonesa', '18:00:00', '23:00:00', 30, 'Sushi bar con ambiente moderno.'),
+(2, 'La Cevicheria', 'Peruana-Mariscos', '12:00:00', '21:00:00', 45, 'Especialidad en ceviches y mariscos frescos.'),
+(2, 'Steak & Grill', 'Carnes', '19:00:00', '00:00:00', 60, 'Asados a la parrilla y cortes premium.'),
+(3, 'Le Bistró', 'Francesa', '07:00:00', '23:00:00', 70, 'Cocina francesa clásica con toque moderno.'),
+(3, 'Pizza e Pasta', 'Italiana', '12:00:00', '22:00:00', 40, 'Pizzas al horno de leña y pastas artesanales.'),
+(4, 'Sabores del Valle', 'Vallecaucana', '06:00:00', '22:00:00', 55, 'Comida tradicional del Valle del Cauca.'),
+(4, 'Cafetería Gourmet', 'Café y postres', '07:00:00', '20:00:00', 25, 'Especialidades de café y repostería.'),
+(5, 'El Pescador', 'Caribeña', '11:00:00', '20:00:00', 65, 'Platos de pescado y mariscos frescos de la costa.'),
+(5, 'Bar de Piscina', 'Snacks y Bebidas', '10:00:00', '18:00:00', 30, 'Comida ligera y cócteles junto a la piscina.'),
+(6, 'Restaurante Internacional', 'Buffet Internacional', '07:00:00', '22:00:00', 100, 'Variedad de platos de diferentes cocinas.'),
+(6, 'Restaurante Wok', 'Asiática', '18:00:00', '23:00:00', 40, 'Comida asiática preparada al wok.'),
+(7, 'El Rancho', 'Campestre', '12:00:00', '21:00:00', 50, 'Comida típica de la región cafetera.'),
+(7, 'Jugos Naturales', 'Bebidas Saludables', '08:00:00', '18:00:00', 15, 'Variedad de jugos y batidos de frutas.'),
+(8, 'Altos de Caldas', 'Fusion', '19:00:00', '23:00:00', 35, 'Cocina de autor con ingredientes locales.'),
+(8, 'Panadería y Pastelería', 'Pan y Dulces', '06:00:00', '20:00:00', 20, 'Pan fresco y postres artesanales.'),
+(9, 'La Casona Colonial', 'Santandereana', '12:00:00', '22:00:00', 50, 'Platos tradicionales de Santander.'),
+(9, 'Sports Bar', 'Comida Rápida', '17:00:00', '01:00:00', 40, 'Hamburguesas, alitas, cervezas y deportes.'),
+(10, 'Mirador del Quindío', 'Típica', '08:00:00', '20:00:00', 60, 'Comida colombiana con vistas panorámicas.'),
+(10, 'Bar Cafetería', 'Snacks y Cafés', '07:00:00', '21:00:00', 25, 'Café, snacks y ambiente relajado.');
+GO
+
+-- 21. Reserva_Restaurante (20 Registros) - Relacionado con Clientes y Restaurantes
+INSERT INTO Reserva_Restaurante (cliente_id, restaurante_id, fecha_reserva, hora_reserva, numero_comensales, estado, notas, empleado_registro_id) VALUES
+(1, 1, '2025-06-02', '20:00:00', 2, 'confirmada', 'Mesa junto a la ventana', 3),
+(2, 3, '2025-07-11', '13:00:00', 3, 'confirmada', 'Solicita silla para bebé', 5),
+(3, 5, '2025-08-20', '19:30:00', 1, 'confirmada', 'Cena de negocios', 7),
+(4, 7, '2025-09-06', '12:30:00', 2, 'cancelada', 'El cliente canceló', 9),
+(5, 9, '2025-06-16', '14:00:00', 4, 'confirmada', 'Celebración familiar', 11),
+(6, 11, '2025-10-02', '21:00:00', 2, 'confirmada', 'Cumpleaños', 13),
+(7, 13, '2025-11-10', '18:00:00', 1, 'confirmada', 'Cena temprana', 15),
+(8, 15, '2025-07-26', '20:30:00', 2, 'no_show', 'No se presentaron', 17),
+(9, 17, '2025-12-02', '13:00:00', 3, 'confirmada', 'Reserva con guía', 19),
+(10, 19, '2025-08-02', '19:00:00', 2, 'confirmada', 'Mesa tranquila', 1),
+(11, 2, '2025-06-21', '21:00:00', 2, 'confirmada', 'Mesa romántica', 3),
+(12, 4, '2025-07-02', '18:30:00', 2, 'confirmada', 'Mesa cerca del bar', 5),
+(13, 6, '2025-08-06', '14:00:00', 4, 'confirmada', 'Mesa grande', 7),
+(14, 8, '2025-09-16', '09:00:00', 2, 'confirmada', 'Desayuno de trabajo', 9),
+(15, 10, '2025-10-21', '15:00:00', 1, 'cancelada', 'Cambio de planes', 11),
+(16, 12, '2025-11-02', '20:00:00', 3, 'confirmada', 'Menú degustación', 13),
+(17, 14, '2025-12-11', '10:00:00', 2, 'confirmada', 'Brunch', 15),
+(18, 16, '2025-06-26', '17:00:00', 1, 'confirmada', 'Café y postre', 17),
+(19, 18, '2025-07-31', '22:00:00', 2, 'confirmada', 'Ver partido', 19),
+(20, 20, '2025-09-02', '15:30:00', 3, 'confirmada', 'Merienda', 1);
+GO
+
+-- 22. Proveedor (20 Registros)
+INSERT INTO Proveedor (nombre, tipo, contacto_nombre, telefono, email, direccion, identificacion_fiscal) VALUES
+('Alimentos Frescos S.A.S.', 'alimentos', 'Luis Gómez', '6017778888', 'contacto@alimentosfrescos.com', 'Calle 100 #10-10, Bogotá', '800123456-1'),
+('Limpieza Brillante Ltda.', 'limpieza', 'María Paz', '6025554444', 'info@limpiezabrillante.com', 'Carrera 50 #5-50, Cali', '900234567-2'),
+('Mantenimiento Total Ltda.', 'mantenimiento', 'Carlos Soto', '6043332222', 'servicio@mantenimientototal.com', 'Av. 80 #80-80, Medellín', '810345678-3'),
+('Textiles de Calidad S.A.', 'textiles', 'Laura Rincón', '6056667777', 'ventas@textilescalidad.com', 'Calle 20 #1-1, Barranquilla', '820456789-4'),
+('Insumos Varios del Caribe', 'otros', 'Andrés Díaz', '6058889999', 'pedidos@insumoscaribe.com', 'Diagonal 30 #5-15, Cartagena', '900567890-5'),
+('Tech Solutions S.A.S.', 'tecnologia', 'Sofía Castro', '6019991111', 'soporte@techsolutions.com', 'Calle 70 #10-10, Bogotá', '800678901-6'),
+('Frutas y Verduras La Huerta', 'alimentos', 'Daniel Toro', '6041112233', 'ventas@lahuerta.com', 'Central de Abastos, Medellín', '800789012-7'),
+('Productos Químicos del Sur', 'limpieza', 'Valentina Ruiz', '6022223344', 'compras@quimicossur.com', 'Carrera 100 #1-1, Cali', '900890123-8'),
+('Equipos Industriales SA', 'mantenimiento', 'Javier Peña', '6014445566', 'contacto@equiposind.com', 'Calle 10 #1-1, Bogotá', '800901234-9'),
+('Lencería Fina', 'textiles', 'Camila Soto', '6057778899', 'info@lenceriafina.com', 'Carrera 40 #1-10, Barranquilla', '820012345-0'),
+('Papelería Empresarial', 'otros', 'Roberto López', '6013334455', 'pedidos@papeleriaemp.com', 'Av. Boyacá #1-1, Bogotá', '800112233-4'),
+('Carnes Premium Ltda.', 'alimentos', 'Isabel Flores', '6045556677', 'ventas@carnespremium.com', 'Calle 50 #10-20, Medellín', '800223344-5'),
+('Materiales de Construcción El Pino', 'mantenimiento', 'Ricardo Silva', '6027778899', 'info@elpino.com', 'Diagonal 10 #1-1, Cali', '900334455-6'),
+('Detergentes Limpios', 'limpieza', 'Fernanda Castro', '6012221133', 'ventas@detergenteslimpios.com', 'Carrera 7 #1-1, Bogotá', '800445566-7'),
+('Suministros de Oficina', 'otros', 'Luis Mesa', '6059990011', 'contacto@suministrosofi.com', 'Calle 30 #1-1, Cartagena', '900556677-8'),
+('Pescados y Mariscos La Red', 'alimentos', 'Mariana Pinto', '6051112233', 'ventas@lared.com', 'Mercado del Mar, Santa Marta', '800667788-9'),
+('Servicios Eléctricos Ltda.', 'mantenimiento', 'Pablo Vargas', '6043331122', 'electricos@servicios.com', 'Calle 60 #1-1, Medellín', '800778899-0'),
+('Productos de Panadería El Horno', 'alimentos', 'Alejandra Ruiz', '6014443322', 'info@elhorno.com', 'Carrera 90 #1-1, Bogotá', '800889900-1'),
+('Equipos de Seguridad', 'mantenimiento', 'Sergio Rojas', '6025556677', 'ventas@seguridad.com', 'Av. Pasoancho #1-1, Cali', '900990011-2'),
+('Uniforme Profesional', 'textiles', 'Natalia Gómez', '6056667788', 'ventas@uniprof.com', 'Calle 100 #1-1, Barranquilla', '820001122-3');
+GO
+
+-- 23. Item_Suministro (20 Registros) - Relacionado con Proveedores 1-10
+INSERT INTO Item_Suministro (proveedor_id, nombre_item, descripcion, unidad_medida, precio_unitario_proveedor) VALUES
+(1, 'Manzanas Red Delicious', 'Caja de manzanas rojas frescas.', 'Kg', 3.50),
+(1, 'Leche Entera UHT', 'Galón de leche de vaca, larga vida.', 'Galón', 4.00),
+(2, 'Detergente multiusos', 'Concentrado para limpieza general.', 'Litro', 15.00),
+(2, 'Desinfectante de superficies', 'Para uso hospitalario.', 'Litro', 20.00),
+(3, 'Bombillos LED', 'Bombillo de bajo consumo, luz cálida.', 'Unidad', 5.00),
+(3, 'Filtros de Aire Acondicionado', 'Repuesto para sistemas HVAC.', 'Unidad', 25.00),
+(4, 'Sábanas de algodón king', 'Juego de sábanas blancas, 300 hilos.', 'Juego', 50.00),
+(4, 'Toallas de mano', 'Algodón 100%, blancas.', 'Docena', 30.00),
+(5, 'Resmas de papel A4', 'Papel blanco para impresora.', 'Resma', 4.50),
+(5, 'Lapiceros Bic', 'Caja de lapiceros azules.', 'Caja (50 unid)', 12.00),
+(6, 'Router Wi-Fi 6', 'Router de alta velocidad.', 'Unidad', 120.00),
+(6, 'Cable de red Cat6', 'Rollo de 100 metros.', 'Metro', 0.80),
+(7, 'Plátano maduro', 'Kg de plátanos.', 'Kg', 1.80),
+(7, 'Cebolla blanca', 'Kg de cebolla.', 'Kg', 2.00),
+(8, 'Jabón líquido para manos', 'Dispensador de 5 litros.', 'Litro', 10.00),
+(8, 'Limpiador de cristales', 'Spray para ventanas.', 'Unidad', 7.50),
+(9, 'Kit de herramientas básico', 'Para reparaciones menores.', 'Kit', 40.00),
+(9, 'Pintura Blanca Galón', 'Pintura para paredes interiores.', 'Galón', 30.00),
+(10, 'Manteles para restaurante', 'Manteles de tela, varios tamaños.', 'Unidad', 25.00),
+(10, 'Servilletas de tela', 'Servilletas de algodón para mesa.', 'Docena', 15.00);
+GO
+
+-- 24. Inventario_Hotel (20 Registros) - Combinando Hoteles 1-5 y Items_Suministro 1-20
+INSERT INTO Inventario_Hotel (hotel_id, item_suministro_id, stock_actual, stock_minimo, fecha_ultima_actualizacion, ubicacion_almacen) VALUES
+(1, 1, 50, 10, GETDATE(), 'Almacén 1'),
+(1, 3, 20, 5, GETDATE(), 'Bodega Limpieza'),
+(1, 5, 100, 20, GETDATE(), 'Electricidad'),
+(1, 7, 30, 5, GETDATE(), 'Lencería Piso 1'),
+(2, 2, 40, 8, GETDATE(), 'Cocina Principal'),
+(2, 4, 15, 3, GETDATE(), 'Bodega Limpieza'),
+(2, 6, 10, 2, GETDATE(), 'Electricidad'),
+(2, 8, 25, 5, GETDATE(), 'Lencería Piso 2'),
+(3, 9, 200, 50, GETDATE(), 'Oficina Admin'),
+(3, 11, 5, 1, GETDATE(), 'Sala Servidores'),
+(3, 13, 60, 15, GETDATE(), 'Cocina Principal'),
+(3, 15, 30, 7, GETDATE(), 'Bodega Limpieza'),
+(4, 17, 8, 2, GETDATE(), 'Mantenimiento'),
+(4, 19, 15, 3, GETDATE(), 'Restaurante Principal'),
+(4, 2, 35, 7, GETDATE(), 'Cocina Principal'),
+(5, 1, 45, 9, GETDATE(), 'Almacén Principal'),
+(5, 10, 150, 30, GETDATE(), 'Oficina Front Desk'),
+(5, 12, 10, 2, GETDATE(), 'Sala IT'),
+(5, 14, 25, 5, GETDATE(), 'Bodega Limpieza'),
+(5, 16, 20, 4, GETDATE(), 'Bodega Limpieza');
+GO
+
+-- 25. Pedido_Suministro (20 Registros) - Relacionado con Hoteles 1-10, Proveedores 1-10, Empleados 1-20
+INSERT INTO Pedido_Suministro (hotel_id, proveedor_id, empleado_id, fecha_pedido, fecha_entrega_esperada, estado, total, notas) VALUES
+(1, 1, 1, GETDATE(), '2025-06-10', 'pendiente', 200.00, 'Urgente, para desayuno.'),
+(2, 2, 4, GETDATE(), '2025-06-12', 'pendiente', 150.00, 'Inventario bajo de desinfectante.'),
+(3, 3, 6, GETDATE(), '2025-06-15', 'pendiente', 300.00, 'Reparación de iluminación.'),
+(4, 4, 8, GETDATE(), '2025-06-05', 'entregado', 250.00, 'Recibido completo.'),
+(5, 5, 10, GETDATE(), '2025-06-10', 'pendiente', 100.00, 'Suministros de oficina.'),
+(6, 6, 12, GETDATE(), '2025-06-18', 'pendiente', 500.00, 'Actualización de red.'),
+(7, 7, 14, GETDATE(), '2025-06-08', 'entregado', 80.00, 'Verduras frescas.'),
+(8, 8, 16, GETDATE(), '2025-06-11', 'pendiente', 120.00, 'Limpiadores especializados.'),
+(9, 9, 18, GETDATE(), '2025-06-14', 'pendiente', 400.00, 'Herramientas y pintura.'),
+(10, 10, 20, GETDATE(), '2025-06-07', 'entregado', 180.00, 'Lencería de cocina.'),
+(1, 7, 1, GETDATE(), '2025-06-09', 'pendiente', 90.00, 'Frutas adicionales.'),
+(2, 8, 4, GETDATE(), '2025-06-13', 'pendiente', 75.00, 'Más jabón líquido.'),
+(3, 9, 6, GETDATE(), '2025-06-16', 'pendiente', 280.00, 'Repuestos eléctricos.'),
+(4, 10, 8, GETDATE(), '2025-06-06', 'entregado', 160.00, 'Nuevas servilletas.'),
+(5, 1, 10, GETDATE(), '2025-06-11', 'pendiente', 180.00, 'Lácteos para el desayuno.'),
+(6, 2, 12, GETDATE(), '2025-06-19', 'pendiente', 95.00, 'Productos de limpieza.'),
+(7, 3, 14, GETDATE(), '2025-06-09', 'entregado', 350.00, 'Equipo de plomería.'),
+(8, 4, 16, GETDATE(), '2025-06-12', 'pendiente', 200.00, 'Toallas de piscina.'),
+(9, 5, 18, GETDATE(), '2025-06-15', 'pendiente', 110.00, 'Insumos de oficina.'),
+(10, 6, 20, GETDATE(), '2025-06-08', 'entregado', 600.00, 'Actualización de software.');
+GO
+
+-- 26. Detalle_Pedido_Suministro (20 Registros) - Relacionado con Pedidos 1-10 y Items_Suministro 1-20
+INSERT INTO Detalle_Pedido_Suministro (pedido_id, item_suministro_id, cantidad_pedida, cantidad_recibida, precio_unitario_pedido, subtotal) VALUES
+(1, 1, 50, 50, 3.50, 175.00), -- Manzanas
+(1, 2, 5, 5, 4.00, 20.00), -- Leche
+(2, 4, 7, 7, 20.00, 140.00), -- Desinfectante
+(3, 5, 20, 20, 5.00, 100.00), -- Bombillos
+(3, 6, 4, 4, 25.00, 100.00), -- Filtros
+(4, 7, 5, 5, 50.00, 250.00), -- Sábanas
+(5, 9, 20, 20, 4.50, 90.00), -- Resmas
+(6, 11, 2, 2, 120.00, 240.00), -- Router
+(6, 12, 100, 100, 0.80, 80.00), -- Cable
+(7, 13, 10, 10, 1.80, 18.00), -- Plátano
+(7, 14, 10, 10, 2.00, 20.00), -- Cebolla
+(8, 15, 10, 10, 10.00, 100.00), -- Jabón líquido
+(9, 17, 1, 1, 40.00, 40.00), -- Kit herramientas
+(9, 18, 5, 5, 30.00, 150.00), -- Pintura
+(10, 19, 5, 5, 25.00, 125.00), -- Manteles
+(10, 20, 10, 10, 15.00, 150.00), -- Servilletas
+(11, 1, 20, 0, 3.50, 70.00), -- Pedido 11 - parcial (manzanas)
+(12, 4, 5, 0, 20.00, 100.00), -- Pedido 12 - parcial (desinfectante)
+(13, 5, 30, 0, 5.00, 150.00), -- Pedido 13 - parcial (bombillos)
+(14, 7, 6, 6, 50.00, 300.00); -- Pedido 14 - entregado (sábanas)
+GO
+
+-- 27. CheckIn (20 Registros) - Relacionado con Reservas 1-20 y Empleados 1-20
+INSERT INTO CheckIn (reserva_id, empleado_id, fecha_hora, metodo_pago_adelanto, documentos_verificados, observaciones) VALUES
+(1, 3, GETDATE(), 'tarjeta', 1, 'Registro sin problemas.'),
+(2, 3, GETDATE(), 'efectivo', 1, 'Cliente solicitó pago en efectivo.'),
+(3, 7, GETDATE(), 'tarjeta', 1, 'Check-in rápido, cliente apurado.'),
+(4, 9, GETDATE(), NULL, 0, 'Cliente no se presentó para check-in (cancelada).'), -- No deberían tener un CheckIn real si cancelaron
+(5, 11, GETDATE(), 'tarjeta', 1, 'Familia numerosa.'),
+(6, 13, GETDATE(), 'transferencia', 1, 'Requiere early check-in.'),
+(7, 15, GETDATE(), 'tarjeta', 1, 'Todo en orden.'),
+(8, 17, GETDATE(), NULL, 0, 'No show, no se cobró nada.'),
+(9, 19, GETDATE(), 'tarjeta', 1, 'Pareja en luna de miel.'),
+(10, 1, GETDATE(), 'efectivo', 1, 'Pago total en efectivo.'),
+(11, 3, GETDATE(), 'tarjeta', 1, 'Cliente silencioso.'),
+(12, 3, GETDATE(), 'tarjeta', 1, 'Check-in estándar.'),
+(13, 7, GETDATE(), 'efectivo', 1, 'Familia con niños.'),
+(14, 9, GETDATE(), 'tarjeta', 1, 'Cliente corporativo.'),
+(15, 11, GETDATE(), NULL, 0, 'Cancelada antes de check-in.'),
+(16, 13, GETDATE(), 'tarjeta', 1, 'Reserva con paquete especial.'),
+(17, 15, GETDATE(), 'transferencia', 1, 'Estadía larga.'),
+(18, 17, GETDATE(), 'efectivo', 1, 'Cliente muy amable.'),
+(19, 19, GETDATE(), 'tarjeta', 1, 'Solicitud de habitación específica.'),
+(20, 1, GETDATE(), 'tarjeta', 1, 'Aniversario, se envió detalle a la habitación.');
+GO
+
+
+INSERT INTO CheckOut (reserva_id, empleado_id, fecha_hora, total_factura, metodo_pago_final, observaciones) VALUES
+(1, 3, GETDATE(), 600.00, 'tarjeta', 'Salida sin incidentes.'),
+(3, 7, GETDATE(), 350.00, 'tarjeta', 'Cliente satisfecho.'),
+(5, 11, GETDATE(), 800.00, 'tarjeta', 'Consumos extras de bar.'),
+(7, 15, GETDATE(), 400.00, 'transferencia', 'Factura corporativa.'),
+(9, 19, GETDATE(), 950.00, 'tarjeta', 'Check-out express.'),
+(10, 1, GETDATE(), 700.00, 'efectivo', 'Pago total en efectivo.'),
+(11, 3, GETDATE(), 360.00, 'tarjeta', 'Todo bien.'),
+(12, 3, GETDATE(), 300.00, 'tarjeta', 'Sin consumos adicionales.'),
+(13, 7, GETDATE(), 1200.00, 'tarjeta', 'Factura grande por duración.'),
+(14, 9, GETDATE(), 550.00, 'transferencia', 'Pago desde cuenta de empresa.'),
+(16, 13, GETDATE(), 900.00, 'tarjeta', 'Cliente contento con el paquete.'),
+(17, 15, GETDATE(), 1500.00, 'transferencia', 'Estadía prolongada, varios servicios.'),
+(18, 17, GETDATE(), 320.00, 'efectivo', 'Check-out sin problemas.'),
+(19, 19, GETDATE(), 500.00, 'tarjeta', 'Todo en orden.'),
+(20, 1, GETDATE(), 750.00, 'tarjeta', 'Check-out de aniversario.');
+GO
+
+
+INSERT INTO Factura (reserva_id, cliente_id, fecha_emision, subtotal, impuestos, total, metodo_pago_factura, estado, empleado_emisor_id) VALUES
+(1, 1, GETDATE(), 550.00, 50.00, 600.00, 'tarjeta', 'pagada', 3),
+(3, 3, GETDATE(), 320.00, 30.00, 350.00, 'tarjeta', 'pagada', 7),
+(5, 5, GETDATE(), 750.00, 50.00, 800.00, 'tarjeta', 'pagada', 11),
+(7, 7, GETDATE(), 380.00, 20.00, 400.00, 'transferencia', 'pagada', 15),
+(9, 9, GETDATE(), 880.00, 70.00, 950.00, 'tarjeta', 'pagada', 19),
+(10, 10, GETDATE(), 650.00, 50.00, 700.00, 'efectivo', 'pagada', 1),
+(11, 11, GETDATE(), 330.00, 30.00, 360.00, 'tarjeta', 'pagada', 3),
+(12, 12, GETDATE(), 280.00, 20.00, 300.00, 'tarjeta', 'pagada', 3),
+(13, 13, GETDATE(), 1100.00, 100.00, 1200.00, 'tarjeta', 'pagada', 7),
+(14, 14, GETDATE(), 500.00, 50.00, 550.00, 'transferencia', 'pagada', 9),
+(16, 16, GETDATE(), 820.00, 80.00, 900.00, 'tarjeta', 'pagada', 13),
+(17, 17, GETDATE(), 1380.00, 120.00, 1500.00, 'transferencia', 'pagada', 15),
+(18, 18, GETDATE(), 290.00, 30.00, 320.00, 'efectivo', 'pagada', 17),
+(19, 19, GETDATE(), 460.00, 40.00, 500.00, 'tarjeta', 'pagada', 19),
+(20, 20, GETDATE(), 690.00, 60.00, 750.00, 'tarjeta', 'pagada', 1);
+GO
+
+
+INSERT INTO Detalle_Factura (factura_id, tipo_concepto, referencia_id, descripcion_concepto, cantidad, precio_unitario, subtotal) VALUES
+(1, 'habitacion', 1, 'Estancia Hab. 101 (Reserva 1)', 4, 120.00, 480.00), -- Reserva_Habitacion id 1
+(1, 'servicio_consumido', 1, 'Restaurante Central (Reserva 1)', 2, 50.00, 100.00), -- Consumo_Servicio id 1
+(1, 'servicio_consumido', 2, 'Room Service (Reserva 1)', 1, 10.00, 10.00), -- Consumo_Servicio id 2
+(2, 'habitacion', 3, 'Estancia Hab. 601 (Reserva 3)', 2, 120.00, 240.00), -- Reserva_Habitacion id 3
+(2, 'servicio_consumido', 5, 'La Cuisine (Reserva 3)', 1, 75.00, 75.00), -- Consumo_Servicio id 5
+(3, 'habitacion', 5, 'Estancia Hab. 101 (Reserva 5)', 5, 160.00, 800.00), -- Reserva_Habitacion id 5
+(3, 'servicio_consumido', 7, 'Grill House (Reserva 5)', 2, 45.00, 90.00), -- Consumo_Servicio id 7
+(4, 'habitacion', 8, 'Estancia Hab. 901 (Reserva 7)', 2, 120.00, 240.00), -- Reserva_Habitacion id 8
+(4, 'servicio_consumido', 10, 'Restaurante Buffet (Reserva 7)', 1, 35.00, 35.00), -- Consumo_Servicio id 10
+(5, 'paquete_reservado', 9, 'Paquete Luna de Miel (Reserva 9)', 1, 700.00, 700.00), -- Reserva_Paquete id 9
+(5, 'habitacion', 9, 'Estancia Hab. 1302 (Reserva 9)', 4, 160.00, 640.00), -- Asumo una habitación extra no cubierta por el paquete
+(6, 'habitacion', 10, 'Estancia Hab. 1401 (Reserva 10)', 6, 120.00, 720.00),
+(7, 'habitacion', 11, 'Estancia Hab. 102 (Reserva 11)', 3, 120.00, 360.00),
+(8, 'habitacion', 12, 'Estancia Hab. 201 (Reserva 12)', 2, 150.00, 300.00),
+(9, 'habitacion', 13, 'Estancia Hab. 601 (Reserva 13)', 4, 800.00, 3200.00), -- Suite Presidencial
+(10, 'habitacion', 14, 'Estancia Hab. 802 (Reserva 14)', 3, 80.00, 240.00),
+(11, 'paquete_reservado', 16, 'Paquete Golf Getaway (Reserva 16)', 1, 850.00, 850.00),
+(12, 'habitacion', 17, 'Estancia Hab. 1301 (Reserva 17)', 5, 160.00, 800.00),
+(13, 'habitacion', 18, 'Estancia Hab. 401 (Reserva 18)', 2, 250.00, 500.00),
+(14, 'habitacion', 19, 'Estancia Hab. 902 (Reserva 19)', 3, 160.00, 480.00);
+GO
+
+USE HotelManagementSystem;
+GO
+
+-- 1. Ciudad
+SELECT TOP 5 * FROM Ciudad;
+GO
+
+-- 2. Cadena_Hotelera
+SELECT TOP 5 * FROM Cadena_Hotelera;
+GO
+
+-- 3. Hotel
+SELECT TOP 5 * FROM Hotel;
+GO
+
+-- 4. Tipo_Habitacion
+SELECT TOP 5 * FROM Tipo_Habitacion;
+GO
+
+-- 5. Habitacion
+SELECT TOP 5 * FROM Habitacion;
+GO
+
+-- 6. Cliente
+SELECT TOP 5 * FROM Cliente;
+GO
+
+-- 7. Cargo
+SELECT TOP 5 * FROM Cargo;
+GO
+
+-- 8. Empleado
+SELECT TOP 5 * FROM Empleado;
+GO
+
+-- 9. Reserva
+SELECT TOP 5 * FROM Reserva;
+GO
+
+-- 10. Reserva_Habitacion
+SELECT TOP 5 * FROM Reserva_Habitacion;
+GO
+
+-- 11. Tipo_Servicio
+SELECT TOP 5 * FROM Tipo_Servicio;
+GO
+
+-- 12. Servicio
+SELECT TOP 5 * FROM Servicio;
+GO
+
+-- 13. Consumo_Servicio
+SELECT TOP 5 * FROM Consumo_Servicio;
+GO
+
+-- 14. Paquete
+SELECT TOP 5 * FROM Paquete;
+GO
+
+-- 15. Detalle_Paquete_Servicio
+SELECT TOP 5 * FROM Detalle_Paquete_Servicio;
+GO
+
+-- 16. Reserva_Paquete
+SELECT TOP 5 * FROM Reserva_Paquete;
+GO
+
+-- 17. Tipo_Transporte
+SELECT TOP 5 * FROM Tipo_Transporte;
+GO
+
+-- 18. Transporte
+SELECT TOP 5 * FROM Transporte;
+GO
+
+-- 19. Detalle_Paquete_Transporte
+SELECT TOP 5 * FROM Detalle_Paquete_Transporte;
+GO
+
+-- 20. Restaurante
+SELECT TOP 5 * FROM Restaurante;
+GO
+
+-- 21. Reserva_Restaurante
+SELECT TOP 5 * FROM Reserva_Restaurante;
+GO
+
+-- 22. Proveedor
+SELECT TOP 5 * FROM Proveedor;
+GO
+
+-- 23. Item_Suministro
+SELECT TOP 5 * FROM Item_Suministro;
+GO
+
+-- 24. Inventario_Hotel
+SELECT TOP 5 * FROM Inventario_Hotel;
+GO
+
+-- 25. Pedido_Suministro
+SELECT TOP 5 * FROM Pedido_Suministro;
+GO
+
+-- 26. Detalle_Pedido_Suministro
+SELECT TOP 5 * FROM Detalle_Pedido_Suministro;
+GO
+
+-- 27. CheckIn
+SELECT TOP 5 * FROM CheckIn;
+GO
+
+-- 28. CheckOut
+SELECT TOP 5 * FROM CheckOut;
+GO
+
+-- 29. Factura
+SELECT TOP 5 * FROM Factura;
+GO
+
+-- 30. Detalle_Factura
+SELECT TOP 5 * FROM Detalle_Factura;
+GO
