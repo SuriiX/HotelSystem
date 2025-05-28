@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="3fc4bfe4de27472da24bf1bc18b1a8d6" Name="Diagram1" ZoomLevel="24">
+        <EntityTypeShape EntityType="DBHotelModel.Cadena_Hotelera" Width="1.5" PointX="0.75" PointY="19.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Cargo" Width="1.5" PointX="6" PointY="8.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.CheckIn" Width="1.5" PointX="10.5" PointY="22.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.CheckOut" Width="1.5" PointX="13.5" PointY="21.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Ciudad" Width="1.5" PointX="0.75" PointY="25.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Cliente" Width="1.5" PointX="3" PointY="24.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Consumo_Servicio" Width="1.5" PointX="16.5" PointY="21.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Detalle_Factura" Width="1.5" PointX="7.5" PointY="29.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Detalle_Paquete_Servicio" Width="1.5" PointX="16.5" PointY="18.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Detalle_Paquete_Transporte" Width="1.5" PointX="16.5" PointY="5.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Detalle_Pedido_Suministro" Width="1.5" PointX="12.75" PointY="13.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Empleado" Width="1.5" PointX="8.25" PointY="17.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Factura" Width="1.5" PointX="5.25" PointY="24.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Habitacion" Width="1.5" PointX="5.25" PointY="15.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Hotel" Width="1.5" PointX="3" PointY="17.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Inventario_Hotel" Width="1.5" PointX="8.25" PointY="13.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Item_Suministro" Width="1.5" PointX="6" PointY="11.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Paquete" Width="1.5" PointX="14.25" PointY="9.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Pedido_Suministro" Width="1.5" PointX="10.5" PointY="13.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Proveedor" Width="1.5" PointX="3.75" PointY="11.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Reserva" Width="1.5" PointX="8.25" PointY="23.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Reserva_Habitacion" Width="1.5" PointX="13.5" PointY="18" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Reserva_Paquete" Width="1.5" PointX="10.5" PointY="27" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Reserva_Restaurante" Width="1.5" PointX="5.25" PointY="19.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Restaurante" Width="1.5" PointX="5.25" PointY="32.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Servicio" Width="1.5" PointX="11.25" PointY="18.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Tipo_Habitacion" Width="1.5" PointX="3" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Tipo_Servicio" Width="1.5" PointX="9" PointY="10.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Tipo_Transporte" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DBHotelModel.Transporte" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="DBHotelModel.FK__Hotel__cadena_id__3F466844" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Empleado__cargo___5AEE82B9" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__CheckIn__emplead__47A6A41B" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__CheckIn__reserva__46B27FE2" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__CheckOut__emplea__4E53A1AA" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__CheckOut__reserv__4D5F7D71" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Cliente__ciudad___5070F446" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Hotel__ciudad_id__403A8C7D" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Factura__cliente__55F4C372" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva__cliente__628FA481" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva_R__clien__208CD6FA" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Consumo_S__emple__7B5B524B" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Consumo_S__reser__797309D9" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Consumo_S__servi__7A672E12" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Detalle_F__factu__5CA1C101" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Detalle_P__paque__05D8E0BE" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Detalle_P__servi__06CD04F7" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Detalle_P__paque__17036CC0" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Detalle_P__trans__17F790F9" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Detalle_P__item___40F9A68C" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Detalle_P__pedid__40058253" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Empleado__hotel___59FA5E80" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Factura__emplead__56E8E7AB" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Pedido_Su__emple__3A4CA8FD" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva__emplead__6477ECF3" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva_R__emple__22751F6C" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Factura__reserva__55009F39" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Habitacio__hotel__48CFD27E" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Habitacio__tipo___49C3F6B7" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva_H__habit__6D0D32F4" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Inventari__hotel__32AB8735" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Pedido_Su__hotel__3864608B" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva__hotel_i__6383C8BA" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Restauran__hotel__1BC821DD" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Servicio__hotel___73BA3083" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Inventari__item___339FAB6E" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Item_Sumi__prove__2BFE89A6" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva_P__paque__0C85DE4D" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Pedido_Su__prove__395884C4" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva_H__reser__6C190EBB" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva_P__reser__0B91BA14" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Reserva_R__resta__2180FB33" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Servicio__tipo_s__74AE54BC" ManuallyRouted="false" />
+        <AssociationConnector Association="DBHotelModel.FK__Transport__tipo___1332DBDC" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
