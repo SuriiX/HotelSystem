@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -29,9 +30,15 @@ namespace HotalSystem.Models
         public decimal precio_unitario_proveedor { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Detalle_Pedido_Suministro> Detalle_Pedido_Suministro { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Inventario_Hotel> Inventario_Hotel { get; set; }
+
+        [JsonIgnore]
         public virtual Proveedor Proveedor { get; set; }
     }
 }

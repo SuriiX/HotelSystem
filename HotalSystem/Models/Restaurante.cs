@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -28,9 +29,12 @@ namespace HotalSystem.Models
         public Nullable<System.TimeSpan> horario_cierre { get; set; }
         public Nullable<int> capacidad_mesas { get; set; }
         public string descripcion { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Hotel Hotel { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Reserva_Restaurante> Reserva_Restaurante { get; set; }
     }
 }

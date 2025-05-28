@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -33,13 +34,20 @@ namespace HotalSystem.Models
         public Nullable<int> ciudad_residencia_id { get; set; }
         public Nullable<System.DateTime> fecha_nacimiento { get; set; }
         public Nullable<System.DateTime> fecha_registro { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Ciudad Ciudad { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Factura> Facturas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Reserva> Reservas { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Reserva_Restaurante> Reserva_Restaurante { get; set; }
     }
 }

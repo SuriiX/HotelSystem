@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -30,11 +31,18 @@ namespace HotalSystem.Models
         public string metodo_pago_factura { get; set; }
         public string estado { get; set; }
         public Nullable<int> empleado_emisor_id { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Cliente Cliente { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Detalle_Factura> Detalle_Factura { get; set; }
+
+        [JsonIgnore]
         public virtual Empleado Empleado { get; set; }
+
+        [JsonIgnore]
         public virtual Reserva Reserva { get; set; }
     }
 }

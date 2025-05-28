@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -21,8 +22,12 @@ namespace HotalSystem.Models
         public Nullable<int> stock_minimo { get; set; }
         public Nullable<System.DateTime> fecha_ultima_actualizacion { get; set; }
         public string ubicacion_almacen { get; set; }
-    
+
+
+        [JsonIgnore]
         public virtual Hotel Hotel { get; set; }
+
+        [JsonIgnore]
         public virtual Item_Suministro Item_Suministro { get; set; }
     }
 }

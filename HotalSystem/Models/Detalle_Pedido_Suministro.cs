@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -21,8 +22,11 @@ namespace HotalSystem.Models
         public Nullable<int> cantidad_recibida { get; set; }
         public decimal precio_unitario_pedido { get; set; }
         public decimal subtotal { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Item_Suministro Item_Suministro { get; set; }
+
+        [JsonIgnore]
         public virtual Pedido_Suministro Pedido_Suministro { get; set; }
     }
 }

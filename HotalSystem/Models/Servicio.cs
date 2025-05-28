@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -31,10 +32,18 @@ namespace HotalSystem.Models
         public Nullable<int> capacidad { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Consumo_Servicio> Consumo_Servicio { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+
+        [JsonIgnore]
         public virtual ICollection<Detalle_Paquete_Servicio> Detalle_Paquete_Servicio { get; set; }
+
+        [JsonIgnore]
         public virtual Hotel Hotel { get; set; }
+
+        [JsonIgnore]
         public virtual Tipo_Servicio Tipo_Servicio { get; set; }
     }
 }

@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -18,8 +19,11 @@ namespace HotalSystem.Models
         public int paquete_id { get; set; }
         public int servicio_id { get; set; }
         public int cantidad_incluida { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Paquete Paquete { get; set; }
+
+        [JsonIgnore]
         public virtual Servicio Servicio { get; set; }
     }
 }

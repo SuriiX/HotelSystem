@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -20,8 +21,12 @@ namespace HotalSystem.Models
         public Nullable<System.DateTime> fecha_reserva_paquete { get; set; }
         public decimal precio_cobrado { get; set; }
         public string estado { get; set; }
-    
+
+
+        [JsonIgnore]
         public virtual Paquete Paquete { get; set; }
+
+        [JsonIgnore]
         public virtual Reserva Reserva { get; set; }
     }
 }

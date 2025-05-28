@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -22,7 +23,8 @@ namespace HotalSystem.Models
         public int cantidad { get; set; }
         public decimal precio_unitario { get; set; }
         public decimal subtotal { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Factura Factura { get; set; }
     }
 }

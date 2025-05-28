@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -20,8 +21,11 @@ namespace HotalSystem.Models
         public string tipo_trayecto { get; set; }
         public string origen { get; set; }
         public string destino { get; set; }
-    
+
+
+        [JsonIgnore]
         public virtual Paquete Paquete { get; set; }
+        [JsonIgnore]
         public virtual Transporte Transporte { get; set; }
     }
 }

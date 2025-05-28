@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -19,8 +20,11 @@ namespace HotalSystem.Models
         public int habitacion_id { get; set; }
         public decimal precio_noche_cobrado { get; set; }
         public string estado_asignacion { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Habitacion Habitacion { get; set; }
+
+        [JsonIgnore]
         public virtual Reserva Reserva { get; set; }
     }
 }

@@ -9,6 +9,7 @@
 
 namespace HotalSystem.Models
 {
+    using Newtonsoft.Json;
     using System;
     using System.Collections.Generic;
     
@@ -23,9 +24,14 @@ namespace HotalSystem.Models
         public string estado { get; set; }
         public string notas { get; set; }
         public Nullable<int> empleado_registro_id { get; set; }
-    
+
+        [JsonIgnore]
         public virtual Cliente Cliente { get; set; }
+
+        [JsonIgnore]
         public virtual Empleado Empleado { get; set; }
+
+        [JsonIgnore]
         public virtual Restaurante Restaurante { get; set; }
     }
 }
