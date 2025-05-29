@@ -24,7 +24,7 @@ namespace HotalSystem.Models
         {
             throw new UnintentionalCodeFirstException();
         }
-    
+
         public virtual DbSet<Cadena_Hotelera> Cadena_Hotelera { get; set; }
         public virtual DbSet<Cargo> Cargoes { get; set; }
         public virtual DbSet<CheckIn> CheckIns { get; set; }

@@ -3,115 +3,31 @@
   "WorkspaceRootPath": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\transporte.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\transporte.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\controllers\\reservascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:controllers\\reservascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\tipo_transporte.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\tipo_transporte.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\clases\\clsreserva.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:clases\\clsreserva.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\tipo_servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\tipo_servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\clases\\clschekin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:clases\\clschekin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\tipo_habitacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\tipo_habitacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\controllers\\checkinscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:controllers\\checkinscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\models\\dbhotel.tt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\dbhotel.tt||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\restaurante.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\restaurante.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\reserva_restaurante.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\reserva_restaurante.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\reserva_paquete.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\reserva_paquete.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\reserva_habitacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\reserva_habitacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\reserva.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\reserva.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\proveedor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\proveedor.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\pedido_suministro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\pedido_suministro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\paquete.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\paquete.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\item_suministro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\item_suministro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\inventario_hotel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\inventario_hotel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\hotel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\hotel.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\habitacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\habitacion.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\factura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\factura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\empleado.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\empleado.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\detalle_pedido_suministro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\detalle_pedido_suministro.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\detalle_paquete_transporte.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\detalle_paquete_transporte.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\detalle_paquete_servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\detalle_paquete_servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\detalle_factura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\detalle_factura.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\consumo_servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\consumo_servicio.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\ciudad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\ciudad.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\checkout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\checkout.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\models\\checkin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\models\\checkin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\checkin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -122,375 +38,106 @@
       "DocumentGroups": [
         {
           "DockedHeight": 286,
-          "SelectedChildIndex": 0,
+          "SelectedChildIndex": 1,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+            },
             {
               "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "Transporte.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Transporte.cs",
-              "RelativeDocumentMoniker": "Models\\Transporte.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Transporte.cs",
-              "RelativeToolTip": "Models\\Transporte.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAwCQAAAAUAAAAAAAAAA==",
+              "Title": "ReservasController.cs",
+              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\ReservasController.cs",
+              "RelativeDocumentMoniker": "Controllers\\ReservasController.cs",
+              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\ReservasController.cs",
+              "RelativeToolTip": "Controllers\\ReservasController.cs",
+              "ViewState": "AgIAAD4AAAAAAAAAAAAAAD4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:06:41.238Z",
+              "WhenOpened": "2025-05-29T00:50:37.201Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 1,
-              "Title": "Tipo_Transporte.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Tipo_Transporte.cs",
-              "RelativeDocumentMoniker": "Models\\Tipo_Transporte.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Tipo_Transporte.cs",
-              "RelativeToolTip": "Models\\Tipo_Transporte.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAAB0AAAAUAAAAAAAAAA==",
+              "Title": "ClsReserva.cs",
+              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsReserva.cs",
+              "RelativeDocumentMoniker": "Clases\\ClsReserva.cs",
+              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsReserva.cs",
+              "RelativeToolTip": "Clases\\ClsReserva.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:06:37.794Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "Tipo_Servicio.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Tipo_Servicio.cs",
-              "RelativeDocumentMoniker": "Models\\Tipo_Servicio.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Tipo_Servicio.cs",
-              "RelativeToolTip": "Models\\Tipo_Servicio.cs",
-              "ViewState": "AgIAAA0AAAAAAAAAAAAAAB0AAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:06:33.766Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Tipo_Habitacion.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Tipo_Habitacion.cs",
-              "RelativeDocumentMoniker": "Models\\Tipo_Habitacion.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Tipo_Habitacion.cs",
-              "RelativeToolTip": "Models\\Tipo_Habitacion.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAwCAAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:06:28.209Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-29T00:50:08.382Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Servicio.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Servicio.cs",
-              "RelativeDocumentMoniker": "Models\\Servicio.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Servicio.cs",
-              "RelativeToolTip": "Models\\Servicio.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAywC0AAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:06:18.326Z",
-              "EditorCaption": ""
+              "Title": "DBHotel.tt",
+              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\DBHotel.tt",
+              "RelativeDocumentMoniker": "Models\\DBHotel.tt",
+              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\DBHotel.tt",
+              "RelativeToolTip": "Models\\DBHotel.tt",
+              "ViewState": "AgIAABUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
+              "WhenOpened": "2025-05-29T00:35:08.775Z"
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "Restaurante.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Restaurante.cs",
-              "RelativeDocumentMoniker": "Models\\Restaurante.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Restaurante.cs",
-              "RelativeToolTip": "Models\\Restaurante.cs",
-              "ViewState": "AgIAABgAAAAAAAAAAAA3wCQAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:06:09.202Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
-              "Title": "Reserva_Restaurante.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva_Restaurante.cs",
-              "RelativeDocumentMoniker": "Models\\Reserva_Restaurante.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva_Restaurante.cs",
-              "RelativeToolTip": "Models\\Reserva_Restaurante.cs",
-              "ViewState": "AgIAABEAAAAAAAAAAAAzwCEAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:06:01.251Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "Reserva_Paquete.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva_Paquete.cs",
-              "RelativeDocumentMoniker": "Models\\Reserva_Paquete.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva_Paquete.cs",
-              "RelativeToolTip": "Models\\Reserva_Paquete.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABwAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:05:49.682Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Reserva_Habitacion.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva_Habitacion.cs",
-              "RelativeDocumentMoniker": "Models\\Reserva_Habitacion.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva_Habitacion.cs",
-              "RelativeToolTip": "Models\\Reserva_Habitacion.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABoAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:05:43.756Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "Reserva.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva.cs",
-              "RelativeDocumentMoniker": "Models\\Reserva.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Reserva.cs",
-              "RelativeToolTip": "Models\\Reserva.cs",
-              "ViewState": "AgIAADIAAAAAAAAAAAAqwEYAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:05:21.501Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 10,
-              "Title": "Proveedor.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Proveedor.cs",
-              "RelativeDocumentMoniker": "Models\\Proveedor.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Proveedor.cs",
-              "RelativeToolTip": "Models\\Proveedor.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAAQwCcAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:05:15.539Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 11,
-              "Title": "Pedido_Suministro.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Pedido_Suministro.cs",
-              "RelativeDocumentMoniker": "Models\\Pedido_Suministro.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Pedido_Suministro.cs",
-              "RelativeToolTip": "Models\\Pedido_Suministro.cs",
-              "ViewState": "AgIAAB8AAAAAAAAAAAAIwC0AAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:05:05.876Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 12,
-              "Title": "Paquete.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Paquete.cs",
-              "RelativeDocumentMoniker": "Models\\Paquete.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Paquete.cs",
-              "RelativeToolTip": "Models\\Paquete.cs",
-              "ViewState": "AgIAABkAAAAAAAAAAAA1wCwAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:04:56.042Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 13,
-              "Title": "Item_Suministro.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Item_Suministro.cs",
-              "RelativeDocumentMoniker": "Models\\Item_Suministro.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Item_Suministro.cs",
-              "RelativeToolTip": "Models\\Item_Suministro.cs",
-              "ViewState": "AgIAAA8AAAAAAAAAAAAxwCgAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:04:47.719Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 14,
-              "Title": "Inventario_Hotel.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Inventario_Hotel.cs",
-              "RelativeDocumentMoniker": "Models\\Inventario_Hotel.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Inventario_Hotel.cs",
-              "RelativeToolTip": "Models\\Inventario_Hotel.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAAB0AAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:04:37.861Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 15,
-              "Title": "Hotel.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Hotel.cs",
-              "RelativeDocumentMoniker": "Models\\Hotel.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Hotel.cs",
-              "RelativeToolTip": "Models\\Hotel.cs",
-              "ViewState": "AgIAADQAAAAAAAAAAAAAAEoAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:04:14.375Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 16,
-              "Title": "Habitacion.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Habitacion.cs",
-              "RelativeDocumentMoniker": "Models\\Habitacion.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Habitacion.cs",
-              "RelativeToolTip": "Models\\Habitacion.cs",
-              "ViewState": "AgIAABQAAAAAAAAAAAAQwCcAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:04:06.709Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 17,
-              "Title": "Factura.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Factura.cs",
-              "RelativeDocumentMoniker": "Models\\Factura.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Factura.cs",
-              "RelativeToolTip": "Models\\Factura.cs",
-              "ViewState": "AgIAABsAAAAAAAAAAAA9wCkAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:03:56.564Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 18,
-              "Title": "Empleado.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Empleado.cs",
-              "RelativeDocumentMoniker": "Models\\Empleado.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Empleado.cs",
-              "RelativeToolTip": "Models\\Empleado.cs",
-              "ViewState": "AgIAACYAAAAAAAAAAAA2wEwAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:03:26.106Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 19,
-              "Title": "Detalle_Pedido_Suministro.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Pedido_Suministro.cs",
-              "RelativeDocumentMoniker": "Models\\Detalle_Pedido_Suministro.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Pedido_Suministro.cs",
-              "RelativeToolTip": "Models\\Detalle_Pedido_Suministro.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABwAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:03:19.265Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 20,
-              "Title": "Detalle_Paquete_Transporte.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Paquete_Transporte.cs",
-              "RelativeDocumentMoniker": "Models\\Detalle_Paquete_Transporte.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Paquete_Transporte.cs",
-              "RelativeToolTip": "Models\\Detalle_Paquete_Transporte.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABsAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:03:13.717Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 21,
-              "Title": "Detalle_Paquete_Servicio.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Paquete_Servicio.cs",
-              "RelativeDocumentMoniker": "Models\\Detalle_Paquete_Servicio.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Paquete_Servicio.cs",
-              "RelativeToolTip": "Models\\Detalle_Paquete_Servicio.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABkAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:03:07.019Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 22,
-              "Title": "Detalle_Factura.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Factura.cs",
-              "RelativeDocumentMoniker": "Models\\Detalle_Factura.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Detalle_Factura.cs",
-              "RelativeToolTip": "Models\\Detalle_Factura.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABoAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:03:02Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 23,
-              "Title": "Consumo_Servicio.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Consumo_Servicio.cs",
-              "RelativeDocumentMoniker": "Models\\Consumo_Servicio.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Consumo_Servicio.cs",
-              "RelativeToolTip": "Models\\Consumo_Servicio.cs",
-              "ViewState": "AgIAAAwAAAAAAAAAAAAAACAAAAAUAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:02:51.989Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 24,
               "Title": "Cliente.cs",
               "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Cliente.cs",
               "RelativeDocumentMoniker": "Models\\Cliente.cs",
               "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Cliente.cs",
               "RelativeToolTip": "Models\\Cliente.cs",
-              "ViewState": "AgIAABwAAAAAAAAAAAA7wDEAAAAUAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:02:40.132Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-28T23:02:40.132Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 25,
-              "Title": "Ciudad.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Ciudad.cs",
-              "RelativeDocumentMoniker": "Models\\Ciudad.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Ciudad.cs",
-              "RelativeToolTip": "Models\\Ciudad.cs",
-              "ViewState": "AgIAABIAAAAAAAAAAAAAwCMAAAAUAAAAAAAAAA==",
+              "DocumentIndex": 3,
+              "Title": "CheckInsController.cs",
+              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\CheckInsController.cs",
+              "RelativeDocumentMoniker": "Controllers\\CheckInsController.cs",
+              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\CheckInsController.cs",
+              "RelativeToolTip": "Controllers\\CheckInsController.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAUwCcAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:02:32.276Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-29T00:05:00.964Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 26,
-              "Title": "CheckOut.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\CheckOut.cs",
-              "RelativeDocumentMoniker": "Models\\CheckOut.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\CheckOut.cs",
-              "RelativeToolTip": "Models\\CheckOut.cs",
-              "ViewState": "AgIAAAYAAAAAAAAAAAAAABsAAAAUAAAAAAAAAA==",
+              "DocumentIndex": 2,
+              "Title": "ClsChekIn.cs",
+              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsChekIn.cs",
+              "RelativeDocumentMoniker": "Clases\\ClsChekIn.cs",
+              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsChekIn.cs",
+              "RelativeToolTip": "Clases\\ClsChekIn.cs",
+              "ViewState": "AgIAACgAAAAAAAAAAAAqwEMAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:02:22.969Z",
-              "EditorCaption": ""
+              "WhenOpened": "2025-05-29T00:02:33.644Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 27,
+              "DocumentIndex": 6,
               "Title": "CheckIn.cs",
               "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\CheckIn.cs",
               "RelativeDocumentMoniker": "Models\\CheckIn.cs",
               "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\CheckIn.cs",
               "RelativeToolTip": "Models\\CheckIn.cs",
-              "ViewState": "AgIAAAkAAAAAAAAAAAAAABsAAAAUAAAAAAAAAA==",
+              "ViewState": "AgIAAAEAAAAAAAAAAAAAAAEAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-05-28T23:02:06.772Z",
-              "EditorCaption": ""
-            },
+              "WhenOpened": "2025-05-28T23:02:06.772Z"
+            }
+          ]
+        },
+        {
+          "DockedHeight": 114,
+          "SelectedChildIndex": -1,
+          "Children": [
             {
               "$type": "Bookmark",
-              "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
+              "Name": "ST:0:0:{d78612c7-9962-4b83-95d9-268046dad23a}"
             }
           ]
         }
