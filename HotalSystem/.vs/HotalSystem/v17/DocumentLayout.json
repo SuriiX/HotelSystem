@@ -1,33 +1,33 @@
 {
   "Version": 1,
-  "WorkspaceRootPath": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\",
+  "WorkspaceRootPath": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\santi\\desktop\\proyectofinalapps\\hotalsystem\\controllers\\reservascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|c:\\users\\admin\\source\\repos\\suriix\\hotelsystem\\hotalsystem\\controllers\\reservascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:controllers\\reservascontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\clases\\clsreserva.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\clases\\clsreserva.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:clases\\clsreserva.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\clases\\clschekin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\clases\\clschekin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:clases\\clschekin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\controllers\\checkinscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\controllers\\checkinscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:controllers\\checkinscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\models\\dbhotel.tt||{8B382828-6202-11D1-8870-0000F87579D2}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\models\\dbhotel.tt||{8B382828-6202-11D1-8870-0000F87579D2}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\dbhotel.tt||{8B382828-6202-11D1-8870-0000F87579D2}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\cliente.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\models\\checkin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "AbsoluteMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\models\\checkin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
       "RelativeMoniker": "D:0:0:{B83B8694-918D-4A44-AFE9-176EB16EB1CF}|HotalSystem.csproj|solutionrelative:models\\checkin.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
@@ -38,8 +38,12 @@
       "DocumentGroups": [
         {
           "DockedHeight": 286,
-          "SelectedChildIndex": 1,
+          "SelectedChildIndex": 2,
           "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:0:0:{1c4feeaa-4718-4aa9-859d-94ce25d182ba}"
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:128:0:{75188d03-9892-4ae2-abf1-207126247ce5}"
@@ -48,9 +52,9 @@
               "$type": "Document",
               "DocumentIndex": 0,
               "Title": "ReservasController.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\ReservasController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Controllers\\ReservasController.cs",
               "RelativeDocumentMoniker": "Controllers\\ReservasController.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\ReservasController.cs",
+              "ToolTip": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Controllers\\ReservasController.cs",
               "RelativeToolTip": "Controllers\\ReservasController.cs",
               "ViewState": "AgIAAD4AAAAAAAAAAAAAAD4AAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -61,9 +65,9 @@
               "$type": "Document",
               "DocumentIndex": 1,
               "Title": "ClsReserva.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsReserva.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Clases\\ClsReserva.cs",
               "RelativeDocumentMoniker": "Clases\\ClsReserva.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsReserva.cs",
+              "ToolTip": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Clases\\ClsReserva.cs",
               "RelativeToolTip": "Clases\\ClsReserva.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -73,9 +77,9 @@
               "$type": "Document",
               "DocumentIndex": 4,
               "Title": "DBHotel.tt",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\DBHotel.tt",
+              "DocumentMoniker": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Models\\DBHotel.tt",
               "RelativeDocumentMoniker": "Models\\DBHotel.tt",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\DBHotel.tt",
+              "ToolTip": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Models\\DBHotel.tt",
               "RelativeToolTip": "Models\\DBHotel.tt",
               "ViewState": "AgIAABUAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003109|",
@@ -85,9 +89,9 @@
               "$type": "Document",
               "DocumentIndex": 5,
               "Title": "Cliente.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Cliente.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Models\\Cliente.cs",
               "RelativeDocumentMoniker": "Models\\Cliente.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\Cliente.cs",
+              "ToolTip": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Models\\Cliente.cs",
               "RelativeToolTip": "Models\\Cliente.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -97,9 +101,9 @@
               "$type": "Document",
               "DocumentIndex": 3,
               "Title": "CheckInsController.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\CheckInsController.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Controllers\\CheckInsController.cs",
               "RelativeDocumentMoniker": "Controllers\\CheckInsController.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Controllers\\CheckInsController.cs",
+              "ToolTip": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Controllers\\CheckInsController.cs",
               "RelativeToolTip": "Controllers\\CheckInsController.cs",
               "ViewState": "AgIAABsAAAAAAAAAAAAUwCcAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -109,9 +113,9 @@
               "$type": "Document",
               "DocumentIndex": 2,
               "Title": "ClsChekIn.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsChekIn.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Clases\\ClsChekIn.cs",
               "RelativeDocumentMoniker": "Clases\\ClsChekIn.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Clases\\ClsChekIn.cs",
+              "ToolTip": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Clases\\ClsChekIn.cs",
               "RelativeToolTip": "Clases\\ClsChekIn.cs",
               "ViewState": "AgIAACgAAAAAAAAAAAAqwEMAAAAJAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
@@ -121,9 +125,9 @@
               "$type": "Document",
               "DocumentIndex": 6,
               "Title": "CheckIn.cs",
-              "DocumentMoniker": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\CheckIn.cs",
+              "DocumentMoniker": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Models\\CheckIn.cs",
               "RelativeDocumentMoniker": "Models\\CheckIn.cs",
-              "ToolTip": "C:\\Users\\santi\\Desktop\\ProyectoFinalApps\\HotalSystem\\Models\\CheckIn.cs",
+              "ToolTip": "C:\\Users\\Admin\\source\\repos\\SuriiX\\HotelSystem\\HotalSystem\\Models\\CheckIn.cs",
               "RelativeToolTip": "Models\\CheckIn.cs",
               "ViewState": "AgIAAAEAAAAAAAAAAAAAAAEAAAATAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
