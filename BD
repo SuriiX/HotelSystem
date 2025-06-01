@@ -1,8 +1,16 @@
+
+-- Creación de la Base de Datos
+IF EXISTS (SELECT * FROM sys.databases WHERE name = 'HotelManagementSystem')
+BEGIN
+    DROP DATABASE HotelManagementSystem; -- Para empezar limpio si hubo errores previos
+END
 CREATE DATABASE HotelManagementSystem;
 GO
 
 USE HotelManagementSystem;
 GO
+
+-- Creación de Tablas (Estructura Original + Gestión de Eventos CORREGIDA)
 
 CREATE TABLE Ciudad (
     ciudad_id INT PRIMARY KEY IDENTITY(1,1),
@@ -31,7 +39,7 @@ CREATE TABLE Hotel (
     fecha_apertura DATE NOT NULL,
     estado_operativo VARCHAR(20) DEFAULT 'activo',
     politica_cancelacion NVARCHAR(MAX),
-    gerente_id INT, -- Añadido aquí, la FK se crea después de Empleado
+    gerente_id INT, 
     FOREIGN KEY (cadena_id) REFERENCES Cadena_Hotelera(cadena_id) ON DELETE SET NULL,
     FOREIGN KEY (ciudad_id) REFERENCES Ciudad(ciudad_id),
     CONSTRAINT CK_Hotel_EstadoOperativo CHECK (estado_operativo IN ('activo', 'inactivo', 'en_construccion'))
@@ -110,9 +118,8 @@ CREATE TABLE Empleado (
 );
 GO
 
--- Añadir la FK para gerente_id en Hotel ahora que Empleado existe
 ALTER TABLE Hotel
-ADD CONSTRAINT FK_Hotel_Gerente FOREIGN KEY (gerente_id) REFERENCES Empleado(empleado_id) ON DELETE SET NULL;
+ADD CONSTRAINT FK_Hotel_Gerente FOREIGN KEY (gerente_id) REFERENCES Empleado(empleado_id) ON DELETE NO ACTION; -- CORREGIDO: ON DELETE NO ACTION
 GO
 
 CREATE TABLE Reserva (
@@ -143,7 +150,7 @@ CREATE TABLE Reserva_Habitacion (
     estado_asignacion VARCHAR(20) DEFAULT 'asignada',
     FOREIGN KEY (reserva_id) REFERENCES Reserva(reserva_id) ON DELETE CASCADE,
     FOREIGN KEY (habitacion_id) REFERENCES Habitacion(habitacion_id),
-    CONSTRAINT unique_room_reserva_period UNIQUE (habitacion_id, reserva_id), -- Considerar que esto no previene solapamiento de fechas
+    CONSTRAINT unique_room_reserva_assignment UNIQUE (reserva_id, habitacion_id),
     CONSTRAINT CK_ReservaHabitacion_EstadoAsignacion CHECK (estado_asignacion IN ('asignada', 'cambiada', 'cancelada'))
 );
 GO
@@ -280,7 +287,7 @@ CREATE TABLE Reserva_Restaurante (
     FOREIGN KEY (cliente_id) REFERENCES Cliente(cliente_id),
     FOREIGN KEY (restaurante_id) REFERENCES Restaurante(restaurante_id),
     FOREIGN KEY (empleado_registro_id) REFERENCES Empleado(empleado_id),
-    CONSTRAINT unique_restaurant_booking UNIQUE (restaurante_id, fecha_reserva, hora_reserva), -- No considera capacidad total
+    CONSTRAINT unique_restaurant_booking UNIQUE (restaurante_id, fecha_reserva, hora_reserva),
     CONSTRAINT CK_ReservaRestaurante_Estado CHECK (estado IN ('confirmada', 'cancelada', 'atendida', 'no_show'))
 );
 GO
@@ -407,13 +414,101 @@ CREATE TABLE Detalle_Factura (
     detalle_factura_id INT PRIMARY KEY IDENTITY(1,1),
     factura_id INT NOT NULL,
     tipo_concepto VARCHAR(30) NOT NULL,
-    referencia_id INT, -- Puede ser Reserva_Habitacion_id, Consumo_Servicio_id, Reserva_Paquete_id, etc.
+    referencia_id INT,
     descripcion_concepto NVARCHAR(255) NOT NULL,
     cantidad INT NOT NULL DEFAULT 1,
     precio_unitario DECIMAL(10,2) NOT NULL,
     subtotal DECIMAL(12,2) NOT NULL,
     FOREIGN KEY (factura_id) REFERENCES Factura(factura_id) ON DELETE CASCADE,
     CONSTRAINT CK_DetalleFactura_TipoConcepto CHECK (tipo_concepto IN ('habitacion', 'servicio_consumido', 'paquete_reservado', 'transporte_asociado', 'otro'))
+);
+GO
+
+-- NUEVAS TABLAS PARA GESTIÓN DE EVENTOS (CORREGIDAS)
+CREATE TABLE SalonEvento (
+    SalonEventoID INT PRIMARY KEY IDENTITY(1,1),
+    HotelID INT NOT NULL FOREIGN KEY REFERENCES Hotel(hotel_id) ON DELETE CASCADE, -- CORREGIDO: hotel_id
+    Nombre VARCHAR(150) NOT NULL,
+    Descripcion NVARCHAR(MAX) NULL,
+    CapacidadMaxima INT NOT NULL,
+    Ubicacion VARCHAR(100) NULL,
+    PrecioPorHora DECIMAL(10,2) NULL,
+    EstaActivo BIT DEFAULT 1
+);
+GO
+
+CREATE TABLE TipoEvento (
+    TipoEventoID INT PRIMARY KEY IDENTITY(1,1),
+    NombreTipo VARCHAR(100) NOT NULL UNIQUE,
+    Descripcion NVARCHAR(MAX) NULL
+);
+GO
+
+CREATE TABLE ReservaEvento (
+    ReservaEventoID INT PRIMARY KEY IDENTITY(1,1),
+    ClienteID INT NOT NULL FOREIGN KEY REFERENCES Cliente(cliente_id), -- CORREGIDO: cliente_id
+    SalonEventoID INT NOT NULL FOREIGN KEY REFERENCES SalonEvento(SalonEventoID),
+    TipoEventoID INT NULL FOREIGN KEY REFERENCES TipoEvento(TipoEventoID),
+    NombreEvento VARCHAR(200) NOT NULL,
+    FechaSolicitud DATETIME DEFAULT GETDATE(),
+    FechaEvento DATE NOT NULL,
+    HoraInicio TIME NOT NULL,
+    HoraFin TIME NOT NULL,
+    NumeroAsistentesEstimado INT NOT NULL,
+    NumeroAsistentesConfirmado INT NULL,
+    EmpleadoResponsableID INT NULL FOREIGN KEY REFERENCES Empleado(empleado_id), -- Referencia a empleado_id
+    Estado VARCHAR(50) NOT NULL CHECK (Estado IN ('Solicitada', 'Confirmada', 'En Curso', 'Cancelada', 'Realizada')),
+    Notas NVARCHAR(MAX) NULL,
+    MontoEstimadoSalon DECIMAL(12,2) NULL,
+    MontoEstimadoServicios DECIMAL(12,2) NULL
+);
+GO
+
+CREATE TABLE ServicioAdicionalEvento (
+    ServicioAdicionalID INT PRIMARY KEY IDENTITY(1,1),
+    NombreServicio VARCHAR(100) NOT NULL UNIQUE,
+    Descripcion NVARCHAR(MAX) NULL,
+    PrecioBase DECIMAL(10,2) NOT NULL,
+    RequierePersonalPago BIT DEFAULT 0
+);
+GO
+
+CREATE TABLE ReservaEvento_Servicio (
+    ReservaEventoID INT NOT NULL FOREIGN KEY REFERENCES ReservaEvento(ReservaEventoID) ON DELETE CASCADE,
+    ServicioAdicionalID INT NOT NULL FOREIGN KEY REFERENCES ServicioAdicionalEvento(ServicioAdicionalID),
+    Cantidad INT NOT NULL DEFAULT 1,
+    PrecioCobradoPorUnidad DECIMAL(10,2) NOT NULL,
+    Subtotal AS (CONVERT(DECIMAL(12,2), Cantidad * PrecioCobradoPorUnidad)),
+    Notas NVARCHAR(MAX) NULL,
+    PRIMARY KEY (ReservaEventoID, ServicioAdicionalID)
+);
+GO
+
+CREATE TABLE FacturaEvento (
+    FacturaEventoID INT PRIMARY KEY IDENTITY(1,1),
+    ReservaEventoID INT NOT NULL UNIQUE FOREIGN KEY REFERENCES ReservaEvento(ReservaEventoID),
+    ClienteID INT NOT NULL FOREIGN KEY REFERENCES Cliente(cliente_id), -- CORREGIDO: cliente_id
+    FechaEmision DATETIME DEFAULT GETDATE(),
+    SubtotalSalon DECIMAL(12,2) NOT NULL,
+    SubtotalServiciosAdicionales DECIMAL(12,2) NOT NULL,
+    Impuestos DECIMAL(12,2) NOT NULL,
+    TotalFactura DECIMAL(12,2) NOT NULL,
+    MetodoPago VARCHAR(50) NULL,
+    Estado VARCHAR(50) NOT NULL CHECK (Estado IN ('Pendiente', 'Pagada', 'Parcialmente Pagada', 'Anulada')),
+    EmpleadoEmisorID INT NULL FOREIGN KEY REFERENCES Empleado(empleado_id), -- Referencia a empleado_id
+    Notas NVARCHAR(MAX) NULL
+);
+GO
+
+CREATE TABLE DetalleFacturaEvento (
+    DetalleFacturaEventoID INT PRIMARY KEY IDENTITY(1,1),
+    FacturaEventoID INT NOT NULL FOREIGN KEY REFERENCES FacturaEvento(FacturaEventoID) ON DELETE CASCADE,
+    TipoConcepto VARCHAR(50) NOT NULL,
+    ReferenciaConceptoID INT NULL,
+    DescripcionConcepto NVARCHAR(255) NOT NULL,
+    Cantidad INT NOT NULL,
+    PrecioUnitario DECIMAL(10,2) NOT NULL,
+    Subtotal DECIMAL(12,2) NOT NULL
 );
 GO
 
@@ -428,15 +523,17 @@ CREATE INDEX idx_empleado_hotel_cargo ON Empleado(hotel_id, cargo_id);
 CREATE INDEX idx_reserva_cliente ON Reserva(cliente_id);
 CREATE INDEX idx_consumo_reserva ON Consumo_Servicio(reserva_id);
 CREATE INDEX idx_reserva_habitacion_reserva ON Reserva_Habitacion(reserva_id);
+CREATE INDEX IDX_ReservaEvento_FechaEvento ON ReservaEvento(FechaEvento);
+CREATE INDEX IDX_ReservaEvento_ClienteID ON ReservaEvento(ClienteID);
+CREATE INDEX IDX_ReservaEvento_SalonEventoID ON ReservaEvento(SalonEventoID);
 GO
 
--- YA NO SE NECESITA ESTA SEGUNDA ALTERACIÓN, LA FK SE DEFINIÓ ARRIBA.
--- ALTER TABLE Hotel
--- ADD CONSTRAINT FK_Hotel_Gerente FOREIGN KEY (gerente_id) REFERENCES Empleado(empleado_id) ON DELETE NO ACTION;
--- GO
-
-USE HotelManagementSystem;
+PRINT 'Esquema de base de datos HotelManagementSystem adaptado con Gestión de Eventos creado/actualizado.';
 GO
+
+-- Inserción de Datos de Ejemplo (Originales)
+-- (Los INSERT INTO... que proporcionaste originalmente se colocarían aquí sin cambios,
+-- ya que no hemos definido datos de ejemplo para las nuevas tablas de eventos)
 
 -- 1. Ciudad (20 Registros)
 INSERT INTO Ciudad (nombre_ciudad, departamento_estado, pais) VALUES
@@ -657,17 +754,17 @@ INSERT INTO Reserva (cliente_id, hotel_id, fecha_reserva, fecha_entrada, fecha_s
 (10, 10, GETDATE(), '2025-08-01', '2025-08-07', 'pendiente', 2, 'Reserva de último minuto', 1),
 (11, 1, GETDATE(), '2025-06-20', '2025-06-23', 'confirmada', 1, 'Solicita habitación silenciosa', 3),
 (12, 2, GETDATE(), '2025-07-01', '2025-07-03', 'confirmada', 2, 'Viaje corto', 5),
-(13, 3, GETDATE(), '2025-08-05', '2025-08-09', 'confirmada', 4, 'Vacaciones familiares', 7), -- Estado cambiado a confirmada para consistencia con Factura
+(13, 3, GETDATE(), '2025-08-05', '2025-08-09', 'confirmada', 4, 'Vacaciones familiares', 7),
 (14, 4, GETDATE(), '2025-09-15', '2025-09-18', 'confirmada', 2, 'Reserva corporativa', 9),
 (15, 5, GETDATE(), '2025-10-20', '2025-10-22', 'cancelada', 1, 'Cambio de destino', 11),
 (16, 6, GETDATE(), '2025-11-01', '2025-11-04', 'confirmada', 3, 'Reserva con paquete', 13),
-(17, 7, GETDATE(), '2025-12-10', '2025-12-15', 'confirmada', 2, 'Estadía prolongada', 15), -- Estado cambiado a confirmada
+(17, 7, GETDATE(), '2025-12-10', '2025-12-15', 'confirmada', 2, 'Estadía prolongada', 15),
 (18, 8, GETDATE(), '2025-06-25', '2025-06-27', 'confirmada', 1, 'Reserva personal', 17),
-(19, 9, GETDATE(), '2025-07-30', '2025-08-02', 'confirmada', 2, 'Solicita vista específica', 19), -- Estado cambiado a confirmada
+(19, 9, GETDATE(), '2025-07-30', '2025-08-02', 'confirmada', 2, 'Solicita vista específica', 19),
 (20, 10, GETDATE(), '2025-09-01', '2025-09-05', 'confirmada', 3, 'Aniversario', 1);
 GO
 
--- 10. Reserva_Habitacion (21 Registros, se añade uno para reserva_id=20)
+-- 10. Reserva_Habitacion (21 Registros)
 INSERT INTO Reserva_Habitacion (reserva_id, habitacion_id, precio_noche_cobrado, estado_asignacion) VALUES
 (1, 1, 120.00, 'asignada'),
 (2, 4, 120.00, 'asignada'),
@@ -678,18 +775,18 @@ INSERT INTO Reserva_Habitacion (reserva_id, habitacion_id, precio_noche_cobrado,
 (6, 12, 120.00, 'asignada'),
 (7, 14, 120.00, 'asignada'),
 (8, 16, 120.00, 'cancelada'),
-(9, 18, 160.00, 'asignada'), -- Esta es la reserva_habitacion_id = 10
+(9, 18, 160.00, 'asignada'),
 (10, 20, 120.00, 'asignada'),
 (11, 2, 120.00, 'asignada'),
-(12, 3, 150.00, 'asignada'), -- Esta es la reserva_habitacion_id = 13
-(13, 7, 800.00, 'asignada'), -- Esta es la reserva_habitacion_id = 14 (para reserva_id=13)
-(13, 9, 120.00, 'asignada'), -- Esta es la reserva_habitacion_id = 15 (para reserva_id=13)
+(12, 3, 150.00, 'asignada'),
+(13, 7, 800.00, 'asignada'),
+(13, 9, 120.00, 'asignada'),
 (14, 13, 80.00, 'asignada'),
 (15, 15, 150.00, 'cancelada'),
 (16, 17, 250.00, 'asignada'),
 (17, 19, 160.00, 'asignada'),
 (18, 5, 250.00, 'asignada'),
-(20, 20, 120.00, 'asignada'); -- NUEVO para reserva_id=20, será reserva_habitacion_id=21 (Habitacion 20, Hotel 10)
+(20, 20, 120.00, 'asignada'); 
 GO
 
 -- 11. Tipo_Servicio (20 Registros)
@@ -742,16 +839,16 @@ GO
 
 -- 13. Consumo_Servicio (20 Registros)
 INSERT INTO Consumo_Servicio (reserva_id, servicio_id, fecha_hora_consumo, cantidad, precio_unitario_cobrado, empleado_registro_id) VALUES
-(1, 1, GETDATE(), 2, 50.00, 7),  -- consumo_servicio_id = 1
-(1, 3, GETDATE(), 1, 10.00, 3),  -- consumo_servicio_id = 2
+(1, 1, GETDATE(), 2, 50.00, 7),
+(1, 3, GETDATE(), 1, 10.00, 3),
 (2, 4, GETDATE(), 3, 60.00, 7),
 (2, 5, GETDATE(), 1, 20.00, 9),
-(3, 7, GETDATE(), 1, 75.00, 7),  -- consumo_servicio_id = 5
+(3, 7, GETDATE(), 1, 75.00, 7),
 (4, 8, GETDATE(), 1, 40.00, 11),
-(5, 10, GETDATE(), 2, 45.00, 7), -- consumo_servicio_id = 7
+(5, 10, GETDATE(), 2, 45.00, 7),
 (5, 11, GETDATE(), 1, 0.00, 13),
 (6, 12, GETDATE(), 1, 10.00, 15),
-(7, 13, GETDATE(), 1, 35.00, 17), -- consumo_servicio_id = 10
+(7, 13, GETDATE(), 1, 35.00, 17),
 (8, 14, GETDATE(), 1, 70.00, 19),
 (9, 15, GETDATE(), 2, 25.00, 1),
 (10, 16, GETDATE(), 1, 20.00, 3),
@@ -822,18 +919,18 @@ INSERT INTO Reserva_Paquete (reserva_id, paquete_id, fecha_reserva_paquete, prec
 (6, 6, GETDATE(), 800.00, 'reservado'),
 (7, 7, GETDATE(), 1200.00, 'reservado'),
 (8, 8, GETDATE(), 750.00, 'cancelado'),
-(9, 9, GETDATE(), 400.00, 'reservado'), -- reserva_paquete_id = 9
+(9, 9, GETDATE(), 400.00, 'reservado'),
 (10, 10, GETDATE(), 350.00, 'reservado'),
 (11, 11, GETDATE(), 950.00, 'reservado'),
 (12, 12, GETDATE(), 280.00, 'reservado'),
 (13, 13, GETDATE(), 400.00, 'reservado'),
 (14, 14, GETDATE(), 700.00, 'reservado'),
 (15, 15, GETDATE(), 500.00, 'cancelado'),
-(16, 16, GETDATE(), 850.00, 'reservado'), -- reserva_paquete_id = 16
+(16, 16, GETDATE(), 850.00, 'reservado'),
 (17, 17, GETDATE(), 420.00, 'reservado'),
 (18, 18, GETDATE(), 300.00, 'reservado'),
 (19, 19, GETDATE(), 650.00, 'reservado'),
-(20, 20, GETDATE(), 580.00, 'reservado'); -- reserva_paquete_id = 20
+(20, 20, GETDATE(), 580.00, 'reservado');
 GO
 
 -- 17. Tipo_Transporte (20 Registros)
@@ -1100,7 +1197,7 @@ INSERT INTO CheckIn (reserva_id, empleado_id, fecha_hora, metodo_pago_adelanto, 
 (20, 1, GETDATE(), 'tarjeta', 1, 'Aniversario, se envió detalle a la habitación.');
 GO
 
--- 28. CheckOut (15 Registros, alineado con las facturas)
+-- 28. CheckOut (15 Registros)
 INSERT INTO CheckOut (reserva_id, empleado_id, fecha_hora, total_factura, metodo_pago_final, observaciones) VALUES
 (1, 3, GETDATE(), 600.00, 'tarjeta', 'Salida sin incidentes.'),
 (3, 7, GETDATE(), 350.00, 'tarjeta', 'Cliente satisfecho.'),
@@ -1121,71 +1218,55 @@ GO
 
 -- 29. Factura (15 Registros)
 INSERT INTO Factura (reserva_id, cliente_id, fecha_emision, subtotal, impuestos, total, metodo_pago_factura, estado, empleado_emisor_id) VALUES
-(1, 1, GETDATE(), 550.00, 50.00, 600.00, 'tarjeta', 'pagada', 3),  -- factura_id = 1
-(3, 3, GETDATE(), 320.00, 30.00, 350.00, 'tarjeta', 'pagada', 7),  -- factura_id = 2
-(5, 5, GETDATE(), 750.00, 50.00, 800.00, 'tarjeta', 'pagada', 11), -- factura_id = 3
-(7, 7, GETDATE(), 380.00, 20.00, 400.00, 'transferencia', 'pagada', 15), -- factura_id = 4
-(9, 9, GETDATE(), 880.00, 70.00, 950.00, 'tarjeta', 'pagada', 19), -- factura_id = 5
-(10, 10, GETDATE(), 650.00, 50.00, 700.00, 'efectivo', 'pagada', 1), -- factura_id = 6
-(11, 11, GETDATE(), 330.00, 30.00, 360.00, 'tarjeta', 'pagada', 3), -- factura_id = 7
-(12, 12, GETDATE(), 280.00, 20.00, 300.00, 'tarjeta', 'pagada', 3), -- factura_id = 8
-(13, 13, GETDATE(), 1100.00, 100.00, 1200.00, 'tarjeta', 'pagada', 7), -- factura_id = 9
-(14, 14, GETDATE(), 500.00, 50.00, 550.00, 'transferencia', 'pagada', 9), -- factura_id = 10
-(16, 16, GETDATE(), 820.00, 80.00, 900.00, 'tarjeta', 'pagada', 13), -- factura_id = 11
-(17, 17, GETDATE(), 1380.00, 120.00, 1500.00, 'transferencia', 'pagada', 15), -- factura_id = 12
-(18, 18, GETDATE(), 290.00, 30.00, 320.00, 'efectivo', 'pagada', 17), -- factura_id = 13
-(19, 19, GETDATE(), 460.00, 40.00, 500.00, 'tarjeta', 'pagada', 19), -- factura_id = 14
-(20, 20, GETDATE(), 690.00, 60.00, 750.00, 'tarjeta', 'pagada', 1); -- factura_id = 15
+(1, 1, GETDATE(), 550.00, 50.00, 600.00, 'tarjeta', 'pagada', 3),
+(3, 3, GETDATE(), 320.00, 30.00, 350.00, 'tarjeta', 'pagada', 7),
+(5, 5, GETDATE(), 750.00, 50.00, 800.00, 'tarjeta', 'pagada', 11),
+(7, 7, GETDATE(), 380.00, 20.00, 400.00, 'transferencia', 'pagada', 15),
+(9, 9, GETDATE(), 880.00, 70.00, 950.00, 'tarjeta', 'pagada', 19),
+(10, 10, GETDATE(), 650.00, 50.00, 700.00, 'efectivo', 'pagada', 1),
+(11, 11, GETDATE(), 330.00, 30.00, 360.00, 'tarjeta', 'pagada', 3),
+(12, 12, GETDATE(), 280.00, 20.00, 300.00, 'tarjeta', 'pagada', 3),
+(13, 13, GETDATE(), 1100.00, 100.00, 1200.00, 'tarjeta', 'pagada', 7),
+(14, 14, GETDATE(), 500.00, 50.00, 550.00, 'transferencia', 'pagada', 9),
+(16, 16, GETDATE(), 820.00, 80.00, 900.00, 'tarjeta', 'pagada', 13),
+(17, 17, GETDATE(), 1380.00, 120.00, 1500.00, 'transferencia', 'pagada', 15),
+(18, 18, GETDATE(), 290.00, 30.00, 320.00, 'efectivo', 'pagada', 17),
+(19, 19, GETDATE(), 460.00, 40.00, 500.00, 'tarjeta', 'pagada', 19),
+(20, 20, GETDATE(), 690.00, 60.00, 750.00, 'tarjeta', 'pagada', 1);
 GO
 
--- 30. Detalle_Factura (Corregido y con detalles para factura_id=15)
+-- 30. Detalle_Factura (Ajustado para consistencia)
 INSERT INTO Detalle_Factura (factura_id, tipo_concepto, referencia_id, descripcion_concepto, cantidad, precio_unitario, subtotal) VALUES
 (1, 'habitacion', 1, 'Estancia Hab. 101 (Reserva 1)', 4, 120.00, 480.00),
-(1, 'servicio_consumido', 1, 'Restaurante Central (Reserva 1)', 2, 25.00, 50.00), -- Precio unitario ajustado para que subtotal original de factura (550) cuadre con 480+50+10
-(1, 'servicio_consumido', 2, 'Room Service (Reserva 1)', 1, 20.00, 20.00), -- Precio unitario ajustado
-
+(1, 'servicio_consumido', 1, 'Restaurante Central (Reserva 1)', 1, 50.00, 50.00),
+(1, 'servicio_consumido', 2, 'Room Service (Reserva 1)', 1, 20.00, 20.00),
 (2, 'habitacion', 3, 'Estancia Hab. 601 (Reserva 3)', 2, 120.00, 240.00),
-(2, 'servicio_consumido', 5, 'La Cuisine (Reserva 3)', 1, 80.00, 80.00), -- Ajustado para cuadrar Factura.subtotal = 320
-
-(3, 'habitacion', 5, 'Estancia Hab. Familia (Reserva 5)', 1, 660.00, 660.00), -- Ajustado para reserva 5 (Habitaciones 10 y 11)
-(3, 'servicio_consumido', 7, 'Grill House (Reserva 5)', 2, 45.00, 90.00), -- Suman 750
-
+(2, 'servicio_consumido', 5, 'La Cuisine (Reserva 3)', 1, 80.00, 80.00),
+(3, 'habitacion', 5, 'Estancia Hab. Familiar (Reserva 5)', 5, 130.00, 650.00),
+(3, 'servicio_consumido', 7, 'Grill House (Reserva 5)', 2, 50.00, 100.00),
 (4, 'habitacion', 8, 'Estancia Hab. 901 (Reserva 7)', 2, 120.00, 240.00),
-(4, 'servicio_consumido', 10, 'Restaurante Buffet (Reserva 7)', 1, 140.00, 140.00), -- Ajustado para cuadrar Factura.subtotal = 380
-
+(4, 'servicio_consumido', 10, 'Restaurante Buffet (Reserva 7)', 4, 35.00, 140.00),
 (5, 'paquete_reservado', 9, 'Paquete Cultural Immersion (Reserva 9)', 1, 400.00, 400.00),
-(5, 'habitacion', 10, 'Estancia Hab. 1302 (Reserva 9)', 4, 120.00, 480.00), -- referencia_id corregido a 10 (para habitacion de reserva_id=9). Suman 880.
-
-(6, 'habitacion', 11, 'Estancia Hab. 1401 (Reserva 10)', 6, 100.00, 600.00), -- Ajustado
-(6, 'otro', NULL, 'Otros cargos (Reserva 10)', 1, 50.00, 50.00), -- Suman 650
-
-(7, 'habitacion', 12, 'Estancia Hab. 102 (Reserva 11)', 3, 110.00, 330.00), -- Suman 330
-
-(8, 'habitacion', 13, 'Estancia Hab. 201 (Reserva 12)', 2, 140.00, 280.00), -- Suman 280
-
--- Para factura_id = 9 (Reserva 13, Factura.subtotal = 1100)
-(9, 'habitacion', 14, 'Estancia Suite Presidencial (Reserva 13)', 1, 800.00, 800.00), -- Usando referencia_id=14 de Reserva_Habitacion
-(9, 'habitacion', 15, 'Estancia Habitación Estándar (Reserva 13)', 1, 300.00, 300.00), -- Usando referencia_id=15 de Reserva_Habitacion
-
+(5, 'habitacion', 10, 'Estancia Hab. 1302 (Reserva 9)', 4, 120.00, 480.00),
+(6, 'habitacion', 11, 'Estancia Hab. 1401 (Reserva 10)', 6, 100.00, 600.00),
+(6, 'servicio_consumido', 13, 'Bar Lounge (Reserva 10)', 1, 50.00, 50.00),
+(7, 'habitacion', 12, 'Estancia Hab. 102 (Reserva 11)', 3, 110.00, 330.00),
+(8, 'habitacion', 13, 'Estancia Hab. 201 (Reserva 12)', 2, 140.00, 280.00),
+(9, 'habitacion', 14, 'Estancia Suite Presidencial (Reserva 13)', 1, 800.00, 800.00),
+(9, 'habitacion', 15, 'Estancia Habitación Estándar (Reserva 13)', 1, 300.00, 300.00),
 (10, 'habitacion', 16, 'Estancia Hab. 802 (Reserva 14)', 3, 100.00, 300.00),
-(10, 'servicio_consumido', 17, 'Souvenirs Shop (Reserva 14)', 1, 200.00, 200.00), -- Asumiendo consumo de servicio con id 17 (original era servicio 20 que es 0.00)
-
-(11, 'paquete_reservado', 16, 'Paquete Golf Getaway (Reserva 16)', 1, 820.00, 820.00), -- Ajustado al subtotal de la factura
-
-(12, 'habitacion', 18, 'Estancia Hab. 1301 (Reserva 17)', 5, 200.00, 1000.00),
-(12, 'servicio_consumido', 20, 'La Cuisine (Reserva 17)', 1, 380.00, 380.00), -- Suman 1380 (servicio_id 20 es La Cuisine)
-
-(13, 'habitacion', 19, 'Estancia Hab. 401 (Reserva 18)', 2, 145.00, 290.00), -- Suman 290
-
-(14, 'habitacion', 20, 'Estancia Hab. 902 (Reserva 19)', 3, 153.33, 459.99), -- Suman aprox 460
+(10, 'servicio_consumido', 17, 'Souvenirs Shop (Reserva 14)', 1, 200.00, 200.00),
+(11, 'paquete_reservado', 16, 'Paquete Golf Getaway (Reserva 16)', 1, 820.00, 820.00),
+(12, 'habitacion', 19, 'Estancia Hab. 1301 (Reserva 17)', 5, 200.00, 1000.00),
+(12, 'servicio_consumido', 20, 'La Cuisine (Reserva 17)', 1, 380.00, 380.00),
+(13, 'habitacion', 20, 'Estancia Hab. 401 (Reserva 18)', 2, 145.00, 290.00),
+(14, 'habitacion', (SELECT TOP 1 reserva_habitacion_id FROM Reserva_Habitacion WHERE reserva_id = 19), 'Estancia Hab. (Reserva 19)', 3, 153.33, 459.99),
 (14, 'otro', NULL, 'Ajuste Redondeo', 1, 0.01, 0.01),
-
--- Detalles para factura_id = 15 (Reserva 20, Factura.subtotal = 690)
 (15, 'paquete_reservado', 20, 'Paquete Experiencia Culinaria (Reserva 20)', 1, 580.00, 580.00),
-(15, 'habitacion', 21, 'Alojamiento Hab. 1401 (Reserva 20)', 1, 110.00, 110.00); -- referencia_id=21 es la Reserva_Habitacion nueva
+(15, 'habitacion', 21, 'Alojamiento Hab. 1401 (Reserva 20)', 1, 110.00, 110.00);
 GO
 
--- VERIFICACIÓN DE DATOS (OPCIONAL, PERO RECOMENDADO)
+-- SELECTS para revisar los datos del inicio
 USE HotelManagementSystem;
 GO
 
@@ -1278,4 +1359,20 @@ SELECT TOP 5 * FROM Factura;
 GO
 -- 30. Detalle_Factura
 SELECT TOP 5 * FROM Detalle_Factura;
+GO
+
+-- SELECTS para las nuevas tablas de Gestión de Eventos (inicialmente vacías)
+SELECT TOP 5 * FROM SalonEvento;
+GO
+SELECT TOP 5 * FROM TipoEvento;
+GO
+SELECT TOP 5 * FROM ReservaEvento;
+GO
+SELECT TOP 5 * FROM ServicioAdicionalEvento;
+GO
+SELECT TOP 5 * FROM ReservaEvento_Servicio;
+GO
+SELECT TOP 5 * FROM FacturaEvento;
+GO
+SELECT TOP 5 * FROM DetalleFacturaEvento;
 GO
