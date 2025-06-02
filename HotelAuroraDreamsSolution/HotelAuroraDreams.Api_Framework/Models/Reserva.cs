@@ -32,6 +32,7 @@ namespace HotelAuroraDreams.Api_Framework.Models
         public System.DateTime fecha_entrada { get; set; }
         public System.DateTime fecha_salida { get; set; }
         public string estado { get; set; }
+        public string Estado { get; internal set; }
         public int numero_huespedes { get; set; }
         public string notas { get; set; }
         public Nullable<int> empleado_registro_id { get; set; }
@@ -51,5 +52,9 @@ namespace HotelAuroraDreams.Api_Framework.Models
         public virtual ICollection<Reserva_Habitacion> Reserva_Habitacion { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Reserva_Paquete> Reserva_Paquete { get; set; }
+        public int ClienteID { get; internal set; }
+        public int HotelID { get; internal set; }
+        public DateTime FechaReserva { get; internal set; }
+        public DateTime FechaEntrada { get; internal set; }
     }
 }
