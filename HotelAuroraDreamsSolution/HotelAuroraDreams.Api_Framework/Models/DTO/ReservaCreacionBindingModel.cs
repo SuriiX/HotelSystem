@@ -1,4 +1,5 @@
-﻿using System;
+﻿// File: ~/Models/DTO/ReservaCreacionBindingModel.cs (API Project)
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -23,7 +24,6 @@ namespace HotelAuroraDreams.Api_Framework.Models.DTO
         public int NumeroHuespedes { get; set; }
 
         [Required]
-        [MinLength(1, ErrorMessage = "Debe seleccionar al menos una habitación.")]
         public List<int> HabitacionIDsSeleccionadas { get; set; }
 
         public string Notas { get; set; }
