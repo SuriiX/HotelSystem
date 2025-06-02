@@ -250,6 +250,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CargosController.cs" />
+    <Compile Include="Controllers\CheckInController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\EmpleadosController.cs" />
     <Compile Include="Controllers\HabitacionesController.cs" />
@@ -310,18 +311,30 @@
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DTO\CargoListItemDto.cs" />
+    <Compile Include="Models\DTO\CheckInBindingModel.cs" />
+    <Compile Include="Models\DTO\CheckInViewModel.cs" />
+    <Compile Include="Models\DTO\CheckOutBindingModel.cs" />
+    <Compile Include="Models\DTO\CheckOutViewModel.cs" />
     <Compile Include="Models\DTO\ClienteBindingModel.cs" />
     <Compile Include="Models\DTO\ClienteViewModel.cs" />
+    <Compile Include="Models\DTO\DetalleFacturaEventoViewModel.cs" />
+    <Compile Include="Models\DTO\DetalleFacturaViewModel.cs" />
     <Compile Include="Models\DTO\DisponibilidadRequestDto.cs" />
     <Compile Include="Models\DTO\EmpleadoUpdateBindingModel.cs" />
     <Compile Include="Models\DTO\EmpleadoViewModel.cs" />
+    <Compile Include="Models\DTO\FacturaEventoViewModel.cs" />
+    <Compile Include="Models\DTO\FacturaViewModel.cs" />
     <Compile Include="Models\DTO\HabitacionBindingModel.cs" />
     <Compile Include="Models\DTO\HabitacionDisponibleDto.cs" />
     <Compile Include="Models\DTO\HabitacionViewModel.cs" />
     <Compile Include="Models\DTO\HotelSimpleViewModel.cs" />
     <Compile Include="Models\DTO\RegisterBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaCreacionBindingModel.cs" />
+    <Compile Include="Models\DTO\ReservaEventoCreacionBindingModel.cs" />
+    <Compile Include="Models\DTO\ReservaEventoViewModel.cs" />
     <Compile Include="Models\DTO\ReservaHabitacionViewModel.cs" />
+    <Compile Include="Models\DTO\ReservaRestauranteBindingModel.cs" />
+    <Compile Include="Models\DTO\ReservaRestauranteViewModel.cs" />
     <Compile Include="Models\DTO\ReservaUpdateBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaViewModel.cs" />
     <Compile Include="Models\DTO\SalonEventoBindingModel.cs" />

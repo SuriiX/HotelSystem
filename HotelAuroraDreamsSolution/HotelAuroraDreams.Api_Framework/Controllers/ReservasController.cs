@@ -145,13 +145,13 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             var empleadoAppUser = await UserManager.FindByIdAsync(empleadoAspNetUserId);
             if (empleadoAppUser == null)
             {
-                return BadRequest("No se pudo identificar al empleado que registra (Identity User not found).");
+                return BadRequest("No se pudo identificar al empleado que registra (Usuario de Identity no encontrado).");
             }
 
             var empleadoDb = await db.Empleadoes.FirstOrDefaultAsync(e => e.email == empleadoAppUser.Email);
             if (empleadoDb == null)
             {
-                return BadRequest("No se encontró el registro de empleado (tabla Empleado) correspondiente al usuario autenticado para asignar a la reserva.");
+                return BadRequest("No se encontró el registro en la tabla Empleado para el usuario autenticado. Asegúrese de que el empleado exista en ambas tablas (Identity y Empleado) con el mismo email.");
             }
             int empleadoRegistroIdInt = empleadoDb.empleado_id;
 
@@ -159,53 +159,38 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             {
                 ClienteID = model.ClienteID,
                 HotelID = model.HotelID,
-                fecha_reserva = DateTime.Now,
-                fecha_entrada = model.FechaEntrada,
+                FechaReserva = DateTime.Now,
+                FechaEntrada = model.FechaEntrada,
                 fecha_salida = model.FechaSalida,
                 Estado = "Confirmada",
                 numero_huespedes = model.NumeroHuespedes,
                 notas = model.Notas,
                 empleado_registro_id = empleadoRegistroIdInt
             };
-            db.Reservas.Add(nuevaReserva);
-
-            try
-            {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateException dbEx)
-            {
-                var errorMessage = $"DbUpdateException al guardar Reserva: {dbEx.ToString()}";
-                return InternalServerError(new Exception(errorMessage, dbEx));
-            }
-            catch (Exception ex)
-            {
-                return InternalServerError(new Exception($"Error general al guardar Reserva: {ex.ToString()}", ex));
-            }
-
-            decimal montoTotalReserva = 0;
-            int noches = (model.FechaSalida.Date - model.FechaEntrada.Date).Days;
-            if (noches <= 0) noches = 1;
-            var habitacionesReservadasVM = new List<ReservaHabitacionViewModel>();
 
             try
             {
                 var idsHabitacionesOcupadas = await db.Reserva_Habitacion
                     .Where(rh => model.HabitacionIDsSeleccionadas.Contains(rh.habitacion_id) &&
                                  (rh.Reserva.estado == "Confirmada") &&
-                                 (rh.Reserva.fecha_entrada < model.FechaSalida && rh.Reserva.fecha_salida > model.FechaEntrada) &&
-                                 rh.reserva_id != nuevaReserva.reserva_id)
+                                 (rh.Reserva.fecha_entrada < model.FechaSalida && rh.Reserva.fecha_salida > model.FechaEntrada))
                     .Select(rh => rh.habitacion_id)
                     .Distinct()
                     .ToListAsync();
 
                 if (idsHabitacionesOcupadas.Any())
                 {
-                    db.Reservas.Remove(nuevaReserva);
-                    await db.SaveChangesAsync();
-                    string habitacionesNoDisponiblesStr = string.Join(", ", idsHabitacionesOcupadas);
-                    return Content(HttpStatusCode.Conflict, new { Message = $"Una o más habitaciones seleccionadas ({habitacionesNoDisponiblesStr}) ya no están disponibles. La reserva no fue creada." });
+                    var habitacionesNoDisponiblesNros = await db.Habitacions
+                        .Where(h => idsHabitacionesOcupadas.Contains(h.habitacion_id))
+                        .Select(h => h.numero).ToListAsync();
+                    return Content(HttpStatusCode.Conflict, new { Message = $"Una o más habitaciones seleccionadas ({string.Join(", ", habitacionesNoDisponiblesNros)}) ya no están disponibles para estas fechas." });
                 }
+
+                db.Reservas.Add(nuevaReserva);
+                await db.SaveChangesAsync();
+
+                decimal montoTotalReserva = 0;
+                int noches = Math.Max(1, (model.FechaSalida.Date - model.FechaEntrada.Date).Days);
 
                 foreach (var habitacionId in model.HabitacionIDsSeleccionadas)
                 {
@@ -213,9 +198,9 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                                          .FirstOrDefaultAsync(h => h.habitacion_id == habitacionId);
                     if (habitacion == null)
                     {
-                        db.Reservas.Remove(nuevaReserva);
-                        await db.SaveChangesAsync();
-                        return InternalServerError(new Exception($"Habitación ID {habitacionId} no encontrada. Reserva cancelada."));
+                        // Esto indica un problema grave si la disponibilidad previa lo permitió.
+                        // Considerar revertir la reserva principal aquí si es posible.
+                        throw new Exception($"Habitación ID {habitacionId} no encontrada durante la asignación a la reserva.");
                     }
                     decimal precioNoche = habitacion.Tipo_Habitacion.precio_base;
                     montoTotalReserva += precioNoche * noches;
@@ -230,62 +215,50 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     db.Reserva_Habitacion.Add(rh);
                 }
                 await db.SaveChangesAsync();
+
+                var cliente = await db.Clientes.FindAsync(nuevaReserva.ClienteID);
+                var hotel = await db.Hotels.FindAsync(nuevaReserva.HotelID);
+                var habitacionesReservadasVM = await db.Reserva_Habitacion
+                    .Where(r => r.reserva_id == nuevaReserva.reserva_id)
+                    .Select(rh => new ReservaHabitacionViewModel
+                    {
+                        ReservaHabitacionID = rh.reserva_habitacion_id,
+                        HabitacionID = rh.habitacion_id,
+                        NumeroHabitacion = rh.Habitacion.numero,
+                        NombreTipoHabitacion = rh.Habitacion.Tipo_Habitacion.nombre,
+                        PrecioNocheCobrado = rh.precio_noche_cobrado,
+                        EstadoAsignacion = rh.estado_asignacion
+                    }).ToListAsync();
+
+                var viewModel = new ReservaViewModel
+                {
+                    ReservaID = nuevaReserva.reserva_id,
+                    ClienteID = nuevaReserva.ClienteID,
+                    NombreCliente = cliente != null ? $"{cliente.nombre} {cliente.apellido}" : "N/A",
+                    EmailCliente = cliente?.email,
+                    TelefonoCliente = cliente?.telefono,
+                    HotelID = nuevaReserva.HotelID,
+                    NombreHotel = hotel?.nombre,
+                    FechaReserva = nuevaReserva.FechaReserva,
+                    FechaEntrada = nuevaReserva.FechaEntrada,
+                    FechaSalida = nuevaReserva.fecha_salida,
+                    Estado = nuevaReserva.Estado,
+                    NumeroHuespedes = nuevaReserva.numero_huespedes,
+                    Notas = nuevaReserva.notas,
+                    NombreEmpleadoRegistro = empleadoDb != null ? $"{empleadoDb.nombre} {empleadoDb.apellido}" : "N/A",
+                    HabitacionesReservadas = habitacionesReservadasVM,
+                    MontoTotalReserva = montoTotalReserva
+                };
+                return CreatedAtRoute("GetReservaById", new { id = nuevaReserva.reserva_id }, viewModel);
             }
             catch (DbUpdateException dbEx)
             {
-                db.Reservas.Remove(nuevaReserva);
-                await db.SaveChangesAsync();
-                var errorMessage = $"DbUpdateException al guardar Reserva_Habitacion: {dbEx.ToString()}";
-                return InternalServerError(new Exception(errorMessage, dbEx));
+                return InternalServerError(new Exception($"DbUpdateException: {dbEx.ToString()}"));
             }
             catch (Exception ex)
             {
-                db.Reservas.Remove(nuevaReserva);
-                await db.SaveChangesAsync();
-                return InternalServerError(new Exception($"Error general al guardar Reserva_Habitacion: {ex.ToString()}", ex));
+                return InternalServerError(new Exception($"Error general al crear reserva: {ex.ToString()}"));
             }
-
-            var cliente = await db.Clientes.FindAsync(nuevaReserva.ClienteID);
-            var hotel = await db.Hotels.FindAsync(nuevaReserva.HotelID);
-
-            var habitacionesGuardadas = await db.Reserva_Habitacion
-                                    .Where(r => r.reserva_id == nuevaReserva.reserva_id)
-                                    .Include(r => r.Habitacion.Tipo_Habitacion)
-                                    .ToListAsync();
-            habitacionesReservadasVM.Clear();
-            foreach (var rh_db in habitacionesGuardadas)
-            {
-                habitacionesReservadasVM.Add(new ReservaHabitacionViewModel
-                {
-                    ReservaHabitacionID = rh_db.reserva_habitacion_id,
-                    HabitacionID = rh_db.habitacion_id,
-                    NumeroHabitacion = rh_db.Habitacion.numero,
-                    NombreTipoHabitacion = rh_db.Habitacion.Tipo_Habitacion.nombre,
-                    PrecioNocheCobrado = rh_db.precio_noche_cobrado,
-                    EstadoAsignacion = rh_db.estado_asignacion
-                });
-            }
-
-            var viewModel = new ReservaViewModel
-            {
-                ReservaID = nuevaReserva.reserva_id,
-                ClienteID = nuevaReserva.ClienteID,
-                NombreCliente = cliente != null ? $"{cliente.nombre} {cliente.apellido}" : "N/A",
-                EmailCliente = cliente?.email,
-                TelefonoCliente = cliente?.telefono,
-                HotelID = nuevaReserva.HotelID,
-                NombreHotel = hotel?.nombre,
-                FechaReserva = (DateTime)nuevaReserva.fecha_reserva,
-                FechaEntrada = nuevaReserva.fecha_entrada,
-                FechaSalida = nuevaReserva.fecha_salida,
-                Estado = nuevaReserva.Estado,
-                NumeroHuespedes = nuevaReserva.numero_huespedes,
-                Notas = nuevaReserva.notas,
-                NombreEmpleadoRegistro = empleadoDb != null ? $"{empleadoDb.nombre} {empleadoDb.apellido}" : "N/A",
-                HabitacionesReservadas = habitacionesReservadasVM,
-                MontoTotalReserva = montoTotalReserva
-            };
-            return CreatedAtRoute("GetReservaById", new { id = nuevaReserva.reserva_id }, viewModel);
         }
 
         [HttpGet]
@@ -314,8 +287,8 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                         NombreCliente = r.Cliente.nombre + " " + r.Cliente.apellido,
                         HotelID = r.HotelID,
                         NombreHotel = r.Hotel.nombre,
-                        FechaReserva = (DateTime)r.fecha_reserva,
-                        FechaEntrada = r.fecha_entrada,
+                        FechaReserva = r.FechaReserva,
+                        FechaEntrada = r.FechaEntrada,
                         FechaSalida = r.fecha_salida,
                         Estado = r.Estado,
                         NumeroHuespedes = r.numero_huespedes,
@@ -350,8 +323,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 }
 
                 decimal montoTotal = 0;
-                int noches = (reservaEntity.fecha_salida.Date - reservaEntity.FechaEntrada.Date).Days;
-                if (noches <= 0) noches = 1;
+                int noches = Math.Max(1, (reservaEntity.fecha_salida.Date - reservaEntity.FechaEntrada.Date).Days);
 
                 var habitacionesReservadasVM = reservaEntity.Reserva_Habitacion.Select(rh =>
                 {
@@ -412,6 +384,11 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return NotFound();
             }
 
+            if (reserva.Estado == "Cancelada" || reserva.Estado == "Completada")
+            {
+                return BadRequest($"La reserva no se puede modificar porque su estado es '{reserva.Estado}'.");
+            }
+
             if (model.NumeroHuespedes != reserva.numero_huespedes)
             {
                 int capacidadTotalHabitacionesAsignadas = reserva.Reserva_Habitacion.Sum(rh => rh.Habitacion.Tipo_Habitacion.capacidad);
@@ -419,7 +396,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 {
                     return BadRequest($"El nuevo número de huéspedes ({model.NumeroHuespedes}) excede la capacidad de las habitaciones asignadas ({capacidadTotalHabitacionesAsignadas}).");
                 }
-                reserva.numero_huespedes     = model.NumeroHuespedes;
+                reserva.numero_huespedes = model.NumeroHuespedes;
             }
             reserva.notas = model.Notas;
             reserva.Estado = model.Estado;
@@ -453,7 +430,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
 
             if (reserva.Estado == "Cancelada" || reserva.Estado == "Completada")
             {
-                return BadRequest($"La reserva ya está {reserva.Estado.ToLower()}.");
+                return Ok(new { Message = $"La reserva ya estaba {reserva.Estado.ToLower()}." });
             }
 
             reserva.Estado = "Cancelada";
