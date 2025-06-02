@@ -249,7 +249,13 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ClientesController.cs" />
+    <Compile Include="Controllers\EmpleadosController.cs" />
+    <Compile Include="Controllers\HabitacionesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SalonesEventoController.cs" />
+    <Compile Include="Controllers\ServiciosAdicionalesEventoController.cs" />
+    <Compile Include="Controllers\TiposEventoController.cs" />
     <Compile Include="Controllers\TiposHabitacionController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
@@ -300,7 +306,18 @@
     <Compile Include="Models\Detalle_Pedido_Suministro.cs">
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DTO\ClienteBindingModel.cs" />
+    <Compile Include="Models\DTO\ClienteViewModel.cs" />
+    <Compile Include="Models\DTO\EmpleadoUpdateBindingModel.cs" />
+    <Compile Include="Models\DTO\EmpleadoViewModel.cs" />
+    <Compile Include="Models\DTO\HabitacionBindingModel.cs" />
+    <Compile Include="Models\DTO\HabitacionViewModel.cs" />
     <Compile Include="Models\DTO\RegisterBindingModel.cs" />
+    <Compile Include="Models\DTO\SalonEventoBindingModel.cs" />
+    <Compile Include="Models\DTO\SalonEventoViewModel.cs" />
+    <Compile Include="Models\DTO\ServicioAdicionalEventoBindingModel.cs" />
+    <Compile Include="Models\DTO\TipoEventoBindingModel.cs" />
+    <Compile Include="Models\DTO\TipoEventoViewModel.cs" />
     <Compile Include="Models\DTO\TipoHabitacionBindingModel.cs" />
     <Compile Include="Models\DTO\UserInfoViewModel.cs" />
     <Compile Include="Models\Empleado.cs">
@@ -418,6 +435,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
+    <Compile Include="Models\DTO\ServicioAdicionalEventoViewModel.cs" />
     <Content Include="Models\HotelDBModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <DependentUpon>HotelDBModel.edmx</DependentUpon>

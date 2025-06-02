@@ -51,10 +51,11 @@
                         <li><a runat="server" href="~/About.aspx">Acerca de</a></li>
                         <li><a runat="server" href="~/Contact.aspx">Contacto</a></li>
 
-                        <asp:PlaceHolder ID="phAdminMenu" runat="server" Visible="false">
-                            <li style="background-color:darkslateblue;"><a runat="server" href="~/Admin/DashboardAdmin.aspx" style="color:white; font-weight:bold;">Panel Admin</a></li>
-                            <%-- Aquí irían más enlaces específicos para Administrador --%>
-                        </asp:PlaceHolder>
+                    <asp:PlaceHolder ID="phAdminMenu" runat="server" Visible="false">
+                        <li style="background-color:darkslateblue;"><a runat="server" href="~/Admin/DashboardAdmin.aspx" style="color:white; font-weight:bold;">Panel Admin</a></li>
+                        <li><a runat="server" href="~/Admin/GestionTiposHabitacion.aspx">Gestión Tipos Habitación</a></li>
+                        <li><a runat="server" href="~/Admin/GestionClientes.aspx">Gestión Clientes</a></li> <%-- NUEVO ENLACE --%>
+                    </asp:PlaceHolder>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
                         <asp:PlaceHolder ID="phUserInfo" runat="server" Visible="false">

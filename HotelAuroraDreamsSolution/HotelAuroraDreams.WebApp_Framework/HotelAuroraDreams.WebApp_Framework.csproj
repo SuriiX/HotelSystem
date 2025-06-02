@@ -121,6 +121,8 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="About.aspx" />
+    <Content Include="Admin\GestionClientes.aspx" />
+    <Content Include="Admin\GestionHabitaciones.aspx" />
     <Content Include="Admin\GestionTiposHabitacion.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
@@ -206,6 +208,20 @@
     <Content Include="Site.Mobile.Master" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Admin\GestionClientes.aspx.cs">
+      <DependentUpon>GestionClientes.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\GestionClientes.aspx.designer.cs">
+      <DependentUpon>GestionClientes.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\GestionHabitaciones.aspx.cs">
+      <DependentUpon>GestionHabitaciones.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\GestionHabitaciones.aspx.designer.cs">
+      <DependentUpon>GestionHabitaciones.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\GestionTiposHabitacion.aspx.cs">
       <DependentUpon>GestionTiposHabitacion.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -247,6 +263,12 @@
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\ApiErrorModel.cs" />
+    <Compile Include="Models\ClienteBindingModel.cs" />
+    <Compile Include="Models\ClienteViewModel.cs" />
+    <Compile Include="Models\HabitacionBindingModel.cs" />
+    <Compile Include="Models\HabitacionViewModel.cs" />
+    <Compile Include="Models\HotelSimpleViewModel.cs" />
+    <Compile Include="Models\TipoHabitacionSimpleViewModel.cs" />
     <Compile Include="Models\TipoHabitacionViewModel.cs" />
     <Compile Include="Models\TokenResponseModel.cs" />
     <Compile Include="Models\UserInfoViewModel.cs" />
