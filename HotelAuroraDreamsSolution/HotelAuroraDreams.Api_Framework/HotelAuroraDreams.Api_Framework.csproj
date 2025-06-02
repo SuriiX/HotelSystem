@@ -256,6 +256,13 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="IdentityModels\ApplicationIdentityDbContext.cs" />
+    <Compile Include="IdentityModels\ApplicationUser.cs" />
+    <Compile Include="Migrations\IdentityMigrations\202506020106091_InitialIdentitySchema.cs" />
+    <Compile Include="Migrations\IdentityMigrations\202506020106091_InitialIdentitySchema.Designer.cs">
+      <DependentUpon>202506020106091_InitialIdentitySchema.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\IdentityMigrations\Configuration.cs" />
     <Compile Include="Models\Cadena_Hotelera.cs">
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
@@ -543,6 +550,11 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Migrations\IdentityMigrations\202506020106091_InitialIdentitySchema.resx">
+      <DependentUpon>202506020106091_InitialIdentitySchema.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
