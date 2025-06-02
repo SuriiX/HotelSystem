@@ -1,7 +1,12 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\HotelAuroraDreamsSolution",
+    "\\HotelAuroraDreamsSolution\\HotelAuroraDreams.Api_Framework",
+    "\\HotelAuroraDreamsSolution\\HotelAuroraDreams.Api_Framework\\Controllers",
+    "\\HotelAuroraDreamsSolution\\HotelAuroraDreams.Api_Framework\\Models",
+    "\\HotelAuroraDreamsSolution\\HotelAuroraDreams.Api_Framework\\Views\\Home"
   ],
-  "SelectedNode": "\\HotelAuroraDreams.WebApp_Framework.sln",
+  "SelectedNode": "\\HotelAuroraDreamsSolution\\HotelAuroraDreams.Api_Framework\\HotelAuroraDreams.Api_Framework.sln",
   "PreviewInSolutionExplorer": false
 }

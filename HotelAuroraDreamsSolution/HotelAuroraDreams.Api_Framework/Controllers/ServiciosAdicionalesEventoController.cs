@@ -15,43 +15,23 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     [Authorize(Roles = "Administrador")]
     public class ServiciosAdicionalesEventoController : ApiController
     {
-        private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
+        private readonly ClsServiciosAdicionalesEvento servicio = new ClsServiciosAdicionalesEvento();
 
         [HttpGet]
         [Route("")]
         public async Task<IHttpActionResult> GetServiciosAdicionalesEvento()
         {
-            var servicios = await db.ServicioAdicionalEventoes
-                .Select(s => new ServicioAdicionalEventoViewModel
-                {
-                    ServicioAdicionalID = s.ServicioAdicionalID,
-                    NombreServicio = s.NombreServicio,
-                    Descripcion = s.Descripcion,
-                    PrecioBase = s.PrecioBase,
-                    RequierePersonalPago = (bool)s.RequierePersonalPago
-                })
-                .OrderBy(s => s.NombreServicio)
-                .ToListAsync();
-            return Ok(servicios);
+            var lista = await servicio.ObtenerTodosAsync();
+            return Ok(lista);
         }
 
         [HttpGet]
         [Route("{id:int}", Name = "GetServicioAdicionalEventoById")]
         public async Task<IHttpActionResult> GetServicioAdicionalEvento(int id)
         {
-            var servicioViewModel = await db.ServicioAdicionalEventoes
-                .Where(s => s.ServicioAdicionalID == id)
-                .Select(s => new ServicioAdicionalEventoViewModel
-                {
-                    ServicioAdicionalID = s.ServicioAdicionalID,
-                    NombreServicio = s.NombreServicio,
-                    Descripcion = s.Descripcion,
-                    PrecioBase = s.PrecioBase,
-                    RequierePersonalPago = (bool)s.RequierePersonalPago
-                })
-                .FirstOrDefaultAsync();
-            if (servicioViewModel == null) return NotFound();
-            return Ok(servicioViewModel);
+            var servicioDetalle = await servicio.ObtenerPorIdAsync(id);
+            if (servicioDetalle == null) return NotFound();
+            return Ok(servicioDetalle);
         }
 
         [HttpPost]
@@ -60,29 +40,16 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         public async Task<IHttpActionResult> PostServicioAdicionalEvento(ServicioAdicionalEventoBindingModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            if (await db.ServicioAdicionalEventoes.AnyAsync(s => s.NombreServicio.ToLower() == model.NombreServicio.ToLower()))
+
+            var (existe, mensaje) = await servicio.ExisteNombreServicioAsync(model.Nombre);
+            if (existe)
             {
-                ModelState.AddModelError("NombreServicio", "Este servicio adicional ya existe.");
+                ModelState.AddModelError("Nombre", mensaje);
                 return BadRequest(ModelState);
             }
-            ServicioAdicionalEvento servicioEntity = new ServicioAdicionalEvento
-            {
-                NombreServicio = model.NombreServicio,
-                Descripcion = model.Descripcion,
-                PrecioBase = model.PrecioBase,
-                RequierePersonalPago = model.RequierePersonalPago
-            };
-            db.ServicioAdicionalEventoes.Add(servicioEntity);
-            await db.SaveChangesAsync();
-            var viewModel = new ServicioAdicionalEventoViewModel
-            {
-                ServicioAdicionalID = servicioEntity.ServicioAdicionalID,
-                NombreServicio = servicioEntity.NombreServicio,
-                Descripcion = servicioEntity.Descripcion,
-                PrecioBase = servicioEntity.PrecioBase,
-                RequierePersonalPago = (bool)servicioEntity.RequierePersonalPago
-            };
-            return CreatedAtRoute("GetServicioAdicionalEventoById", new { id = servicioEntity.ServicioAdicionalID }, viewModel);
+
+            var creado = await servicio.CrearAsync(model);
+            return CreatedAtRoute("GetServicioAdicionalEventoById", new { id = creado.ServicioID }, creado);
         }
 
         [HttpPut]
@@ -91,22 +58,17 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         public async Task<IHttpActionResult> PutServicioAdicionalEvento(int id, ServicioAdicionalEventoBindingModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var servicioEntity = await db.ServicioAdicionalEventoes.FindAsync(id);
-            if (servicioEntity == null) return NotFound();
 
-            if (await db.ServicioAdicionalEventoes.AnyAsync(s => s.NombreServicio.ToLower() == model.NombreServicio.ToLower() && s.ServicioAdicionalID != id))
+            var (existe, mensaje) = await servicio.ExisteNombreServicioAsync(model.Nombre, id);
+            if (existe)
             {
-                ModelState.AddModelError("NombreServicio", "Este nombre de servicio ya está en uso.");
+                ModelState.AddModelError("Nombre", mensaje);
                 return BadRequest(ModelState);
             }
 
-            servicioEntity.NombreServicio = model.NombreServicio;
-            servicioEntity.Descripcion = model.Descripcion;
-            servicioEntity.PrecioBase = model.PrecioBase;
-            servicioEntity.RequierePersonalPago = model.RequierePersonalPago;
+            var actualizado = await servicio.ActualizarAsync(id, model);
+            if (!actualizado) return NotFound();
 
-            db.Entry(servicioEntity).State = EntityState.Modified;
-            await db.SaveChangesAsync();
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -114,20 +76,18 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         [Route("{id:int}")]
         public async Task<IHttpActionResult> DeleteServicioAdicionalEvento(int id)
         {
-            var servicio = await db.ServicioAdicionalEventoes.FindAsync(id);
-            if (servicio == null) return NotFound();
-             if (await db.ReservaEvento_Servicio.AnyAsync(rs => rs.ServicioAdicionalID == id))
-             {
-                return Content(HttpStatusCode.Conflict, "No se puede eliminar el servicio, está en uso en reservas de evento.");
-             }
-            db.ServicioAdicionalEventoes.Remove(servicio);
-            await db.SaveChangesAsync();
-            return Ok(new { Message = "Servicio adicional de evento eliminado.", Id = id });
+            var eliminado = await servicio.EliminarAsync(id);
+            if (!eliminado) return NotFound();
+
+            return Ok(new { Message = "Servicio adicional eliminado.", Id = id });
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) db.Dispose();
+            if (disposing)
+            {
+                servicio.Dispose();
+            }
             base.Dispose(disposing);
         }
     }

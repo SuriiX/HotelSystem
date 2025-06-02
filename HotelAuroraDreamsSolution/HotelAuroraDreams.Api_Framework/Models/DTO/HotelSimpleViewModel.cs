@@ -6,4 +6,4 @@ namespace HotelAuroraDreams.Api_Framework.Models.DTO
         public int HotelID { get; set; }
         public string Nombre { get; set; }
     }
-}
+}   

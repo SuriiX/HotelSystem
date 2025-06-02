@@ -16,39 +16,16 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     [RoutePrefix("api/Account")]
     public class AccountController : ApiController
     {
-        private ApplicationUserManager _userManager;
-        private ApplicationRoleManager _roleManager;
+        private readonly ClsAccount _accountService;
 
-        public ApplicationUserManager UserManager
+        public AccountController()
         {
-            get
-            {
-                return _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
+            _accountService = new ClsAccount();
         }
-
-        public ApplicationRoleManager RoleManager
-        {
-            get
-            {
-                return _roleManager ?? Request.GetOwinContext().Get<ApplicationRoleManager>();
-            }
-            private set
-            {
-                _roleManager = value;
-            }
-        }
-
-        public AccountController() { }
 
         public AccountController(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
         {
-            UserManager = userManager;
-            RoleManager = roleManager;
+            _accountService = new ClsAccount(userManager, roleManager);
         }
 
         [HttpPost]
@@ -57,107 +34,53 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var user = new ApplicationUser()
-            {
-                UserName = model.Email,
-                Email = model.Email,
-                Nombre = model.Nombre,
-                Apellido = model.Apellido,
-                FechaContratacion = DateTime.UtcNow,
-                Estado = "activo",
-                Salario = model.Salario,
-                HotelID = model.HotelID,
-                CargoID = model.CargoID
-            };
+            var resultado = await _accountService.RegistrarUsuario(model);
 
-            IdentityResult result = await UserManager.CreateAsync(user, model.Password);
+            if (!resultado.Exito)
+                return GetErrorResult(resultado.Resultado);
 
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            return Ok(new { Message = "User registered successfully." });
+            return Ok(new { Message = resultado.Mensaje });
         }
-
-        // Este es el bloque de atributos que estaba suelto y causaba el problema.
-        // Ya no es necesario porque GetUserInfo() está definido correctamente abajo.
-        // [Authorize]
-        // [Route("UserInfo")]
-        // [HttpGet] 
 
         [HttpPost]
         [AllowAnonymous]
         [Route("SetupRoles")]
         public async Task<IHttpActionResult> SetupRoles()
         {
-            string[] roleNames = { "Administrador", "Empleado" };
-            IdentityResult roleResult;
+            var resultado = await _accountService.SetupRoles();
+            if (!resultado.Exito)
+                return GetErrorResult(resultado.Resultado);
 
-            foreach (var roleName in roleNames)
-            {
-                if (!await RoleManager.RoleExistsAsync(roleName))
-                {
-                    roleResult = await RoleManager.CreateAsync(new IdentityRole(roleName));
-                    if (!roleResult.Succeeded)
-                    {
-                        return GetErrorResult(roleResult);
-                    }
-                }
-            }
-            return Ok(new { Message = "Roles 'Administrador' y 'Empleado' configurados/verificados." });
+            return Ok(new { Message = resultado.Mensaje });
         }
 
         [HttpGet]
-        [Route("AdminData")]
         [Authorize(Roles = "Administrador")]
+        [Route("AdminData")]
         public IHttpActionResult GetAdminSpecificData()
         {
-            var adminData = new
+            return Ok(new
             {
                 Message = "Estos son datos secretos solo para Administradores.",
                 CurrentServerTime = DateTime.Now,
                 LoggedInUser = User.Identity.Name
-            };
-            return Ok(adminData);
+            });
         }
 
-        [HttpGet] // Asegúrate de que [HttpGet] esté aquí
+        [HttpGet]
         [Authorize]
         [Route("UserInfo")]
         public async Task<IHttpActionResult> GetUserInfo()
         {
-            string userId = User.Identity.GetUserId();
-            if (string.IsNullOrEmpty(userId))
-            {
-                return BadRequest("User ID not found in token.");
-            }
+            var userId = User.Identity.GetUserId();
+            var resultado = await _accountService.ObtenerInfoUsuario(userId);
 
-            ApplicationUser user = await UserManager.FindByIdAsync(userId);
+            if (!resultado.Exito)
+                return BadRequest(resultado.Error);
 
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var roles = await UserManager.GetRolesAsync(userId);
-
-            var userInfo = new UserInfoViewModel
-            {
-                Id = user.Id,
-                Email = user.Email,
-                Nombre = user.Nombre,
-                Apellido = user.Apellido,
-                HotelID = user.HotelID,
-                CargoID = user.CargoID,
-                Roles = roles
-            };
-
-            return Ok(userInfo);
+            return Ok(resultado.DatosUsuario);
         }
 
         [HttpPost]
@@ -166,83 +89,48 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         public async Task<IHttpActionResult> AssignRoleToUser(string userEmail, string roleName)
         {
             if (string.IsNullOrWhiteSpace(userEmail) || string.IsNullOrWhiteSpace(roleName))
-            {
                 return BadRequest("Email del usuario y nombre del rol son requeridos.");
-            }
 
-            ApplicationUser user = await UserManager.FindByEmailAsync(userEmail);
-            if (user == null)
+            var resultado = await _accountService.AsignarRol(userEmail, roleName);
+
+            if (!resultado.Exito)
             {
-                return NotFoundResultWithMessage($"Usuario con email '{userEmail}' no encontrado.");
+                if (resultado.Resultado == null)
+                    return Content(HttpStatusCode.NotFound, new { Message = resultado.Mensaje });
+
+                return GetErrorResult(resultado.Resultado);
             }
 
-            if (!await RoleManager.RoleExistsAsync(roleName))
-            {
-                return NotFoundResultWithMessage($"Rol '{roleName}' no encontrado. Por favor, ejecute SetupRoles primero o créelo manualmente.");
-            }
-
-            if (await UserManager.IsInRoleAsync(user.Id, roleName))
-            {
-                return Ok(new { Message = $"El usuario '{userEmail}' ya pertenece al rol '{roleName}'." });
-            }
-
-            IdentityResult result = await UserManager.AddToRoleAsync(user.Id, roleName);
-
-            if (!result.Succeeded)
-            {
-                return GetErrorResult(result);
-            }
-
-            return Ok(new { Message = $"Usuario '{userEmail}' añadido exitosamente al rol '{roleName}'." });
+            return Ok(new { Message = resultado.Mensaje });
         }
 
         protected override void Dispose(bool disposing)
         {
             if (disposing)
-            {
-                if (_userManager != null)
-                {
-                    _userManager.Dispose();
-                    _userManager = null;
-                }
-                if (_roleManager != null)
-                {
-                    _roleManager.Dispose();
-                    _roleManager = null;
-                }
-            }
+                _accountService.Dispose();
+
             base.Dispose(disposing);
         }
 
         private IHttpActionResult GetErrorResult(IdentityResult result)
         {
             if (result == null)
-            {
                 return InternalServerError();
-            }
 
             if (!result.Succeeded)
             {
-                if (result.Errors != null)
+                foreach (var error in result.Errors)
                 {
-                    foreach (string error in result.Errors)
-                    {
-                        ModelState.AddModelError("", error);
-                    }
+                    ModelState.AddModelError("", error);
                 }
 
                 if (ModelState.IsValid)
-                {
                     return BadRequest();
-                }
+
                 return BadRequest(ModelState);
             }
-            return null;
-        }
 
-        private IHttpActionResult NotFoundResultWithMessage(string message)
-        {
-            return Content(HttpStatusCode.NotFound, new { Message = message });
+            return null;
         }
     }
 }
