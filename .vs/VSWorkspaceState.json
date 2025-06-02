@@ -1,8 +1,9 @@
 {
   "ExpandedNodes": [
     "",
-    "\\HotalSystem"
+    "\\HotelAuroraDreamsSolution",
+    "\\HotelAuroraDreamsSolution\\HotelAuroraDreams.Api_Framework"
   ],
-  "SelectedNode": "\\HotalSystem.sln",
+  "SelectedNode": "\\HotalSystem",
   "PreviewInSolutionExplorer": false
 }

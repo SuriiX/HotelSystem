@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="713abb0d23eb474eb22dd8bdc2cca660" Name="Diagram1">
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Cadena_Hotelera" Width="1.5" PointX="0.75" PointY="26.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Cargo" Width="1.5" PointX="6" PointY="19.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.CheckIn" Width="1.5" PointX="13.5" PointY="27.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.CheckOut" Width="1.5" PointX="10.5" PointY="23.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Ciudad" Width="1.5" PointX="0.75" PointY="33.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Cliente" Width="1.5" PointX="3" PointY="32.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Consumo_Servicio" Width="1.5" PointX="13.5" PointY="22.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Detalle_Factura" Width="1.5" PointX="7.5" PointY="38.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Detalle_Paquete_Servicio" Width="1.5" PointX="13.5" PointY="19.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Detalle_Paquete_Transporte" Width="1.5" PointX="13.5" PointY="8.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Detalle_Pedido_Suministro" Width="1.5" PointX="18.75" PointY="27.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.DetalleFacturaEvento" Width="1.5" PointX="10.5" PointY="38.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Empleado" Width="1.5" PointX="8.25" PointY="25.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Factura" Width="1.5" PointX="5.25" PointY="32.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.FacturaEvento" Width="1.5" PointX="8.25" PointY="32.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Habitacion" Width="1.5" PointX="5.25" PointY="23" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Hotel" Width="1.5" PointX="3" PointY="25.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Inventario_Hotel" Width="1.5" PointX="11.25" PointY="27.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Item_Suministro" Width="1.5" PointX="16.5" PointY="23.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Paquete" Width="1.5" PointX="11.25" PointY="16" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Pedido_Suministro" Width="1.5" PointX="16.5" PointY="26.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Proveedor" Width="1.5" PointX="14.25" PointY="15.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Reserva" Width="1.5" PointX="5.25" PointY="27.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Reserva_Habitacion" Width="1.5" PointX="10.5" PointY="20.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Reserva_Paquete" Width="1.5" PointX="13.5" PointY="31.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Reserva_Restaurante" Width="1.5" PointX="5.25" PointY="37.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.ReservaEvento" Width="1.5" PointX="11.25" PointY="32" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.ReservaEvento_Servicio" Width="1.5" PointX="13.5" PointY="35.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Restaurante" Width="1.5" PointX="5.25" PointY="42.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.SalonEvento" Width="1.5" PointX="5.25" PointY="46.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Servicio" Width="1.5" PointX="8.25" PointY="20.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.ServicioAdicionalEvento" Width="1.5" PointX="11.25" PointY="42.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Tipo_Habitacion" Width="1.5" PointX="3" PointY="22.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Tipo_Servicio" Width="1.5" PointX="6" PointY="16.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Tipo_Transporte" Width="1.5" PointX="0.75" PointY="1.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.TipoEvento" Width="1.5" PointX="9" PointY="42.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.Transporte" Width="1.5" PointX="3" PointY="1" IsExpanded="true" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Hotel__cadena_id__3F466844" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Empleado__cargo___5AEE82B9" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__CheckIn__emplead__47A6A41B" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__CheckIn__reserva__46B27FE2" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__CheckOut__emplea__4E53A1AA" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__CheckOut__reserv__4D5F7D71" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Cliente__ciudad___5070F446" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Hotel__ciudad_id__403A8C7D" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Factura__cliente__55F4C372" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__FacturaEv__Clien__793DFFAF" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva__cliente__628FA481" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva_R__clien__208CD6FA" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__ReservaEv__Clien__671F4F74" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Consumo_S__emple__7B5B524B" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Consumo_S__reser__797309D9" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Consumo_S__servi__7A672E12" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Detalle_F__factu__5CA1C101" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Detalle_P__paque__05D8E0BE" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Detalle_P__servi__06CD04F7" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Detalle_P__paque__17036CC0" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Detalle_P__trans__17F790F9" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Detalle_P__item___40F9A68C" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Detalle_P__pedid__40058253" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__DetalleFa__Factu__7EF6D905" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Empleado__hotel___59FA5E80" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Factura__emplead__56E8E7AB" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__FacturaEv__Emple__7C1A6C5A" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Pedido_Su__emple__3A4CA8FD" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva__emplead__6477ECF3" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva_R__emple__22751F6C" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__ReservaEv__Emple__6AEFE058" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK_Hotel_Gerente" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Factura__reserva__55009F39" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__FacturaEv__Reser__7849DB76" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Habitacio__hotel__48CFD27E" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Habitacio__tipo___49C3F6B7" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva_H__habit__6D0D32F4" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Inventari__hotel__32AB8735" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Pedido_Su__hotel__3864608B" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva__hotel_i__6383C8BA" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Restauran__hotel__1BC821DD" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__SalonEven__Hotel__607251E5" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Servicio__hotel___73BA3083" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Inventari__item___339FAB6E" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Item_Sumi__prove__2BFE89A6" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva_P__paque__0C85DE4D" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Pedido_Su__prove__395884C4" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva_H__reser__6C190EBB" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva_P__reser__0B91BA14" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Reserva_R__resta__2180FB33" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__ReservaEv__Reser__72910220" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__ReservaEv__Salon__681373AD" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__ReservaEv__TipoE__690797E6" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__ReservaEv__Servi__73852659" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Servicio__tipo_s__74AE54BC" ManuallyRouted="false" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK__Transport__tipo___1332DBDC" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
