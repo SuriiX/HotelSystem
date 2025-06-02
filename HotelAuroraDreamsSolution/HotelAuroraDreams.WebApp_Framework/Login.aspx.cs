@@ -1,11 +1,12 @@
-﻿using System;
+﻿// File: Login.aspx.cs
+using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers; // Para MediaTypeWithQualityHeaderValue si es necesario
 using System.Threading.Tasks;
-using System.Web; // Para HttpCookie, Session, Response.Redirect
-using Newtonsoft.Json; // Para deserializar
-using System.Configuration; // Para ConfigurationManager
+using System.Web;
+using Newtonsoft.Json;
+using System.Configuration;
+using HotelAuroraDreams.WebApp_Framework.Models; // <-- ¡AÑADE O VERIFICA ESTA LÍNEA!
 
 namespace HotelAuroraDreams.WebApp_Framework
 {
@@ -16,9 +17,7 @@ namespace HotelAuroraDreams.WebApp_Framework
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (!IsPostBack)
-            {
-            }
+            // ... (sin cambios aquí) ...
         }
 
         protected async void btnLogin_Click(object sender, EventArgs e)
@@ -35,7 +34,7 @@ namespace HotelAuroraDreams.WebApp_Framework
 
             if (string.IsNullOrEmpty(_apiBaseUrl))
             {
-                lblMessage.Text = "Error: La URL base de la API no está configurada en Web.config.";
+                lblMessage.Text = "Error: La URL base de la API no está configurada.";
                 return;
             }
 
@@ -54,6 +53,7 @@ namespace HotelAuroraDreams.WebApp_Framework
 
                 if (response.IsSuccessStatusCode)
                 {
+                    // Ahora usa TokenResponseModel del namespace Models
                     var tokenData = JsonConvert.DeserializeObject<TokenResponseModel>(responseContent);
 
                     if (tokenData != null && !string.IsNullOrEmpty(tokenData.access_token))
@@ -61,16 +61,16 @@ namespace HotelAuroraDreams.WebApp_Framework
                         HttpCookie authTokenCookie = new HttpCookie("AuthTokenHotel")
                         {
                             Value = tokenData.access_token,
-                            HttpOnly = true, // Protege contra XSS
-                            Secure = Request.IsSecureConnection, // Enviar solo sobre HTTPS
-                            Expires = DateTime.Now.AddSeconds(tokenData.expires_in - 60) // Un poco antes de que expire el token
+                            HttpOnly = true,
+                            Secure = Request.IsSecureConnection,
+                            Expires = DateTime.Now.AddSeconds(tokenData.expires_in > 60 ? tokenData.expires_in - 60 : tokenData.expires_in)
                         };
                         Response.Cookies.Add(authTokenCookie);
 
                         Session["UserEmail"] = tokenData.userName;
                         Session["UserFullName"] = tokenData.nombreCompleto;
 
-                        Response.Redirect("~/Default.aspx"); // Cambia "Default.aspx" por tu página de inicio deseada
+                        Response.Redirect("~/Default.aspx");
                     }
                     else
                     {
@@ -81,39 +81,36 @@ namespace HotelAuroraDreams.WebApp_Framework
                 {
                     try
                     {
+                        // Ahora usa ApiErrorModel del namespace Models
                         var errorData = JsonConvert.DeserializeObject<ApiErrorModel>(responseContent);
-                        lblMessage.Text = $"Error: {errorData?.error_description ?? response.ReasonPhrase}";
+                        if (errorData != null && !string.IsNullOrEmpty(errorData.error_description))
+                        {
+                            lblMessage.Text = $"Error: {errorData.error_description}";
+                        }
+                        else if (errorData != null && !string.IsNullOrEmpty(errorData.Message))
+                        {
+                            lblMessage.Text = $"Error: {errorData.Message}";
+                        }
+                        else
+                        {
+                            lblMessage.Text = $"Error de la API: {response.StatusCode}";
+                        }
                     }
                     catch
                     {
-                        lblMessage.Text = $"Error de la API: {response.StatusCode} - {response.ReasonPhrase}";
+                        lblMessage.Text = $"Error de la API: {response.StatusCode}";
                     }
                 }
             }
-            catch (HttpRequestException httpEx)
+            catch (HttpRequestException)
             {
-                lblMessage.Text = $"No se pudo conectar con el servicio de autenticación. Verifique que la API esté ejecutándose. ({httpEx.Message})";
+                lblMessage.Text = "No se pudo conectar con el servicio de autenticación. Verifique que la API esté ejecutándose.";
             }
             catch (Exception ex)
             {
-                lblMessage.Text = $"Ocurrió un error inesperado: {ex.Message}";
+                lblMessage.Text = $"Ocurrió un error inesperado. ({ex.Message.Substring(0, Math.Min(ex.Message.Length, 100))})";
             }
         }
     }
-
-    public class TokenResponseModel
-    {
-        public string access_token { get; set; }
-        public string token_type { get; set; }
-        public int expires_in { get; set; }
-        public string userName { get; set; }
-        public string nombreCompleto { get; set; }
-    }
-
-    public class ApiErrorModel
-    {
-        public string error { get; set; }
-        public string error_description { get; set; }
-        public string Message { get; set; }
-    }
+    // YA NO DEFINAS TokenResponseModel ni ApiErrorModel AQUÍ DENTRO
 }
