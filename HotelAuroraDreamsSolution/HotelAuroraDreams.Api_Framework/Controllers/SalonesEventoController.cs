@@ -16,7 +16,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     [Authorize(Roles = "Administrador")]
     public class SalonesEventoController : ApiController
     {
-        private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
+        private ClsSalonEvento logic = new ClsSalonEvento();
 
         [HttpGet]
         [Route("")]
@@ -24,27 +24,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var query = db.SalonEventoes.AsQueryable();
-                if (hotelId.HasValue)
-                {
-                    query = query.Where(s => s.HotelID == hotelId.Value);
-                }
-
-                var salones = await query
-                    .Select(s => new SalonEventoViewModel
-                    {
-                        SalonEventoID = s.SalonEventoID,
-                        HotelID = s.HotelID,
-                        NombreHotel = s.Hotel.nombre,
-                        Nombre = s.Nombre,
-                        Descripcion = s.Descripcion,
-                        CapacidadMaxima = s.CapacidadMaxima,
-                        Ubicacion = s.Ubicacion,
-                        PrecioPorHora = s.PrecioPorHora,
-                        EstaActivo = (bool)s.EstaActivo
-                    })
-                    .OrderBy(s => s.NombreHotel).ThenBy(s => s.Nombre)
-                    .ToListAsync();
+                var salones = await logic.GetSalonesEventoAsync(hotelId);
                 return Ok(salones);
             }
             catch (Exception ex)
@@ -57,21 +37,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         [Route("{id:int}", Name = "GetSalonEventoById")]
         public async Task<IHttpActionResult> GetSalonEvento(int id)
         {
-            var salonViewModel = await db.SalonEventoes
-                .Where(s => s.SalonEventoID == id)
-                .Select(s => new SalonEventoViewModel
-                {
-                    SalonEventoID = s.SalonEventoID,
-                    HotelID = s.HotelID,
-                    NombreHotel = s.Hotel.nombre,
-                    Nombre = s.Nombre,
-                    Descripcion = s.Descripcion,
-                    CapacidadMaxima = s.CapacidadMaxima,
-                    Ubicacion = s.Ubicacion,
-                    PrecioPorHora = s.PrecioPorHora,
-                    EstaActivo = (bool)s.EstaActivo
-                })
-                .FirstOrDefaultAsync();
+            var salonViewModel = await logic.GetSalonEventoAsync(id);
             if (salonViewModel == null) return NotFound();
             return Ok(salonViewModel);
         }
@@ -83,33 +49,8 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            SalonEvento salonEntity = new SalonEvento
-            {
-                HotelID = model.HotelID,
-                Nombre = model.Nombre,
-                Descripcion = model.Descripcion,
-                CapacidadMaxima = model.CapacidadMaxima,
-                Ubicacion = model.Ubicacion,
-                PrecioPorHora = model.PrecioPorHora,
-                EstaActivo = model.EstaActivo
-            };
-            db.SalonEventoes.Add(salonEntity);
-            await db.SaveChangesAsync();
-
-            var hotel = await db.Hotels.FindAsync(salonEntity.HotelID);
-            var viewModel = new SalonEventoViewModel
-            {
-                SalonEventoID = salonEntity.SalonEventoID,
-                HotelID = salonEntity.HotelID,
-                NombreHotel = hotel?.nombre,
-                Nombre = salonEntity.Nombre,
-                Descripcion = salonEntity.Descripcion,
-                CapacidadMaxima = salonEntity.CapacidadMaxima,
-                Ubicacion = salonEntity.Ubicacion,
-                PrecioPorHora = salonEntity.PrecioPorHora,
-                EstaActivo = (bool)salonEntity.EstaActivo
-            };
-            return CreatedAtRoute("GetSalonEventoById", new { id = salonEntity.SalonEventoID }, viewModel);
+            var createdSalon = await logic.CreateSalonEventoAsync(model);
+            return CreatedAtRoute("GetSalonEventoById", new { id = createdSalon.SalonEventoID }, createdSalon);
         }
 
         [HttpPut]
@@ -118,19 +59,10 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         public async Task<IHttpActionResult> PutSalonEvento(int id, SalonEventoBindingModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-            var salonEntity = await db.SalonEventoes.FindAsync(id);
-            if (salonEntity == null) return NotFound();
 
-            salonEntity.HotelID = model.HotelID;
-            salonEntity.Nombre = model.Nombre;
-            salonEntity.Descripcion = model.Descripcion;
-            salonEntity.CapacidadMaxima = model.CapacidadMaxima;
-            salonEntity.Ubicacion = model.Ubicacion;
-            salonEntity.PrecioPorHora = model.PrecioPorHora;
-            salonEntity.EstaActivo = model.EstaActivo;
+            var updated = await logic.UpdateSalonEventoAsync(id, model);
+            if (!updated) return NotFound();
 
-            db.Entry(salonEntity).State = EntityState.Modified;
-            await db.SaveChangesAsync();
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -138,17 +70,15 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         [Route("{id:int}")]
         public async Task<IHttpActionResult> DeleteSalonEvento(int id)
         {
-            var salon = await db.SalonEventoes.FindAsync(id);
-            if (salon == null) return NotFound();
+            var deleted = await logic.DeleteSalonEventoAsync(id);
+            if (!deleted) return NotFound();
 
-            db.SalonEventoes.Remove(salon);
-            await db.SaveChangesAsync();
             return Ok(new { Message = "Salón de evento eliminado.", Id = id });
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing) db.Dispose();
+            if (disposing) logic.Dispose();
             base.Dispose(disposing);
         }
     }

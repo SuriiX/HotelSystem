@@ -14,7 +14,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     [Authorize(Roles = "Empleado, Administrador")]
     public class HotelesController : ApiController
     {
-        private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
+        private readonly ClsHotel _clsHotel = new ClsHotel();
 
         [HttpGet]
         [Route("")]
@@ -22,16 +22,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var hoteles = await db.Hotels 
-                    .Where(h => h.estado_operativo == "activo") 
-                    .OrderBy(h => h.nombre)
-                    .Select(h => new HotelListItemDto
-                    {
-                        HotelID = h.hotel_id,
-                        Nombre = h.nombre
-                    })
-                    .ToListAsync();
-
+                var hoteles = await _clsHotel.ObtenerHotelesActivos();
                 return Ok(hoteles);
             }
             catch (Exception ex)
@@ -41,40 +32,21 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         }
 
         [HttpGet]
-        [Route("{id:int}", Name = "GetHotelById_HotelesController")] 
+        [Route("{id:int}", Name = "GetHotelById_HotelesController")]
         public async Task<IHttpActionResult> GetHotel(int id)
         {
             try
             {
-                var hotel = await db.Hotels
-                    .Where(h => h.hotel_id == id)
-                    .Select(h => new HotelListItemDto 
-                    {
-                        HotelID = h.hotel_id,
-                        Nombre = h.nombre
-
-                    })
-                    .FirstOrDefaultAsync();
-
+                var hotel = await _clsHotel.ObtenerHotelPorId(id);
                 if (hotel == null)
-                {
                     return NotFound();
-                }
+
                 return Ok(hotel);
             }
             catch (Exception ex)
             {
                 return InternalServerError(new Exception($"Error al obtener el hotel con ID {id}: {ex.Message}", ex.InnerException));
             }
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }

@@ -16,7 +16,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     [Authorize(Roles = "Empleado, Administrador")]
     public class ClientesController : ApiController
     {
-        private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
+        private readonly ClsCliente clsCliente = new ClsCliente();
 
         [HttpGet]
         [Route("")]
@@ -24,25 +24,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var clientes = await db.Clientes
-                    .Select(c => new ClienteViewModel
-                    {
-                        ClienteID = c.cliente_id,
-                        Nombre = c.nombre,
-                        Apellido = c.apellido,
-                        TipoDocumento = c.tipo_documento,
-                        NumeroDocumento = c.numero_documento,
-                        Email = c.email,
-                        Telefono = c.telefono,
-                        Direccion = c.direccion,
-                        CiudadResidenciaID = c.ciudad_residencia_id,
-                        NombreCiudadResidencia = c.Ciudad != null ? c.Ciudad.nombre_ciudad : null,
-                        FechaNacimiento = c.fecha_nacimiento,
-                        FechaRegistro = (DateTime)c.fecha_registro
-                    })
-                    .OrderBy(c => c.Apellido)
-                    .ThenBy(c => c.Nombre)
-                    .ToListAsync();
+                var clientes = await clsCliente.GetClientesAsync();
                 return Ok(clientes);
             }
             catch (Exception ex)
@@ -57,30 +39,11 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var clienteViewModel = await db.Clientes
-                    .Where(c => c.cliente_id == id)
-                    .Select(c => new ClienteViewModel
-                    {
-                        ClienteID = c.cliente_id,
-                        Nombre = c.nombre,
-                        Apellido = c.apellido,
-                        TipoDocumento = c.tipo_documento,
-                        NumeroDocumento = c.numero_documento,
-                        Email = c.email,
-                        Telefono = c.telefono,
-                        Direccion = c.direccion,
-                        CiudadResidenciaID = c.ciudad_residencia_id,
-                        NombreCiudadResidencia = c.Ciudad != null ? c.Ciudad.nombre_ciudad : null,
-                        FechaNacimiento = c.fecha_nacimiento,
-                        FechaRegistro = (DateTime)c.fecha_registro
-                    })
-                    .FirstOrDefaultAsync();
-
-                if (clienteViewModel == null)
-                {
+                var cliente = await clsCliente.GetClienteByIdAsync(id);
+                if (cliente == null)
                     return NotFound();
-                }
-                return Ok(clienteViewModel);
+
+                return Ok(cliente);
             }
             catch (Exception ex)
             {
@@ -94,65 +57,23 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         public async Task<IHttpActionResult> PostCliente(ClienteBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            if (await db.Clientes.AnyAsync(c => c.numero_documento == model.NumeroDocumento && c.tipo_documento == model.TipoDocumento))
+            if (await clsCliente.ExisteClienteAsync(model.TipoDocumento, model.NumeroDocumento))
             {
                 ModelState.AddModelError("NumeroDocumento", "Ya existe un cliente con este tipo y número de documento.");
                 return BadRequest(ModelState);
             }
 
-            Cliente clienteEntity = new Cliente
-            {
-                nombre = model.Nombre,
-                apellido = model.Apellido,
-                tipo_documento = model.TipoDocumento,
-                numero_documento = model.NumeroDocumento,
-                email = model.Email,
-                telefono = model.Telefono,
-                direccion = model.Direccion,
-                ciudad_residencia_id = model.CiudadResidenciaID,
-                fecha_nacimiento = model.FechaNacimiento,
-                fecha_registro = DateTime.Now
-            };
-
-            db.Clientes.Add(clienteEntity);
-
             try
             {
-                await db.SaveChangesAsync();
+                var cliente = await clsCliente.CrearClienteAsync(model);
+                return CreatedAtRoute("GetClienteById", new { id = cliente.ClienteID }, cliente);
             }
             catch (Exception ex)
             {
                 return InternalServerError(new Exception($"Error al crear cliente: {ex.Message}", ex.InnerException));
             }
-
-            string nombreCiudad = null;
-            if (clienteEntity.ciudad_residencia_id.HasValue)
-            {
-                var ciudad = await db.Ciudads.FindAsync(clienteEntity.ciudad_residencia_id.Value);
-                nombreCiudad = ciudad?.nombre_ciudad;
-            }
-
-            var viewModel = new ClienteViewModel
-            {
-                ClienteID = clienteEntity.cliente_id,
-                Nombre = clienteEntity.nombre,
-                Apellido = clienteEntity.apellido,
-                TipoDocumento = clienteEntity.tipo_documento,
-                NumeroDocumento = clienteEntity.numero_documento,
-                Email = clienteEntity.email,
-                Telefono = clienteEntity.telefono,
-                Direccion = clienteEntity.direccion,
-                CiudadResidenciaID = clienteEntity.ciudad_residencia_id,
-                NombreCiudadResidencia = nombreCiudad,
-                FechaNacimiento = clienteEntity.fecha_nacimiento,
-                FechaRegistro = (DateTime)clienteEntity.fecha_registro
-            };
-
-            return CreatedAtRoute("GetClienteById", new { id = clienteEntity.cliente_id }, viewModel);
         }
 
         [HttpPut]
@@ -161,48 +82,26 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         public async Task<IHttpActionResult> PutCliente(int id, ClienteBindingModel model)
         {
             if (!ModelState.IsValid)
-            {
                 return BadRequest(ModelState);
-            }
 
-            var clienteEntity = await db.Clientes.FindAsync(id);
-            if (clienteEntity == null)
-            {
-                return NotFound();
-            }
-
-            if (await db.Clientes.AnyAsync(c => c.numero_documento == model.NumeroDocumento && c.tipo_documento == model.TipoDocumento && c.cliente_id != id))
+            if (await clsCliente.ExisteClienteAsync(model.TipoDocumento, model.NumeroDocumento, id))
             {
                 ModelState.AddModelError("NumeroDocumento", "Ya existe otro cliente con este tipo y número de documento.");
                 return BadRequest(ModelState);
             }
 
-            clienteEntity.nombre = model.Nombre;
-            clienteEntity.apellido = model.Apellido;
-            clienteEntity.tipo_documento = model.TipoDocumento;
-            clienteEntity.numero_documento = model.NumeroDocumento;
-            clienteEntity.email = model.Email;
-            clienteEntity.telefono = model.Telefono;
-            clienteEntity.direccion = model.Direccion;
-            clienteEntity.ciudad_residencia_id = model.CiudadResidenciaID;
-            clienteEntity.fecha_nacimiento = model.FechaNacimiento;
-
-            db.Entry(clienteEntity).State = EntityState.Modified;
-
             try
             {
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException ex)
-            {
-                return InternalServerError(new Exception($"Error de concurrencia al actualizar cliente: {ex.Message}", ex.InnerException));
+                var actualizado = await clsCliente.ActualizarClienteAsync(id, model);
+                if (!actualizado)
+                    return NotFound();
+
+                return StatusCode(HttpStatusCode.NoContent);
             }
             catch (Exception ex)
             {
                 return InternalServerError(new Exception($"Error al actualizar cliente: {ex.Message}", ex.InnerException));
             }
-
-            return StatusCode(HttpStatusCode.NoContent);
         }
 
         [HttpDelete]
@@ -210,33 +109,18 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         [Authorize(Roles = "Administrador")]
         public async Task<IHttpActionResult> DeleteCliente(int id)
         {
-            Cliente cliente = await db.Clientes.FindAsync(id);
-            if (cliente == null)
-            {
-                return NotFound();
-            }
-
-            db.Clientes.Remove(cliente);
             try
             {
-                await db.SaveChangesAsync();
+                var eliminado = await clsCliente.EliminarClienteAsync(id);
+                if (!eliminado)
+                    return NotFound();
+
+                return Ok(new { Message = "Cliente eliminado exitosamente.", Id = id });
             }
             catch (Exception ex)
             {
-                // Podría fallar si hay FKs que lo impiden (ej. reservas)
                 return InternalServerError(new Exception($"Error al eliminar cliente: {ex.Message}. Verifique dependencias.", ex.InnerException));
             }
-
-            return Ok(new { Message = "Cliente eliminado exitosamente.", Id = id });
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
         }
     }
 }
