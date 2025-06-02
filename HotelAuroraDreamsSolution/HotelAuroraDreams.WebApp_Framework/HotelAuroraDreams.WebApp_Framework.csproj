@@ -150,6 +150,7 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
+    <Content Include="Reservas\NuevaReserva.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -298,11 +299,15 @@
     <Compile Include="Models\CargoListItemDto.cs" />
     <Compile Include="Models\ClienteBindingModel.cs" />
     <Compile Include="Models\ClienteViewModel.cs" />
+    <Compile Include="Models\DisponibilidadRequestDto.cs" />
     <Compile Include="Models\EmpleadoUpdateBindingModel.cs" />
     <Compile Include="Models\EmpleadoViewMode.CS" />
     <Compile Include="Models\HabitacionBindingModel.cs" />
+    <Compile Include="Models\HabitacionDisponibleDto.cs" />
     <Compile Include="Models\HabitacionViewModel.cs" />
     <Compile Include="Models\HotelSimpleViewModel.cs" />
+    <Compile Include="Models\ReservaCreacionBindingModel.cs" />
+    <Compile Include="Models\ReservaViewModel.cs" />
     <Compile Include="Models\SalonEventoBindingModel.cs" />
     <Compile Include="Models\SalonEventoViewModel.cs" />
     <Compile Include="Models\ServicioAdicionalEventoBindingModel.cs" />
@@ -314,6 +319,13 @@
     <Compile Include="Models\TokenResponseModel.cs" />
     <Compile Include="Models\UserInfoViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Reservas\NuevaReserva.aspx.cs">
+      <DependentUpon>NuevaReserva.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Reservas\NuevaReserva.aspx.designer.cs">
+      <DependentUpon>NuevaReserva.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
