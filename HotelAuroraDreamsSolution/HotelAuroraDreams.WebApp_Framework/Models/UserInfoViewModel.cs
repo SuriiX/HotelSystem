@@ -1,8 +1,7 @@
 ﻿
 using System.Collections.Generic;
 
-namespace HotelAuroraDreams.WebApp_Framework.Models
-{
+
     public class UserInfoViewModel
     {
         public string Id { get; set; }
@@ -13,4 +12,3 @@ namespace HotelAuroraDreams.WebApp_Framework.Models
         public int? CargoID { get; set; }
         public IList<string> Roles { get; set; }
     }
-}

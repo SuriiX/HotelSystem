@@ -1,5 +1,6 @@
-﻿using HotelAuroraDreams.Api_Framework.Models; 
-using HotelAuroraDreams.Api_Framework.Models.DTO; 
+﻿// File: ~/Controllers/TiposHabitacionController.cs
+using HotelAuroraDreams.Api_Framework.Models; // Donde está HotelManagementSystemEntities y Tipo_Habitacion
+using HotelAuroraDreams.Api_Framework.Models.DTO;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -33,7 +34,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                                                 th.capacidad,
                                                 th.comodidades
                                             })
-                                            .OrderBy(th => th.nombre) 
+                                            .OrderBy(th => th.nombre)
                                             .ToListAsync();
                 return Ok(tiposHabitacion);
             }
@@ -42,9 +43,8 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return InternalServerError(new Exception($"Error al obtener tipos de habitación: {ex.Message}", ex.InnerException));
             }
         }
-
         [HttpGet]
-        [Route("{id:int}", Name = "GetTipoHabitacionById")] 
+        [Route("{id:int}", Name = "GetTipoHabitacionById")]
         public async Task<IHttpActionResult> GetTipoHabitacion(int id)
         {
             try
@@ -71,10 +71,9 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return InternalServerError(new Exception($"Error al obtener tipo de habitación ID {id}: {ex.Message}", ex.InnerException));
             }
         }
-
         [HttpPost]
         [Route("")]
-        [ResponseType(typeof(Tipo_Habitacion))] 
+        [ResponseType(typeof(Tipo_Habitacion))]
         public async Task<IHttpActionResult> PostTipoHabitacion(TipoHabitacionBindingModel model)
         {
             if (!ModelState.IsValid)
@@ -82,7 +81,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return BadRequest(ModelState);
             }
 
-            if (await db.Tipo_Habitacion.AnyAsync(th => th.nombre == model.Nombre))
+            if (await db.Tipo_Habitacion.AnyAsync(th => th.nombre.ToLower() == model.Nombre.ToLower()))
             {
                 ModelState.AddModelError("Nombre", "Ya existe un tipo de habitación con este nombre.");
                 return BadRequest(ModelState);
@@ -107,10 +106,17 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             {
                 return InternalServerError(new Exception($"Error al crear tipo de habitación: {ex.Message}", ex.InnerException));
             }
-
-            return CreatedAtRoute("GetTipoHabitacionById", new { id = tipoHabitacion.tipo_habitacion_id }, tipoHabitacion);
+            var dto = new
+            {
+                tipoHabitacion.tipo_habitacion_id,
+                tipoHabitacion.nombre,
+                tipoHabitacion.descripcion,
+                tipoHabitacion.precio_base,
+                tipoHabitacion.capacidad,
+                tipoHabitacion.comodidades
+            };
+            return CreatedAtRoute("GetTipoHabitacionById", new { id = tipoHabitacion.tipo_habitacion_id }, dto);
         }
-
         [HttpPut]
         [Route("{id:int}")]
         [ResponseType(typeof(void))]
@@ -127,7 +133,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return NotFound();
             }
 
-            if (await db.Tipo_Habitacion.AnyAsync(th => th.nombre == model.Nombre && th.tipo_habitacion_id != id))
+            if (await db.Tipo_Habitacion.AnyAsync(th => th.nombre.ToLower() == model.Nombre.ToLower() && th.tipo_habitacion_id != id))
             {
                 ModelState.AddModelError("Nombre", "Ya existe otro tipo de habitación con este nombre.");
                 return BadRequest(ModelState);
@@ -154,12 +160,10 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return InternalServerError(new Exception($"Error al actualizar tipo de habitación: {ex.Message}", ex.InnerException));
             }
 
-            return StatusCode(HttpStatusCode.NoContent); 
+            return StatusCode(HttpStatusCode.NoContent);
         }
-
         [HttpDelete]
         [Route("{id:int}")]
-        [ResponseType(typeof(Tipo_Habitacion))] 
         public async Task<IHttpActionResult> DeleteTipoHabitacion(int id)
         {
             Tipo_Habitacion tipoHabitacion = await db.Tipo_Habitacion.FindAsync(id);
@@ -167,8 +171,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             {
                 return NotFound();
             }
-
-
             db.Tipo_Habitacion.Remove(tipoHabitacion);
             try
             {
@@ -179,7 +181,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return InternalServerError(new Exception($"Error al eliminar tipo de habitación: {ex.Message}", ex.InnerException));
             }
 
-            return Ok(new { tipoHabitacion.tipo_habitacion_id, tipoHabitacion.nombre });
+            return Ok(new { Message = "Tipo de habitación eliminado exitosamente.", Id = id });
         }
 
         protected override void Dispose(bool disposing)

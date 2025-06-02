@@ -1,7 +1,9 @@
-﻿using System;
+﻿// File: ~/Admin/GestionTiposHabitacion.aspx.cs
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -10,32 +12,33 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
-using HotelAuroraDreams.WebApp_Framework.Models;
 using Newtonsoft.Json;
+
 namespace HotelAuroraDreams.WebApp_Framework.Admin
 {
     public partial class GestionTiposHabitacion : System.Web.UI.Page
     {
         private static readonly string _apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
-        private static readonly HttpClient client = new HttpClient();
+        private static readonly HttpClient client = new HttpClient(); // Reutilizar HttpClient
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
             RegisterAsyncTask(new PageAsyncTask(Page_Load_Async));
         }
 
         private async Task Page_Load_Async()
-        {
+        { 
             if (!await IsUserAuthorizedAdminAsync())
             {
-                Response.Redirect("~/Login.aspx?ReturnUrl=" + HttpUtility.UrlEncode(Request.Url.PathAndQuery));
+                Response.Redirect("~/Login.aspx?ReturnUrl=" + HttpUtility.UrlEncode(Request.Url.PathAndQuery), true);
                 return;
             }
 
             if (!IsPostBack)
             {
                 await BindGridAsync();
+                pnlForm.Visible = false; // Ocultar formulario inicialmente
+                btnShowAddForm.Visible = true;
             }
         }
 
@@ -46,45 +49,51 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
             {
                 return false;
             }
+
             var userRoles = Session["UserRoles"] as IList<string>;
             if (userRoles != null && userRoles.Contains("Administrador"))
             {
                 return true;
             }
-            // Si no hay roles en sesión, intenta obtenerlos de la API
             else if (authTokenCookie != null && !string.IsNullOrEmpty(authTokenCookie.Value))
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+                if (client.DefaultRequestHeaders.Authorization == null || client.DefaultRequestHeaders.Authorization.Parameter != authTokenCookie.Value)
+                {
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+                }
                 try
                 {
                     var response = await client.GetAsync(_apiBaseUrl.TrimEnd('/') + "/api/Account/UserInfo");
                     if (response.IsSuccessStatusCode)
                     {
-                        var userInfo = JsonConvert.DeserializeObject<Models.UserInfoViewModel>(await response.Content.ReadAsStringAsync());
+                        var userInfo = JsonConvert.DeserializeObject<UserInfoViewModel>(await response.Content.ReadAsStringAsync());
                         if (userInfo != null && userInfo.Roles != null && userInfo.Roles.Contains("Administrador"))
                         {
-                            Session["UserRoles"] = userInfo.Roles; // Guardar para futuras comprobaciones
+                            Session["UserRoles"] = userInfo.Roles;
                             return true;
                         }
                     }
                 }
-                catch {  }
+                catch { /* Ignorar error, acceso denegado */ }
             }
-            return false; 
+            return false;
         }
-
 
         private async Task BindGridAsync()
         {
             lblMessage.Text = "";
-            lblSuccessMessage.Text = "";
+
             HttpCookie authTokenCookie = Request.Cookies["AuthTokenHotel"];
             if (authTokenCookie == null || string.IsNullOrEmpty(authTokenCookie.Value))
             {
-                lblMessage.Text = "No autenticado.";
+                lblMessage.Text = "No autenticado o sesión expirada.";
                 return;
             }
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+
+            if (client.DefaultRequestHeaders.Authorization == null || client.DefaultRequestHeaders.Authorization.Parameter != authTokenCookie.Value)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+            }
 
             try
             {
@@ -94,16 +103,25 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
                     var jsonResponse = await response.Content.ReadAsStringAsync();
                     var tiposHabitacion = JsonConvert.DeserializeObject<List<TipoHabitacionViewModel>>(jsonResponse);
                     gvTiposHabitacion.DataSource = tiposHabitacion;
+
                     gvTiposHabitacion.DataBind();
+                }
+                else if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized || response.StatusCode == System.Net.HttpStatusCode.Forbidden)
+                {
+                    lblMessage.Text = "No autorizado para ver esta información.";
+                    Response.Cookies["AuthTokenHotel"].Expires = DateTime.Now.AddDays(-1);
+                    Session.Clear();
+                    Response.Redirect("~/Login.aspx?ReturnUrl=" + HttpUtility.UrlEncode(Request.Url.PathAndQuery), true);
                 }
                 else
                 {
-                    lblMessage.Text = $"Error al cargar tipos de habitación: {response.StatusCode}";
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    lblMessage.Text = $"Error al cargar tipos de habitación: {response.StatusCode}. Detalles: {errorContent.Substring(0, Math.Min(errorContent.Length, 200))}";
                 }
             }
             catch (Exception ex)
             {
-                lblMessage.Text = $"Error de conexión: {ex.Message}";
+                lblMessage.Text = $"Error de conexión al cargar datos: {ex.Message}";
             }
         }
 
@@ -111,30 +129,35 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
         {
             ClearForm();
             litFormTitle.Text = "Añadir Nuevo Tipo de Habitación";
-            hfTipoHabitacionID.Value = "0"; // Indica que es nuevo
+            hfTipoHabitacionID.Value = "0";
             pnlForm.Visible = true;
             btnShowAddForm.Visible = false;
+            lblMessage.Text = "";
+            lblSuccessMessage.Text = "";
         }
 
         protected async void btnSave_Click(object sender, EventArgs e)
         {
-            if (!Page.IsValid) return; // Validadores ASP.NET
+            if (!Page.IsValid) return;
 
             HttpCookie authTokenCookie = Request.Cookies["AuthTokenHotel"];
             if (authTokenCookie == null || string.IsNullOrEmpty(authTokenCookie.Value))
             {
-                lblMessage.Text = "Sesión expirada o no autenticado.";
+                lblMessage.Text = "Sesión expirada o no autenticado. Por favor, inicie sesión de nuevo.";
                 return;
             }
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
-
-            var tipoHabitacionData = new TipoHabitacionBindingModel // Usa el DTO de la API
+            if (client.DefaultRequestHeaders.Authorization == null || client.DefaultRequestHeaders.Authorization.Parameter != authTokenCookie.Value)
             {
-                Nombre = txtNombre.Text,
-                Descripcion = txtDescripcion.Text,
-                PrecioBase = decimal.Parse(txtPrecioBase.Text),
-                Capacidad = int.Parse(txtCapacidad.Text),
-                Comodidades = txtComodidades.Text
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+            }
+
+            var tipoHabitacionData = new TipoHabitacionBindingModel
+            {
+                Nombre = txtNombre.Text.Trim(),
+                Descripcion = txtDescripcion.Text.Trim(),
+                PrecioBase = decimal.Parse(txtPrecioBase.Text), // Considerar TryParse con validación
+                Capacidad = int.Parse(txtCapacidad.Text),       // Considerar TryParse con validación
+                Comodidades = txtComodidades.Text.Trim()
             };
 
             HttpResponseMessage response;
@@ -143,13 +166,16 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
 
             try
             {
-                if (tipoHabitacionID == 0) // Nuevo
+                string jsonPayload = JsonConvert.SerializeObject(tipoHabitacionData);
+                HttpContent httpContent = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+                if (tipoHabitacionID == 0) // Crear Nuevo
                 {
-                    response = await client.PostAsJsonAsync(apiUrl, tipoHabitacionData);
+                    response = await client.PostAsync(apiUrl, httpContent);
                 }
-                else // Editar
+                else // Editar Existente
                 {
-                    response = await client.PutAsJsonAsync($"{apiUrl}/{tipoHabitacionID}", tipoHabitacionData);
+                    response = await client.PutAsync($"{apiUrl}/{tipoHabitacionID}", httpContent);
                 }
 
                 if (response.IsSuccessStatusCode)
@@ -158,16 +184,17 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
                     pnlForm.Visible = false;
                     btnShowAddForm.Visible = true;
                     await BindGridAsync();
+                    ClearForm();
                 }
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
                     try
                     {
-                        // Intenta deserializar el error de validación del ModelState de la API
                         var apiError = JsonConvert.DeserializeObject<Dictionary<string, object>>(errorContent);
                         if (apiError != null && apiError.ContainsKey("ModelState"))
                         {
+                            lblMessage.Text = ""; // Limpiar mensajes previos
                             var modelStateErrors = apiError["ModelState"] as Newtonsoft.Json.Linq.JObject;
                             if (modelStateErrors != null)
                             {
@@ -179,27 +206,20 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
                                     }
                                 }
                             }
-                            else if (apiError.ContainsKey("Message"))
-                            {
-                                lblMessage.Text = apiError["Message"].ToString();
-                            }
-                            else
-                            {
-                                lblMessage.Text = $"Error: {response.StatusCode}. {errorContent}";
-                            }
+                            else { lblMessage.Text = $"Error al guardar (ModelState): {errorContent}"; }
                         }
                         else if (apiError != null && apiError.ContainsKey("Message"))
                         {
-                            lblMessage.Text = apiError["Message"].ToString();
+                            lblMessage.Text = $"Error de la API: {apiError["Message"]}";
                         }
                         else
                         {
-                            lblMessage.Text = $"Error al guardar: {response.StatusCode} - {errorContent}";
+                            lblMessage.Text = $"Error al guardar: {response.StatusCode}. {errorContent.Substring(0, Math.Min(errorContent.Length, 200))}";
                         }
                     }
                     catch
                     {
-                        lblMessage.Text = $"Error al guardar: {response.StatusCode} - {errorContent}";
+                        lblMessage.Text = $"Error al procesar respuesta de guardado: {response.StatusCode}. {errorContent.Substring(0, Math.Min(errorContent.Length, 200))}";
                     }
                 }
             }
@@ -214,6 +234,8 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
             pnlForm.Visible = false;
             btnShowAddForm.Visible = true;
             ClearForm();
+            lblMessage.Text = "";
+            lblSuccessMessage.Text = "";
         }
 
         private void ClearForm()
@@ -224,31 +246,31 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
             txtPrecioBase.Text = "";
             txtCapacidad.Text = "";
             txtComodidades.Text = "";
-            lblMessage.Text = "";
+            // lblMessage.Text = ""; // No limpiar aquí para que los errores persistan hasta la próxima acción
         }
 
         protected async void gvTiposHabitacion_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (e.CommandName == "EditRow") // Renombramos para evitar colisión con "Edit" reservado
+            if (e.CommandName == "EditRow")
             {
+                int rowIndex = Convert.ToInt32(e.CommandArgument);
+                int tipoHabitacionID = Convert.ToInt32(gvTiposHabitacion.DataKeys[rowIndex].Value);
+                await LoadTipoHabitacionForEditAsync(tipoHabitacionID);
             }
+            // No necesitamos manejar "Delete" aquí si usamos gvTiposHabitacion_RowDeleting
         }
 
-        protected async void gvTiposHabitacion_RowEditing(object sender, GridViewEditEventArgs e)
+        private async Task LoadTipoHabitacionForEditAsync(int tipoHabitacionID)
         {
-
             lblMessage.Text = "";
             lblSuccessMessage.Text = "";
-            pnlForm.Visible = true;
-            btnShowAddForm.Visible = false;
-            litFormTitle.Text = "Editar Tipo de Habitación";
-
-            int tipoHabitacionID = Convert.ToInt32(gvTiposHabitacion.DataKeys[e.NewEditIndex].Value);
-            hfTipoHabitacionID.Value = tipoHabitacionID.ToString();
-
             HttpCookie authTokenCookie = Request.Cookies["AuthTokenHotel"];
             if (authTokenCookie == null || string.IsNullOrEmpty(authTokenCookie.Value)) return;
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+
+            if (client.DefaultRequestHeaders.Authorization == null || client.DefaultRequestHeaders.Authorization.Parameter != authTokenCookie.Value)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+            }
 
             try
             {
@@ -259,22 +281,31 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
                     var tipoHabitacion = JsonConvert.DeserializeObject<TipoHabitacionViewModel>(jsonResponse);
                     if (tipoHabitacion != null)
                     {
+                        hfTipoHabitacionID.Value = tipoHabitacion.tipo_habitacion_id.ToString();
                         txtNombre.Text = tipoHabitacion.nombre;
                         txtDescripcion.Text = tipoHabitacion.descripcion;
-                        txtPrecioBase.Text = tipoHabitacion.precio_base.ToString("N2"); // Formato de moneda
+                        txtPrecioBase.Text = tipoHabitacion.precio_base.ToString("F2"); 
                         txtCapacidad.Text = tipoHabitacion.capacidad.ToString();
                         txtComodidades.Text = tipoHabitacion.comodidades;
+
+                        litFormTitle.Text = "Editar Tipo de Habitación";
+                        pnlForm.Visible = true;
+                        btnShowAddForm.Visible = false;
                     }
                 }
                 else
                 {
-                    lblMessage.Text = "Error al cargar datos para edición.";
+                    lblMessage.Text = "Error al cargar datos del tipo de habitación para edición.";
                 }
             }
             catch (Exception ex)
             {
                 lblMessage.Text = $"Error de conexión: {ex.Message}";
             }
+        }
+
+        protected void gvTiposHabitacion_RowEditing(object sender, GridViewEditEventArgs e)
+        {
         }
 
         protected async void gvTiposHabitacion_RowDeleting(object sender, GridViewDeleteEventArgs e)
@@ -285,7 +316,10 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
                 lblMessage.Text = "Sesión expirada o no autenticado.";
                 return;
             }
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+            if (client.DefaultRequestHeaders.Authorization == null || client.DefaultRequestHeaders.Authorization.Parameter != authTokenCookie.Value)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authTokenCookie.Value);
+            }
 
             int tipoHabitacionID = Convert.ToInt32(gvTiposHabitacion.DataKeys[e.RowIndex].Value);
             string apiUrl = $"{_apiBaseUrl.TrimEnd('/')}/api/TiposHabitacion/{tipoHabitacionID}";
@@ -296,20 +330,28 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
                 if (response.IsSuccessStatusCode)
                 {
                     lblSuccessMessage.Text = "Tipo de habitación eliminado exitosamente.";
-                    await BindGridAsync();
                 }
                 else
                 {
                     var errorContent = await response.Content.ReadAsStringAsync();
-                    lblMessage.Text = $"Error al eliminar: {response.StatusCode} - {errorContent}";
+                    if (response.StatusCode == HttpStatusCode.Conflict) 
+                    {
+                        lblMessage.Text = errorContent; 
+                    }
+                    else
+                    {
+                        lblMessage.Text = $"Error al eliminar: {response.StatusCode}. {errorContent.Substring(0, Math.Min(errorContent.Length, 200))}";
+                    }
                 }
             }
             catch (Exception ex)
             {
                 lblMessage.Text = $"Error de conexión al eliminar: {ex.Message}";
             }
-            pnlForm.Visible = false; // Ocultar formulario si estaba visible
+
+            pnlForm.Visible = false;
             btnShowAddForm.Visible = true;
+            await BindGridAsync(); 
         }
 
         protected void gvTiposHabitacion_RowUpdating(object sender, GridViewUpdateEventArgs e)
@@ -318,7 +360,6 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
 
         protected void gvTiposHabitacion_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
-
         }
     }
 }
