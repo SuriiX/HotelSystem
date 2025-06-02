@@ -249,10 +249,12 @@
     <Compile Include="Areas\HelpPage\SampleGeneration\TextSample.cs" />
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\CargosController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\EmpleadosController.cs" />
     <Compile Include="Controllers\HabitacionesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\HotelesController.cs" />
     <Compile Include="Controllers\SalonesEventoController.cs" />
     <Compile Include="Controllers\ServiciosAdicionalesEventoController.cs" />
     <Compile Include="Controllers\TiposEventoController.cs" />
@@ -306,12 +308,14 @@
     <Compile Include="Models\Detalle_Pedido_Suministro.cs">
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\DTO\CargoListItemDto.cs" />
     <Compile Include="Models\DTO\ClienteBindingModel.cs" />
     <Compile Include="Models\DTO\ClienteViewModel.cs" />
     <Compile Include="Models\DTO\EmpleadoUpdateBindingModel.cs" />
     <Compile Include="Models\DTO\EmpleadoViewModel.cs" />
     <Compile Include="Models\DTO\HabitacionBindingModel.cs" />
     <Compile Include="Models\DTO\HabitacionViewModel.cs" />
+    <Compile Include="Models\DTO\HotelSimpleViewModel.cs" />
     <Compile Include="Models\DTO\RegisterBindingModel.cs" />
     <Compile Include="Models\DTO\SalonEventoBindingModel.cs" />
     <Compile Include="Models\DTO\SalonEventoViewModel.cs" />

@@ -122,7 +122,11 @@
   <ItemGroup>
     <Content Include="About.aspx" />
     <Content Include="Admin\GestionClientes.aspx" />
+    <Content Include="Admin\GestionEmpleados.aspx" />
     <Content Include="Admin\GestionHabitaciones.aspx" />
+    <Content Include="Admin\GestionSalonesEvento.aspx" />
+    <Content Include="Admin\GestionServiciosAdicionales.aspx" />
+    <Content Include="Admin\GestionTiposEvento.aspx" />
     <Content Include="Admin\GestionTiposHabitacion.aspx" />
     <Content Include="Contact.aspx" />
     <Content Include="Content\bootstrap-grid.css" />
@@ -215,12 +219,40 @@
     <Compile Include="Admin\GestionClientes.aspx.designer.cs">
       <DependentUpon>GestionClientes.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\GestionEmpleados.aspx.cs">
+      <DependentUpon>GestionEmpleados.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\GestionEmpleados.aspx.designer.cs">
+      <DependentUpon>GestionEmpleados.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Admin\GestionHabitaciones.aspx.cs">
       <DependentUpon>GestionHabitaciones.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Admin\GestionHabitaciones.aspx.designer.cs">
       <DependentUpon>GestionHabitaciones.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\GestionSalonesEvento.aspx.cs">
+      <DependentUpon>GestionSalonesEvento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\GestionSalonesEvento.aspx.designer.cs">
+      <DependentUpon>GestionSalonesEvento.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\GestionServiciosAdicionales.aspx.cs">
+      <DependentUpon>GestionServiciosAdicionales.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\GestionServiciosAdicionales.aspx.designer.cs">
+      <DependentUpon>GestionServiciosAdicionales.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\GestionTiposEvento.aspx.cs">
+      <DependentUpon>GestionTiposEvento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\GestionTiposEvento.aspx.designer.cs">
+      <DependentUpon>GestionTiposEvento.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\GestionTiposHabitacion.aspx.cs">
       <DependentUpon>GestionTiposHabitacion.aspx</DependentUpon>
@@ -263,11 +295,20 @@
       <DependentUpon>Login.aspx</DependentUpon>
     </Compile>
     <Compile Include="Models\ApiErrorModel.cs" />
+    <Compile Include="Models\CargoListItemDto.cs" />
     <Compile Include="Models\ClienteBindingModel.cs" />
     <Compile Include="Models\ClienteViewModel.cs" />
+    <Compile Include="Models\EmpleadoUpdateBindingModel.cs" />
+    <Compile Include="Models\EmpleadoViewMode.CS" />
     <Compile Include="Models\HabitacionBindingModel.cs" />
     <Compile Include="Models\HabitacionViewModel.cs" />
     <Compile Include="Models\HotelSimpleViewModel.cs" />
+    <Compile Include="Models\SalonEventoBindingModel.cs" />
+    <Compile Include="Models\SalonEventoViewModel.cs" />
+    <Compile Include="Models\ServicioAdicionalEventoBindingModel.cs" />
+    <Compile Include="Models\ServicioAdicionalEventoViewModel.cs" />
+    <Compile Include="Models\TipoEventoBindingModel.cs" />
+    <Compile Include="Models\TipoEventoViewModel.cs" />
     <Compile Include="Models\TipoHabitacionSimpleViewModel.cs" />
     <Compile Include="Models\TipoHabitacionViewModel.cs" />
     <Compile Include="Models\TokenResponseModel.cs" />
