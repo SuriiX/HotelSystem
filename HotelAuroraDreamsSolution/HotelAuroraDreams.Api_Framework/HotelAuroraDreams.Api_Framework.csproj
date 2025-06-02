@@ -250,6 +250,7 @@
     <Compile Include="Areas\HelpPage\XmlDocumentationProvider.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\TiposHabitacionController.cs" />
     <Compile Include="Controllers\ValuesController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -300,6 +301,7 @@
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DTO\RegisterBindingModel.cs" />
+    <Compile Include="Models\DTO\TipoHabitacionBindingModel.cs" />
     <Compile Include="Models\DTO\UserInfoViewModel.cs" />
     <Compile Include="Models\Empleado.cs">
       <DependentUpon>HotelDBModel.tt</DependentUpon>

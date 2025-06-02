@@ -1,4 +1,6 @@
-﻿// File: ~/Models/UserInfoViewModel.cs
+﻿
+using System.Collections.Generic;
+
 namespace HotelAuroraDreams.WebApp_Framework.Models
 {
     public class UserInfoViewModel
@@ -9,5 +11,6 @@ namespace HotelAuroraDreams.WebApp_Framework.Models
         public string Apellido { get; set; }
         public int? HotelID { get; set; }
         public int? CargoID { get; set; }
+        public IList<string> Roles { get; set; }
     }
 }

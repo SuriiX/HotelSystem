@@ -4,12 +4,12 @@ using HotelAuroraDreams.Api_Framework.Models.DTO;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
+using System; // Necesario para DateTime
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Linq;
 using System.Net;
-using System; 
 
 namespace HotelAuroraDreams.Api_Framework.Controllers
 {
@@ -17,7 +17,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     public class AccountController : ApiController
     {
         private ApplicationUserManager _userManager;
-        private ApplicationRoleManager _roleManager; // Añadido
+        private ApplicationRoleManager _roleManager;
 
         public ApplicationUserManager UserManager
         {
@@ -31,7 +31,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-        // Propiedad para ApplicationRoleManager
         public ApplicationRoleManager RoleManager
         {
             get
@@ -45,15 +44,16 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         }
 
         public AccountController() { }
+
         public AccountController(ApplicationUserManager userManager, ApplicationRoleManager roleManager)
         {
             UserManager = userManager;
             RoleManager = roleManager;
         }
 
+        [HttpPost]
         [AllowAnonymous]
         [Route("Register")]
-        [HttpPost] 
         public async Task<IHttpActionResult> Register(RegisterBindingModel model)
         {
             if (!ModelState.IsValid)
@@ -67,7 +67,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 Email = model.Email,
                 Nombre = model.Nombre,
                 Apellido = model.Apellido,
-                FechaContratacion = System.DateTime.UtcNow,
+                FechaContratacion = DateTime.UtcNow,
                 Estado = "activo",
                 Salario = model.Salario,
                 HotelID = model.HotelID,
@@ -84,36 +84,11 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             return Ok(new { Message = "User registered successfully." });
         }
 
-        [Authorize]
-        [Route("UserInfo")]
-        [HttpGet] // Especificar explícitamente el método HTTP
-        public async Task<IHttpActionResult> GetUserInfo()
-        {
-            string userId = User.Identity.GetUserId();
-            if (string.IsNullOrEmpty(userId))
-            {
-                return BadRequest("User ID not found in token.");
-            }
-
-            ApplicationUser user = await UserManager.FindByIdAsync(userId);
-
-            if (user == null)
-            {
-                return NotFound();
-            }
-
-            var userInfo = new UserInfoViewModel
-            {
-                Id = user.Id,
-                Email = user.Email,
-                Nombre = user.Nombre,
-                Apellido = user.Apellido,
-                HotelID = user.HotelID,
-                CargoID = user.CargoID
-            };
-
-            return Ok(userInfo);
-        }
+        // Este es el bloque de atributos que estaba suelto y causaba el problema.
+        // Ya no es necesario porque GetUserInfo() está definido correctamente abajo.
+        // [Authorize]
+        // [Route("UserInfo")]
+        // [HttpGet] 
 
         [HttpPost]
         [AllowAnonymous]
@@ -136,19 +111,53 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
             return Ok(new { Message = "Roles 'Administrador' y 'Empleado' configurados/verificados." });
         }
-        [HttpGet] 
-        [Route("AdminData")] 
-        [Authorize(Roles = "Administrador")] 
+
+        [HttpGet]
+        [Route("AdminData")]
+        [Authorize(Roles = "Administrador")]
         public IHttpActionResult GetAdminSpecificData()
         {
-
             var adminData = new
             {
                 Message = "Estos son datos secretos solo para Administradores.",
                 CurrentServerTime = DateTime.Now,
-                LoggedInUser = User.Identity.Name 
+                LoggedInUser = User.Identity.Name
             };
             return Ok(adminData);
+        }
+
+        [HttpGet] // Asegúrate de que [HttpGet] esté aquí
+        [Authorize]
+        [Route("UserInfo")]
+        public async Task<IHttpActionResult> GetUserInfo()
+        {
+            string userId = User.Identity.GetUserId();
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest("User ID not found in token.");
+            }
+
+            ApplicationUser user = await UserManager.FindByIdAsync(userId);
+
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var roles = await UserManager.GetRolesAsync(userId);
+
+            var userInfo = new UserInfoViewModel
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Nombre = user.Nombre,
+                Apellido = user.Apellido,
+                HotelID = user.HotelID,
+                CargoID = user.CargoID,
+                Roles = roles
+            };
+
+            return Ok(userInfo);
         }
 
         [HttpPost]
@@ -169,7 +178,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
 
             if (!await RoleManager.RoleExistsAsync(roleName))
             {
-
                 return NotFoundResultWithMessage($"Rol '{roleName}' no encontrado. Por favor, ejecute SetupRoles primero o créelo manualmente.");
             }
 
@@ -197,7 +205,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     _userManager.Dispose();
                     _userManager = null;
                 }
-                if (_roleManager != null) 
+                if (_roleManager != null)
                 {
                     _roleManager.Dispose();
                     _roleManager = null;
@@ -231,7 +239,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
             return null;
         }
-
 
         private IHttpActionResult NotFoundResultWithMessage(string message)
         {
