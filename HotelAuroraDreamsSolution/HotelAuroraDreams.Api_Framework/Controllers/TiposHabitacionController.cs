@@ -1,5 +1,4 @@
 ﻿// File: ~/Controllers/TiposHabitacionController.cs
-using HotelAuroraDreams.Api_Framework.Clases;
 using HotelAuroraDreams.Api_Framework.Models; // Donde está HotelManagementSystemEntities y Tipo_Habitacion
 using HotelAuroraDreams.Api_Framework.Models.DTO;
 using System;

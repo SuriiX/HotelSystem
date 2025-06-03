@@ -1,5 +1,4 @@
-﻿using HotelAuroraDreams.Api_Framework.Clases;
-using HotelAuroraDreams.Api_Framework.Models;
+﻿using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
 using System;
 using System.Data.Entity;
@@ -42,7 +41,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var (existe, mensaje) = await servicio.ExisteNombreServicioAsync(model.NombreServicio);
+            var (existe, mensaje) = await servicio.ExisteNombreServicioAsync(model.Nombre);
             if (existe)
             {
                 ModelState.AddModelError("Nombre", mensaje);
@@ -50,7 +49,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
 
             var creado = await servicio.CrearAsync(model);
-            return CreatedAtRoute("GetServicioAdicionalEventoById", new { id = creado.ServicioAdicionalID }, creado);
+            return CreatedAtRoute("GetServicioAdicionalEventoById", new { id = creado.ServicioID }, creado);
         }
 
         [HttpPut]
@@ -60,7 +59,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var (existe, mensaje) = await servicio.ExisteNombreServicioAsync(model.NombreServicio, id);
+            var (existe, mensaje) = await servicio.ExisteNombreServicioAsync(model.Nombre, id);
             if (existe)
             {
                 ModelState.AddModelError("Nombre", mensaje);
