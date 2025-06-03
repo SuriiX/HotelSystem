@@ -1,13 +1,10 @@
 ﻿using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
-using System;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
 
 namespace HotelAuroraDreams.Api_Framework.Controllers
 {
@@ -15,13 +12,21 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     [Authorize(Roles = "Administrador")]
     public class TiposEventoController : ApiController
     {
-        private readonly ClsTipoEvento servicio = new ClsTipoEvento();
+        private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
 
         [HttpGet]
         [Route("")]
         public async Task<IHttpActionResult> GetTiposEvento()
         {
-            var tipos = await servicio.ObtenerTodosAsync();
+            var tipos = await db.TipoEventoes
+                .Select(t => new TipoEventoViewModel
+                {
+                    TipoEventoID = t.TipoEventoID,
+                    NombreTipo = t.NombreTipo,
+                    Descripcion = t.Descripcion
+                })
+                .OrderBy(t => t.NombreTipo)
+                .ToListAsync();
             return Ok(tipos);
         }
 
@@ -29,46 +34,60 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         [Route("{id:int}", Name = "GetTipoEventoById")]
         public async Task<IHttpActionResult> GetTipoEvento(int id)
         {
-            var tipo = await servicio.ObtenerPorIdAsync(id);
-            if (tipo == null) return NotFound();
-            return Ok(tipo);
+            var tipoViewModel = await db.TipoEventoes.Where(t => t.TipoEventoID == id)
+                .Select(t => new TipoEventoViewModel
+                {
+                    TipoEventoID = t.TipoEventoID,
+                    NombreTipo = t.NombreTipo,
+                    Descripcion = t.Descripcion
+                })
+                .FirstOrDefaultAsync();
+            if (tipoViewModel == null) return NotFound();
+            return Ok(tipoViewModel);
         }
 
         [HttpPost]
-        [Route("")]
-        [ResponseType(typeof(TipoEventoViewModel))]
         public async Task<IHttpActionResult> PostTipoEvento(TipoEventoBindingModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
+            if (await db.TipoEventoes.AnyAsync(t => t.NombreTipo.ToLower() == model.NombreTipo.ToLower()))
 
-            var (existe, mensaje) = await servicio.ExisteNombreTipoAsync(model.NombreTipo);
-            if (existe)
+
             {
-                ModelState.AddModelError("NombreTipo", mensaje);
+                ModelState.AddModelError("NombreTipo", "Este tipo de evento ya existe.");
                 return BadRequest(ModelState);
             }
-
-            var creado = await servicio.CrearAsync(model);
-            return CreatedAtRoute("GetTipoEventoById", new { id = creado.TipoEventoID }, creado);
+            TipoEvento tipoEntity = new TipoEvento
+            {
+                NombreTipo = model.NombreTipo,
+                Descripcion = model.Descripcion
+            };
+            db.TipoEventoes.Add(tipoEntity);
+            await db.SaveChangesAsync();
+            var viewModel = new TipoEventoViewModel
+            {
+                TipoEventoID = tipoEntity.TipoEventoID,
+                NombreTipo = tipoEntity.NombreTipo,
+                Descripcion = tipoEntity.Descripcion
+            };
+            return CreatedAtRoute("GetTipoEventoById", new { id = tipoEntity.TipoEventoID }, viewModel);
         }
 
         [HttpPut]
-        [Route("{id:int}")]
-        [ResponseType(typeof(void))]
         public async Task<IHttpActionResult> PutTipoEvento(int id, TipoEventoBindingModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
-
-            var (existe, mensaje) = await servicio.ExisteNombreTipoAsync(model.NombreTipo, id);
-            if (existe)
+            var tipoEntity = await db.TipoEventoes.FindAsync(id);
+            if (tipoEntity == null) return NotFound();
+            if (await db.TipoEventoes.AnyAsync(t => t.NombreTipo.ToLower() == model.NombreTipo.ToLower() && t.TipoEventoID != id))
             {
-                ModelState.AddModelError("NombreTipo", mensaje);
+                ModelState.AddModelError("NombreTipo", "Este nombre de tipo de evento ya está en uso.");
                 return BadRequest(ModelState);
             }
-
-            var actualizado = await servicio.ActualizarAsync(id, model);
-            if (!actualizado) return NotFound();
-
+            tipoEntity.NombreTipo = model.NombreTipo;
+            tipoEntity.Descripcion = model.Descripcion;
+            db.Entry(tipoEntity).State = EntityState.Modified;
+            await db.SaveChangesAsync();
             return StatusCode(HttpStatusCode.NoContent);
         }
 
@@ -76,18 +95,19 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         [Route("{id:int}")]
         public async Task<IHttpActionResult> DeleteTipoEvento(int id)
         {
-            var eliminado = await servicio.EliminarAsync(id);
-            if (!eliminado) return NotFound();
-
+            var tipo = await db.TipoEventoes.FindAsync(id);
+            if (tipo == null) return NotFound();
+            db.TipoEventoes.Remove(tipo);
+            await db.SaveChangesAsync();
             return Ok(new { Message = "Tipo de evento eliminado.", Id = id });
         }
 
         protected override void Dispose(bool disposing)
         {
-            if (disposing)
-            {
-                servicio.Dispose();
-            }
+            if (disposing) db.Dispose();
+
+
+
             base.Dispose(disposing);
         }
     }

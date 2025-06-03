@@ -14,7 +14,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     [Authorize(Roles = "Empleado, Administrador")]
     public class HotelesController : ApiController
     {
-        private readonly ClsHotel _clsHotel = new ClsHotel();
+        private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
 
         [HttpGet]
         [Route("")]
@@ -22,7 +22,16 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var hoteles = await _clsHotel.ObtenerHotelesActivos();
+                var hoteles = await db.Hotels
+                    .Where(h => h.estado_operativo == "activo")
+                    .OrderBy(h => h.nombre)
+                    .Select(h => new HotelListItemDto
+                    {
+                        HotelID = h.hotel_id,
+                        Nombre = h.nombre
+                    })
+                    .ToListAsync();
+
                 return Ok(hoteles);
             }
             catch (Exception ex)
@@ -37,16 +46,34 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var hotel = await _clsHotel.ObtenerHotelPorId(id);
-                if (hotel == null)
-                    return NotFound();
+                var hotel = await db.Hotels
+                    .Where(h => h.hotel_id == id)
+                    .Select(h => new HotelListItemDto
+                    {
+                        HotelID = h.hotel_id,
+                        Nombre = h.nombre
+                    })
+                    .FirstOrDefaultAsync();
 
+                if (hotel == null)
+                {
+                    return NotFound();
+                }
                 return Ok(hotel);
             }
             catch (Exception ex)
             {
                 return InternalServerError(new Exception($"Error al obtener el hotel con ID {id}: {ex.Message}", ex.InnerException));
             }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }

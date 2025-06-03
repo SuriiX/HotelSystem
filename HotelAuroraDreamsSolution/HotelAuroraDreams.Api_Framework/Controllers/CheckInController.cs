@@ -1,4 +1,4 @@
-﻿// File: ~/Controllers/CheckInController.cs
+﻿// File: ~/Controllers/CheckInController.csMore actions
 using HotelAuroraDreams.Api_Framework.IdentityModels;
 using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
@@ -94,12 +94,14 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             };
             db.CheckIns.Add(nuevoCheckIn);
 
-            reserva.Estado = "Hospedado"; 
+            // 3. Actualizar Estado de la Reserva
+            reserva.Estado = "Hospedado"; // Nuevo estado
             db.Entry(reserva).State = EntityState.Modified;
 
+            // 4. Actualizar Estado de las Habitaciones a "Ocupada"
             foreach (var reservaHabitacion in reserva.Reserva_Habitacion)
             {
-                var habitacion = reservaHabitacion.Habitacion; 
+                var habitacion = reservaHabitacion.Habitacion; // Ya está cargada por el Include
                 if (habitacion != null)
                 {
                     habitacion.estado = "ocupada";
