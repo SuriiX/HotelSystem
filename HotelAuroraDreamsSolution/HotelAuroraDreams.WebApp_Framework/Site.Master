@@ -14,53 +14,113 @@
     <webopt:bundlereference runat="server" path="~/Content/css" />
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <style>
-        body { padding-top: 50px; padding-bottom: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { padding-top: 70px; padding-bottom: 20px; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 14px; }
         .navbar-fixed-top { border: 0; }
-        /* Estilos básicos para la barra de navegación (puedes usar Bootstrap o tu propio CSS) */
-        .navbar { overflow: hidden; background-color: #333; }
-        .navbar a { float: left; display: block; color: #f2f2f2; text-align: center; padding: 14px 16px; text-decoration: none; }
-        .navbar a:hover { background-color: #ddd; color: black; }
-        .navbar-right { float: right; }
+        .navbar { background-color: #2c3e50; position: fixed; top: 0; width: 100%; z-index: 1030; min-height:50px; margin-bottom:0; border-radius:0;}
+        .navbar-brand { float: left; padding: 15px 15px; font-size: 18px; line-height: 20px; color: #ecf0f1; font-weight:bold; }
+        .navbar-brand:hover, .navbar-brand:focus { color: #ffffff; text-decoration: none; }
+        .navbar-nav > li > a, .navbar-nav > li > span > span /*for label*/ { padding-top: 15px; padding-bottom: 15px; line-height: 20px; color: #bdc3c7; }
+        .navbar-nav > li > a:hover, .navbar-nav > li > a:focus,
+        .navbar-nav > li > .nav-link-button:hover, .navbar-nav > li > .nav-link-button:focus { background-color: #34495e; color: #ffffff; }
+        .navbar-nav > .active > a, .navbar-nav > .active > a:hover, .navbar-nav > .active > a:focus { color: #ffffff; background-color: #1abc9c; }
+        .navbar-nav .nav-link-button { background:none; border:none; cursor:pointer; display:inline-block; padding: 15px 15px; line-height: 20px; color: #bdc3c7; }
+        .navbar-text { margin-top: 15px; margin-bottom: 15px; color: #ecf0f1; }
+
+        /* Dropdown styles (basic, can be enhanced with Bootstrap JS or custom JS) */
+        .dropdown { position: relative; display: inline-block; }
+        .dropdown-content { display: none; position: absolute; background-color: #333; min-width: 200px; box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2); z-index: 1001; }
+        .dropdown-content a { color: #f2f2f2; padding: 12px 16px; text-decoration: none; display: block; text-align: left; }
+        .dropdown-content a:hover { background-color: #555; }
+        .dropdown:hover .dropdown-content { display: block; }
+        .navbar-nav > li.dropdown > a.dropdown-toggle::after { /* Basic caret */
+            display: inline-block;
+            width: 0;
+            height: 0;
+            margin-left: .255em;
+            vertical-align: .255em;
+            content: "";
+            border-top: .3em solid;
+            border-right: .3em solid transparent;
+            border-bottom: 0;
+            border-left: .3em solid transparent;
+        }
+        .container.body-content { margin-top: 20px; padding-top:20px;} /* Adjusted for fixed navbar */
     </style>
 </head>
 <body>
-    <form runat="server">
+    <form id="form1" runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
-                <%--Framework Scripts--%>
                 <asp:ScriptReference Name="MsAjaxBundle" />
-                <asp:ScriptReference Path="~/Scripts/jquery-3.7.1.min.js" /> <%-- Asegúrate que esta sea tu versión de jQuery --%>
-                <asp:ScriptReference Path="~/Scripts/bootstrap.js" /> <%-- Si usas Bootstrap --%>
+                <asp:ScriptReference Name="jquery.js" Assembly="System.Web" Path="~/Scripts/jquery-3.7.1.min.js" />
+                <asp:ScriptReference Path="~/Scripts/bootstrap.js" />
                 <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
                 <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
                 <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
                 <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
                 <asp:ScriptReference Name="WebFormsBundle" />
-                <%--Site Scripts--%>
             </Scripts>
         </asp:ScriptManager>
 
-        <div class="navbar navbar-inverse navbar-fixed-top">
+        <nav class="navbar navbar-inverse navbar-fixed-top">
             <div class="container">
                 <div class="navbar-header">
                     <a class="navbar-brand" runat="server" href="~/">Hotel Aurora Dreams</a>
                 </div>
-                <div class="navbar-collapse collapse">
+                <div>
                     <ul class="nav navbar-nav">
                         <li><a runat="server" href="~/">Inicio</a></li>
-                        <li><a runat="server" href="~/About.aspx">Acerca de</a></li>
-                        <li><a runat="server" href="~/Contact.aspx">Contacto</a></li>
-
-                    <asp:PlaceHolder ID="phAdminMenu" runat="server" Visible="false">
-                        <li style="background-color:darkslateblue;"><a runat="server" href="~/Admin/DashboardAdmin.aspx" style="color:white; font-weight:bold;">Panel Admin</a></li>
-                        <li><a runat="server" href="~/Admin/GestionTiposHabitacion.aspx">Gestión Tipos Habitación</a></li>
-                        <li><a runat="server" href="~/Admin/GestionClientes.aspx">Gestión Clientes</a></li> <%-- NUEVO ENLACE --%>
-                    </asp:PlaceHolder>
+                        <%-- Enlaces para Empleados/Administradores (visibilidad controlada por phOperationsMenu y phAdminMenu) --%>
+                        <asp:PlaceHolder ID="phOperationsMenu" runat="server" Visible="false">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle">Reservas Hotel <span class="caret"></span></a>
+                                <ul class="dropdown-content">
+                                    <li><a runat="server" href="~/Reservas/NuevaReserva.aspx">Nueva Reserva Habitación</a></li>
+                                    <li><a runat="server" href="~/Reservas/VerReservas.aspx">Ver Reservas Habitación</a></li>
+                                </ul>
+                            </li>
+                             <li class="dropdown">
+                                <a href="#" class="dropdown-toggle">Operaciones <span class="caret"></span></a>
+                                <ul class="dropdown-content">
+                                    <li><a runat="server" href="~/Operaciones/CheckIn.aspx">Check-In</a></li>
+                                    <li><a runat="server" href="~/Operaciones/CheckOut.aspx">Check-Out</a></li>
+                                </ul>
+                            </li>
+                             <li class="dropdown">
+                                <a href="#" class="dropdown-toggle">Restaurante <span class="caret"></span></a>
+                                <ul class="dropdown-content">
+                                     <li><a runat="server" href="~/Restaurante/NuevaReservaRestaurante.aspx">Nueva Reserva Restaurante</a></li>
+                                     <li><a runat="server" href="~/Restaurante/VerReservasRestaurante.aspx">Ver Reservas Restaurante</a></li>
+                                </ul>
+                            </li>
+                        </asp:PlaceHolder>
                     </ul>
                     <ul class="nav navbar-nav navbar-right">
+                        <asp:PlaceHolder ID="phAdminMenu" runat="server" Visible="false">
+                             <li class="dropdown">
+                                <a href="#" class="dropdown-toggle admin-menu-item">Administración <span class="caret"></span></a>
+                                <ul class="dropdown-content">
+                                    <li><a runat="server" href="~/Admin/GestionTiposHabitacion.aspx">Tipos de Habitación</a></li>
+                                    <li><a runat="server" href="~/Admin/GestionHabitaciones.aspx">Habitaciones</a></li>
+                                    <li><a runat="server" href="~/Admin/GestionClientes.aspx">Clientes</a></li>
+                                    <li><a runat="server" href="~/Admin/GestionEmpleados.aspx">Empleados</a></li>
+                                    <li><hr style="margin: 5px 0; border-color: #555;" /></li>
+                                    <li><a runat="server" href="~/Admin/GestionSalonesEvento.aspx">Salones de Evento</a></li>
+                                    <li><a runat="server" href="~/Admin/GestionTiposEvento.aspx">Tipos de Evento</a></li>
+                                    <li><a runat="server" href="~/Admin/GestionServiciosAdicionales.aspx">Servicios Eventos</a></li>
+                                    <li><hr style="margin: 5px 0; border-color: #555;" /></li>
+                                     <li><a runat="server" href="~/Eventos/NuevaReservaEvento.aspx">Nueva Reserva Evento</a></li>
+                                     <li><a runat="server" href="~/Eventos/VerReservasEvento.aspx">Ver Reservas Evento</a></li>
+                                    <li><hr style="margin: 5px 0; border-color: #555;" /></li>
+                                    <li><a runat="server" href="~/Facturacion/VerFacturasAlojamiento.aspx">Facturas Alojamiento</a></li>
+                                    <li><a runat="server" href="~/Facturacion/VerFacturasEvento.aspx">Facturas Eventos</a></li>
+                                </ul>
+                            </li>
+                        </asp:PlaceHolder>
+                        
                         <asp:PlaceHolder ID="phUserInfo" runat="server" Visible="false">
-                            <li><asp:Label ID="lblUserFullNameMaster" runat="server" style="padding: 15px; color: #f2f2f2;" /></li>
-                            <li><asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click" Text="Cerrar Sesión" style="padding: 15px; display:block; color: #f2f2f2; text-decoration:none;" /></li>
+                            <li><span style="padding: 15px; display:block; color: #ecf0f1;"><asp:Label ID="lblUserFullNameMaster" runat="server" /></span></li>
+                            <li><asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click" Text="Cerrar Sesión" CssClass="nav-link-button" /></li>
                         </asp:PlaceHolder>
                         <asp:PlaceHolder ID="phLogin" runat="server">
                              <li><a runat="server" href="~/Login.aspx">Iniciar Sesión</a></li>
@@ -68,7 +128,8 @@
                     </ul>
                 </div>
             </div>
-        </div>
+        </nav>
+        
         <div class="container body-content">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>

@@ -15,7 +15,7 @@ namespace HotelAuroraDreams.Api_Framework.Clases
     {
         private readonly HotelManagementSystemEntities db = new HotelManagementSystemEntities();
 
-        public async Task<List<Tip oEventoViewModel>> ObtenerTodosAsync()
+        public async Task<List<TipoEventoViewModel>> ObtenerTodosAsync()
         {
             return await db.TipoEventoes
                 .Select(t => new TipoEventoViewModel
@@ -95,5 +95,9 @@ namespace HotelAuroraDreams.Api_Framework.Clases
         {
             db.Dispose();
         }
+    }
+
+    public class List<T1, T2>
+    {
     }
 }

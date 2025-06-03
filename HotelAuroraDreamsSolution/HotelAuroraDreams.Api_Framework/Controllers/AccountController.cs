@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using System.Linq;
 using System.Net;
+using HotelAuroraDreams.Api_Framework.Clases;
 
 namespace HotelAuroraDreams.Api_Framework.Controllers
 {

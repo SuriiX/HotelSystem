@@ -1,4 +1,5 @@
 ﻿// File: ~/Controllers/HotelesController.cs
+using HotelAuroraDreams.Api_Framework.Clases;
 using HotelAuroraDreams.Api_Framework.Models; // Para HotelManagementSystemEntities y Hotel
 using HotelAuroraDreams.Api_Framework.Models.DTO; // Para HotelListItemDto
 using System;

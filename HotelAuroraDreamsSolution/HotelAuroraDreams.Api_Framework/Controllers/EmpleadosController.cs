@@ -1,4 +1,5 @@
 ﻿// File: ~/Controllers/EmpleadosController.cs
+using HotelAuroraDreams.Api_Framework.Clases;
 using HotelAuroraDreams.Api_Framework.IdentityModels;
 using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
