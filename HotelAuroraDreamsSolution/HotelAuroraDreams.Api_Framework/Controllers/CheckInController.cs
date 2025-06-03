@@ -94,14 +94,12 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             };
             db.CheckIns.Add(nuevoCheckIn);
 
-            // 3. Actualizar Estado de la Reserva
-            reserva.Estado = "Hospedado"; // Nuevo estado
+            reserva.Estado = "Hospedado"; 
             db.Entry(reserva).State = EntityState.Modified;
 
-            // 4. Actualizar Estado de las Habitaciones a "Ocupada"
             foreach (var reservaHabitacion in reserva.Reserva_Habitacion)
             {
-                var habitacion = reservaHabitacion.Habitacion; // Ya está cargada por el Include
+                var habitacion = reservaHabitacion.Habitacion; 
                 if (habitacion != null)
                 {
                     habitacion.estado = "ocupada";
