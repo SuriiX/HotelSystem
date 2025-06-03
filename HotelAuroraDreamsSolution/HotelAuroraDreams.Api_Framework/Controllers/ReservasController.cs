@@ -12,6 +12,7 @@ using System.Web.Http;
 using System;
 using System.Linq;
 using System.Web;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace HotelAuroraDreams.Api_Framework.Controllers
 {
