@@ -281,7 +281,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             var reserva = await db.Reserva_Restaurante.FindAsync(id);
             if (reserva == null) return NotFound();
 
-            // En lugar de eliminar, es mejor cambiar el estado a "Cancelada"
+            // En lugar de eliminar, es mejor cambiar el estado a "Cancelada"0
             if (reserva.estado == "Cancelada" || reserva.estado == "Atendida")
             {
                 return Ok(new { Message = $"La reserva de restaurante ya estaba {reserva.estado.ToLower()}." });
