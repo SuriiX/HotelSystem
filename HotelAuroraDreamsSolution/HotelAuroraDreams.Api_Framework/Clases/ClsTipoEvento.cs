@@ -1,7 +1,13 @@
-﻿using System;
+﻿using HotelAuroraDreams.Api_Framework.Models;
+using HotelAuroraDreams.Api_Framework.Models.DTO;
+using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.UI.MobileControls;
+using System.Windows.Documents;
 
 namespace HotelAuroraDreams.Api_Framework.Clases
 {
@@ -9,7 +15,7 @@ namespace HotelAuroraDreams.Api_Framework.Clases
     {
         private readonly HotelManagementSystemEntities db = new HotelManagementSystemEntities();
 
-        public async Task<List<TipoEventoViewModel>> ObtenerTodosAsync()
+        public async Task<List<Tip oEventoViewModel>> ObtenerTodosAsync()
         {
             return await db.TipoEventoes
                 .Select(t => new TipoEventoViewModel

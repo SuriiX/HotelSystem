@@ -150,7 +150,9 @@
     <Content Include="Eventos\NuevaReservaEvento.aspx" />
     <Content Include="Eventos\VerReservasEvento.aspx" />
     <Content Include="Facturacion\DescargarFactura.aspx" />
+    <Content Include="Facturacion\DescargarFacturaEvento.aspx" />
     <Content Include="Facturacion\VerFacturasAlojamiento.aspx" />
+    <Content Include="Facturacion\VerFacturasEvento.aspx" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Login.aspx" />
@@ -158,6 +160,8 @@
     <Content Include="Operaciones\CheckOut.aspx" />
     <Content Include="Reservas\NuevaReserva.aspx" />
     <Content Include="Reservas\VerReservas.aspx" />
+    <Content Include="Restaurantes\NuevaReservaRestaurante.aspx" />
+    <Content Include="Restaurantes\VerReservasRestaurante.aspx" />
     <Content Include="Scripts\bootstrap.bundle.js" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\bootstrap.esm.js" />
@@ -313,12 +317,26 @@
     <Compile Include="Facturacion\DescargarFactura.aspx.designer.cs">
       <DependentUpon>DescargarFactura.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Facturacion\DescargarFacturaEvento.aspx.cs">
+      <DependentUpon>DescargarFacturaEvento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Facturacion\DescargarFacturaEvento.aspx.designer.cs">
+      <DependentUpon>DescargarFacturaEvento.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Facturacion\VerFacturasAlojamiento.aspx.cs">
       <DependentUpon>VerFacturasAlojamiento.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Facturacion\VerFacturasAlojamiento.aspx.designer.cs">
       <DependentUpon>VerFacturasAlojamiento.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Facturacion\VerFacturasEvento.aspx.cs">
+      <DependentUpon>VerFacturasEvento.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Facturacion\VerFacturasEvento.aspx.designer.cs">
+      <DependentUpon>VerFacturasEvento.aspx</DependentUpon>
     </Compile>
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -342,6 +360,7 @@
     <Compile Include="Models\DisponibilidadRequestDto.cs" />
     <Compile Include="Models\EmpleadoUpdateBindingModel.cs" />
     <Compile Include="Models\EmpleadoViewMode.CS" />
+    <Compile Include="Models\FacturaEventoViewModel.cs" />
     <Compile Include="Models\FacturaViewModel.cs" />
     <Compile Include="Models\HabitacionBindingModel.cs" />
     <Compile Include="Models\HabitacionDisponibleDto.cs" />
@@ -351,8 +370,13 @@
     <Compile Include="Models\ReservaEventoCreacionBindingModel.cs" />
     <Compile Include="Models\ReservaEventoServicioInputDto.cs" />
     <Compile Include="Models\ReservaEventoViewModel.cs" />
+    <Compile Include="Models\ReservaRestauranteBindingModel.cs" />
+    <Compile Include="Models\ReservaRestauranteViewModel.cs" />
     <Compile Include="Models\ReservaUpdateBindingModel.cs" />
     <Compile Include="Models\ReservaViewModel.cs" />
+    <Compile Include="Models\RestauranteDisponibilidadRequestDto.cs" />
+    <Compile Include="Models\RestauranteDisponibleViewModel.cs" />
+    <Compile Include="Models\RestauranteListItemDto.cs" />
     <Compile Include="Models\SalonDisponibilidadRequestDto.cs" />
     <Compile Include="Models\SalonDisponibleViewModel.cs" />
     <Compile Include="Models\SalonEventoBindingModel.cs" />
@@ -396,6 +420,20 @@
     </Compile>
     <Compile Include="Reservas\VerReservas.aspx.designer.cs">
       <DependentUpon>VerReservas.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Restaurantes\NuevaReservaRestaurante.aspx.cs">
+      <DependentUpon>NuevaReservaRestaurante.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Restaurantes\NuevaReservaRestaurante.aspx.designer.cs">
+      <DependentUpon>NuevaReservaRestaurante.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Restaurantes\VerReservasRestaurante.aspx.cs">
+      <DependentUpon>VerReservasRestaurante.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Restaurantes\VerReservasRestaurante.aspx.designer.cs">
+      <DependentUpon>VerReservasRestaurante.aspx</DependentUpon>
     </Compile>
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
