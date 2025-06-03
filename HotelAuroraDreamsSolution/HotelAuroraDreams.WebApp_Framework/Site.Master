@@ -51,14 +51,22 @@
     <form id="form1" runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
+                <%--Framework Scripts--%>
                 <asp:ScriptReference Name="MsAjaxBundle" />
-                <asp:ScriptReference Name="jquery.js" Assembly="System.Web" Path="~/Scripts/jquery-3.7.1.min.js" />
-                <asp:ScriptReference Path="~/Scripts/bootstrap.js" />
+                <asp:ScriptReference Name="jquery" /> <%-- CORREGIDO: Solo el nombre lógico --%>
+
+                <%-- Para Bootstrap, es mejor usar Path si no tienes un mapping específico --%>
+                <asp:ScriptReference Path="~/Scripts/bootstrap.js" /> 
+                <%-- O si tienes un bundle de bootstrap: <asp:ScriptReference Name="bootstrap" /> --%>
+
+                <%-- Estos scripts de WebForms SÍ usan Assembly="System.Web" porque pueden ser recursos de ese ensamblado --%>
                 <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
                 <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
                 <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
                 <asp:ScriptReference Name="Focus.js" Assembly="System.Web" Path="~/Scripts/WebForms/Focus.js" />
-                <asp:ScriptReference Name="WebFormsBundle" />
+
+                <%-- Si usas bundling de ASP.NET, esta referencia carga el bundle de WebForms --%>
+                <asp:ScriptReference Name="WebFormsBundle" /> 
             </Scripts>
         </asp:ScriptManager>
 
