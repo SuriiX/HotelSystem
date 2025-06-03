@@ -49,6 +49,9 @@
       <HintPath>packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\HotelAuroraDreams.WebApp_Framework\packages\BouncyCastle.Cryptography.2.4.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -56,6 +59,9 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.5.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
+    </Reference>
+    <Reference Include="itextsharp, Version=5.5.13.4, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\HotelAuroraDreams.WebApp_Framework\packages\iTextSharp.5.5.13.4\lib\net461\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.Identity.Core.2.2.4\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
@@ -306,12 +312,17 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CargosController.cs" />
     <Compile Include="Controllers\CheckInController.cs" />
+    <Compile Include="Controllers\CheckOutController.cs" />
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\EmpleadosController.cs" />
+    <Compile Include="Controllers\FacturasController.cs" />
+    <Compile Include="Controllers\FacturasEventoController.cs" />
     <Compile Include="Controllers\HabitacionesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HotelesController.cs" />
     <Compile Include="Controllers\ReservasController.cs" />
+    <Compile Include="Controllers\ReservasEventoController.cs" />
+    <Compile Include="Controllers\ReservasRestauranteController.cs" />
     <Compile Include="Controllers\SalonesEventoController.cs" />
     <Compile Include="Controllers\ServiciosAdicionalesEventoController.cs" />
     <Compile Include="Controllers\TiposEventoController.cs" />
@@ -386,12 +397,18 @@
     <Compile Include="Models\DTO\RegisterBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaCreacionBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaEventoCreacionBindingModel.cs" />
+    <Compile Include="Models\DTO\ReservaEventoUpdateBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaEventoViewModel.cs" />
     <Compile Include="Models\DTO\ReservaHabitacionViewModel.cs" />
     <Compile Include="Models\DTO\ReservaRestauranteBindingModel.cs" />
+    <Compile Include="Models\DTO\ReservaRestauranteUpdateBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaRestauranteViewModel.cs" />
     <Compile Include="Models\DTO\ReservaUpdateBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaViewModel.cs" />
+    <Compile Include="Models\DTO\RestauranteDisponibilidadRequestDto.cs" />
+    <Compile Include="Models\DTO\RestauranteDisponibleViewModel.cs" />
+    <Compile Include="Models\DTO\SalonDisponibilidadRequestDto.cs" />
+    <Compile Include="Models\DTO\SalonDisponibleViewModel.cs" />
     <Compile Include="Models\DTO\SalonEventoBindingModel.cs" />
     <Compile Include="Models\DTO\SalonEventoViewModel.cs" />
     <Compile Include="Models\DTO\ServicioAdicionalEventoBindingModel.cs" />

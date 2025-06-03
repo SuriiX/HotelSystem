@@ -62,10 +62,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
             if (reserva.FechaEntrada.Date > DateTime.Today)
             {
-                // Permitir check-in el mismo día o un poco antes si la política lo permite.
-                // Por ahora, solo el mismo día o pasado (si se olvidó hacer check-in).
-                // Podrías añadir una lógica de "early check-in" aquí.
-                // return BadRequest($"Aún no es la fecha de entrada ({reserva.FechaEntrada:yyyy-MM-dd}) para la reserva ID {model.ReservaID}.");
             }
             if (await db.CheckIns.AnyAsync(ci => ci.reserva_id == model.ReservaID))
             {
