@@ -1,15 +1,15 @@
 ﻿using HotelAuroraDreams.Api_Framework.IdentityModels;
 using HotelAuroraDreams.Api_Framework.Providers;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Owin;
+using Microsoft.Owin.Security;
 using Microsoft.Owin.Security.Jwt;
 using Microsoft.Owin.Security.OAuth;
-using Microsoft.Owin;
 using Owin;
+using System;
 using System.Configuration;
 using System.Text;
 using System.Web.Http;
-using System;
-using Microsoft.Owin.Security;
 
 [assembly: OwinStartup(typeof(HotelAuroraDreams.Api_Framework.Startup))]
 namespace HotelAuroraDreams.Api_Framework
