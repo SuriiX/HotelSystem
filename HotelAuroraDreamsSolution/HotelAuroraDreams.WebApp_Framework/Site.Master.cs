@@ -1,9 +1,8 @@
 ﻿// File: Site.Master.cs
 using System;
-using System.Collections.Generic; // Para IList<string>
-using System.Linq; // Para .Contains()
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
-using System.Web.Security;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
@@ -15,27 +14,48 @@ namespace HotelAuroraDreams.WebApp_Framework
         {
             if (!IsPostBack)
             {
-                if (Request.Cookies["AuthTokenHotel"] != null && !string.IsNullOrEmpty(Request.Cookies["AuthTokenHotel"].Value) && Session["UserFullName"] != null)
+                bool isAdmin = false;
+                bool isEmployee = false;
+
+                if (Request.Cookies["AuthTokenHotel"] != null &&
+                    !string.IsNullOrEmpty(Request.Cookies["AuthTokenHotel"].Value) &&
+                    Session["UserFullName"] != null)
                 {
                     phLogin.Visible = false;
                     phUserInfo.Visible = true;
-                    lblUserFullNameMaster.Text = $"Hola, {Session["UserFullName"]}";
+                    if (lblUserFullNameMaster != null) // Verificar si el control existe
+                    {
+                        lblUserFullNameMaster.Text = $"Hola, {Session["UserFullName"]}";
+                    }
+
 
                     var userRoles = Session["UserRoles"] as IList<string>;
-                    if (userRoles != null && userRoles.Contains("Administrador"))
+                    if (userRoles != null)
                     {
-                        phAdminMenu.Visible = true;
-                    }
-                    else
-                    {
-                        phAdminMenu.Visible = false;
+                        if (userRoles.Contains("Administrador")) isAdmin = true;
+                        if (userRoles.Contains("Empleado")) isEmployee = true;
                     }
                 }
                 else
                 {
                     phLogin.Visible = true;
                     phUserInfo.Visible = false;
-                    phAdminMenu.Visible = false;
+                }
+
+                // Visibilidad de menús
+                // Los PlaceHolders deben existir en el .master para que estas líneas no den error.
+                if (phAdminMenu != null) phAdminMenu.Visible = false;
+                if (phOperationsMenu != null) phOperationsMenu.Visible = false;
+
+                if (isAdmin)
+                {
+                    if (phAdminMenu != null) phAdminMenu.Visible = true;
+                    if (phOperationsMenu != null) phOperationsMenu.Visible = true;
+                }
+                else if (isEmployee)
+                {
+                    if (phAdminMenu != null) phAdminMenu.Visible = false;
+                    if (phOperationsMenu != null) phOperationsMenu.Visible = true;
                 }
             }
         }
@@ -47,11 +67,10 @@ namespace HotelAuroraDreams.WebApp_Framework
             if (Request.Cookies["AuthTokenHotel"] != null)
             {
                 HttpCookie cookie = new HttpCookie("AuthTokenHotel");
-                cookie.Expires = DateTime.Now.AddDays(-1d); // Hacer que expire
+                cookie.Expires = DateTime.Now.AddDays(-1d);
                 Response.Cookies.Add(cookie);
             }
-
-            Response.Redirect("~/Login.aspx");
+            Response.Redirect("~/Login.aspx", true);
         }
     }
 }

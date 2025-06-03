@@ -37,7 +37,7 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
             {
                 await LoadHotelesDropdownAsync();
                 await LoadCargosDropdownAsync();
-                await LoadSystemRolesCheckboxListAsync(); // Para el CheckBoxList de roles
+                LoadSystemRolesCheckboxList(); // Para el CheckBoxList de roles
                 await BindGridAsync();
                 pnlEditEmpleado.Visible = false;
             }
@@ -120,11 +120,9 @@ namespace HotelAuroraDreams.WebApp_Framework.Admin
             }
             catch (Exception ex) { lblMessage.Text += " Excepción cargando cargos: " + ex.Message.Substring(0, Math.Min(ex.Message.Length, 50)); }
         }
-        private async Task LoadSystemRolesCheckboxListAsync()
+        private void LoadSystemRolesCheckboxList()
         {
-            // Para este ejemplo, asumimos roles fijos. En un sistema más grande, podrías obtenerlos de la API.
-            // O si tu API tiene un endpoint para listar roles de Identity.
-            // Por ahora, vamos a hardcodear los roles que creamos ("Administrador", "Empleado")
+
             var rolesDelSistema = new List<string> { "Administrador", "Empleado" };
 
             cblRolesEmpleado.Items.Clear();
