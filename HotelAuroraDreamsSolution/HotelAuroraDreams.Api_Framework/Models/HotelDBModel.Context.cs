@@ -10,6 +10,7 @@
 namespace HotelAuroraDreams.Api_Framework.Models
 {
     using System;
+    using System.Collections.Generic;
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
@@ -62,5 +63,6 @@ namespace HotelAuroraDreams.Api_Framework.Models
         public virtual DbSet<Tipo_Transporte> Tipo_Transporte { get; set; }
         public virtual DbSet<TipoEvento> TipoEventoes { get; set; }
         public virtual DbSet<Transporte> Transportes { get; set; }
+        public IEnumerable<object> ServicioAdicionalEventos { get; internal set; }
     }
 }

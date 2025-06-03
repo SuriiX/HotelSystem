@@ -1,4 +1,5 @@
 ﻿// File: ~/Controllers/SalonesEventoController.cs
+using HotelAuroraDreams.Api_Framework.Clases;
 using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
 using System;

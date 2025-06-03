@@ -1,11 +1,8 @@
-﻿using HotelAuroraDreams.Api_Framework.IdentityModels;
-using HotelAuroraDreams.Api_Framework.Models;
+﻿using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -18,38 +15,37 @@ namespace HotelAuroraDreams.Api_Framework.Clases
 
         public async Task<List<ServicioAdicionalEventoViewModel>> ObtenerTodosAsync()
         {
-            return await db.ServicioAdicionalEventos
+            var query = db.ServicioAdicionalEventoes
+                .OrderBy(s => s.NombreServicio)
                 .Select(s => new ServicioAdicionalEventoViewModel
                 {
-                    ServicioID = s.ServicioID,
-                    Nombre = s.Nombre,
+                    ServicioAdicionalID = s.ServicioAdicionalID,
+                    NombreServicio = s.NombreServicio,
                     Descripcion = s.Descripcion,
-                    Precio = s.Precio
-                })
-                .OrderBy(s => s.Nombre)
-                .ToListAsync();
+                    PrecioBase = s.PrecioBase
+                });
+            return await query.ToListAsync();
         }
 
         public async Task<ServicioAdicionalEventoViewModel> ObtenerPorIdAsync(int id)
         {
-            return await db.ServicioAdicionalEventos
-                .Where(s => s.ServicioID == id)
+            var query = db.ServicioAdicionalEventoes
+                .Where(s => s.ServicioAdicionalID == id)
                 .Select(s => new ServicioAdicionalEventoViewModel
                 {
-                    ServicioID = s.ServicioID,
-                    Nombre = s.Nombre,
+                    ServicioAdicionalID = s.ServicioAdicionalID,
+                    NombreServicio = s.NombreServicio,
                     Descripcion = s.Descripcion,
-                    Precio = s.Precio
-                })
-                .FirstOrDefaultAsync();
+                    PrecioBase = s.PrecioBase
+                });
+            return await query.FirstOrDefaultAsync();
         }
 
         public async Task<(bool Existe, string Mensaje)> ExisteNombreServicioAsync(string nombre, int? excluirId = null)
         {
-            var existe = await db.ServicioAdicionalEventos
-                .AnyAsync(s => s.Nombre.ToLower() == nombre.ToLower()
-                            && (!excluirId.HasValue || s.ServicioID != excluirId.Value));
-
+            var query = db.ServicioAdicionalEventoes.AsQueryable();
+            var existe = await query.AnyAsync(s => s.NombreServicio.ToLower() == nombre.ToLower()
+                            && (!excluirId.HasValue || s.ServicioAdicionalID != excluirId.Value));
             return (existe, existe ? "Este servicio adicional ya está registrado." : null);
         }
 
@@ -57,31 +53,32 @@ namespace HotelAuroraDreams.Api_Framework.Clases
         {
             var servicio = new ServicioAdicionalEvento
             {
-                Nombre = model.Nombre,
+                NombreServicio = model.NombreServicio,
                 Descripcion = model.Descripcion,
-                Precio = model.Precio
+                PrecioBase = model.PrecioBase
             };
 
-            db.ServicioAdicionalEventos.Add(servicio);
+            db.Entry(servicio).State = EntityState.Added;
             await db.SaveChangesAsync();
 
             return new ServicioAdicionalEventoViewModel
             {
-                ServicioID = servicio.ServicioID,
-                Nombre = servicio.Nombre,
+                ServicioAdicionalID = servicio.ServicioAdicionalID,
+                NombreServicio = servicio.NombreServicio,
                 Descripcion = servicio.Descripcion,
-                Precio = servicio.Precio
+                PrecioBase = servicio.PrecioBase
             };
         }
 
         public async Task<bool> ActualizarAsync(int id, ServicioAdicionalEventoBindingModel model)
         {
-            var servicio = await db.ServicioAdicionalEventos.FindAsync(id);
+            var servicio = await db.ServicioAdicionalEventoes
+                .FirstOrDefaultAsync(s => s.ServicioAdicionalID == id);
             if (servicio == null) return false;
 
-            servicio.Nombre = model.Nombre;
+            servicio.NombreServicio = model.NombreServicio;
             servicio.Descripcion = model.Descripcion;
-            servicio.Precio = model.Precio;
+            servicio.PrecioBase = model.PrecioBase;
 
             db.Entry(servicio).State = EntityState.Modified;
             await db.SaveChangesAsync();
@@ -90,10 +87,11 @@ namespace HotelAuroraDreams.Api_Framework.Clases
 
         public async Task<bool> EliminarAsync(int id)
         {
-            var servicio = await db.ServicioAdicionalEventos.FindAsync(id);
+            var servicio = await db.ServicioAdicionalEventoes
+                .FirstOrDefaultAsync(s => s.ServicioAdicionalID == id);
             if (servicio == null) return false;
 
-            db.ServicioAdicionalEventos.Remove(servicio);
+            db.Entry(servicio).State = EntityState.Deleted;
             await db.SaveChangesAsync();
             return true;
         }

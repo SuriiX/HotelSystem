@@ -1,7 +1,7 @@
 ﻿using HotelAuroraDreams.Api_Framework.IdentityModels;
-using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
 using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using System;
 using System.Data.Entity;

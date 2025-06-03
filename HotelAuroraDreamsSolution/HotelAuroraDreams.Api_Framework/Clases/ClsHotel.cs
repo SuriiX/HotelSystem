@@ -1,11 +1,13 @@
-﻿using HotelAuroraDreams.Api_Framework.IdentityModels;
+﻿using HotelAuroraDreams.Api_Framework.Models;
+using HotelAuroraDreams.Api_Framework.Models.DTO;
+using HotelAuroraDreams.Api_Framework.IdentityModels;
 using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
