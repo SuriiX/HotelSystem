@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Web;
 using Newtonsoft.Json;
 using System.Configuration;
-using HotelAuroraDreams.WebApp_Framework.Models; // <-- ¡AÑADE O VERIFICA ESTA LÍNEA!
+using HotelAuroraDreams.WebApp_Framework.Models;
+using System.Net.Http.Headers; // <-- ¡AÑADE O VERIFICA ESTA LÍNEA!
 
 namespace HotelAuroraDreams.WebApp_Framework
 {
@@ -17,7 +18,6 @@ namespace HotelAuroraDreams.WebApp_Framework
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            // ... (sin cambios aquí) ...
         }
 
         protected async void btnLogin_Click(object sender, EventArgs e)
@@ -40,21 +40,20 @@ namespace HotelAuroraDreams.WebApp_Framework
 
             var formContent = new FormUrlEncodedContent(new[]
             {
-                new KeyValuePair<string, string>("grant_type", "password"),
-                new KeyValuePair<string, string>("username", email),
-                new KeyValuePair<string, string>("password", password)
-            });
+        new KeyValuePair<string, string>("grant_type", "password"),
+        new KeyValuePair<string, string>("username", email),
+        new KeyValuePair<string, string>("password", password)
+    });
 
             try
             {
                 string tokenUrl = _apiBaseUrl.TrimEnd('/') + "/api/token";
-                HttpResponseMessage response = await client.PostAsync(tokenUrl, formContent);
-                string responseContent = await response.Content.ReadAsStringAsync();
+                HttpResponseMessage responseToken = await client.PostAsync(tokenUrl, formContent);
+                string responseTokenContent = await responseToken.Content.ReadAsStringAsync();
 
-                if (response.IsSuccessStatusCode)
+                if (responseToken.IsSuccessStatusCode)
                 {
-                    // Ahora usa TokenResponseModel del namespace Models
-                    var tokenData = JsonConvert.DeserializeObject<TokenResponseModel>(responseContent);
+                    var tokenData = JsonConvert.DeserializeObject<TokenResponseModel>(responseTokenContent);
 
                     if (tokenData != null && !string.IsNullOrEmpty(tokenData.access_token))
                     {
@@ -67,10 +66,32 @@ namespace HotelAuroraDreams.WebApp_Framework
                         };
                         Response.Cookies.Add(authTokenCookie);
 
-                        Session["UserEmail"] = tokenData.userName;
-                        Session["UserFullName"] = tokenData.nombreCompleto;
+                        Session["UserEmail"] = tokenData.userName; // userName de la respuesta del token
+                        Session["UserFullName"] = tokenData.nombreCompleto; // nombreCompleto de la respuesta del token
 
-                        Response.Redirect("~/Default.aspx");
+                        // ***** NUEVO: Obtener UserInfo (incluyendo roles) y guardar en Sesión *****
+                        client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", tokenData.access_token);
+                        string userInfoUrl = _apiBaseUrl.TrimEnd('/') + "/api/Account/UserInfo";
+                        HttpResponseMessage responseUser = await client.GetAsync(userInfoUrl);
+                        if (responseUser.IsSuccessStatusCode)
+                        {
+                            var userInfo = JsonConvert.DeserializeObject<UserInfoViewModel>(await responseUser.Content.ReadAsStringAsync());
+                            if (userInfo != null)
+                            {
+                                Session["UserRoles"] = userInfo.Roles; // Guardar roles
+                            }
+                        }
+                        else
+                        {
+                            // No pudo obtener roles, pero el login fue exitoso.
+                            // Podría ser un problema si Site.Master depende de esto inmediatamente.
+                            // Dejar Session["UserRoles"] como null o lista vacía.
+                            Session["UserRoles"] = new List<string>();
+                            lblMessage.Text = "Login exitoso, pero no se pudieron cargar los roles del usuario.";
+                        }
+                        // ***** FIN DE NUEVO CÓDIGO *****
+
+                        Response.Redirect("~/Default.aspx", true);
                     }
                     else
                     {
@@ -81,36 +102,32 @@ namespace HotelAuroraDreams.WebApp_Framework
                 {
                     try
                     {
-                        // Ahora usa ApiErrorModel del namespace Models
-                        var errorData = JsonConvert.DeserializeObject<ApiErrorModel>(responseContent);
+                        var errorData = JsonConvert.DeserializeObject<ApiErrorModel>(responseTokenContent);
                         if (errorData != null && !string.IsNullOrEmpty(errorData.error_description))
                         {
                             lblMessage.Text = $"Error: {errorData.error_description}";
                         }
-                        else if (errorData != null && !string.IsNullOrEmpty(errorData.Message))
-                        {
-                            lblMessage.Text = $"Error: {errorData.Message}";
-                        }
+                        // ... (resto del manejo de errores como estaba) ...
                         else
                         {
-                            lblMessage.Text = $"Error de la API: {response.StatusCode}";
+                            lblMessage.Text = $"Error de la API: {responseToken.StatusCode}";
                         }
                     }
                     catch
                     {
-                        lblMessage.Text = $"Error de la API: {response.StatusCode}";
+                        lblMessage.Text = $"Error de la API: {responseToken.StatusCode}";
                     }
                 }
             }
             catch (HttpRequestException)
             {
-                lblMessage.Text = "No se pudo conectar con el servicio de autenticación. Verifique que la API esté ejecutándose.";
+                lblMessage.Text = "No se pudo conectar con el servicio de autenticación.";
             }
             catch (Exception ex)
             {
-                lblMessage.Text = $"Ocurrió un error inesperado. ({ex.Message.Substring(0, Math.Min(ex.Message.Length, 100))})";
+                lblMessage.Text = $"Ocurrió un error inesperado: {ex.Message.Substring(0, Math.Min(ex.Message.Length, 100))}";
             }
+            // YA NO DEFINAS TokenResponseModel ni ApiErrorModel AQUÍ DENTRO
         }
     }
-    // YA NO DEFINAS TokenResponseModel ni ApiErrorModel AQUÍ DENTRO
 }
