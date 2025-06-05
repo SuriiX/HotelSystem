@@ -11,116 +11,165 @@
         <%: Scripts.Render("~/bundles/modernizr") %>
     </asp:PlaceHolder>
 
-    <webopt:bundlereference runat="server" path="~/Content/css" />
+    <webopt:bundlereference runat="server" path="~/Content/css" /> 
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-<style>
-    body { 
-        padding-top: 56px; /* Altura aproximada de una navbar Bootstrap estándar */
-        padding-bottom: 20px; 
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-        font-size: 14px; 
-        background-color: #f8f9fa; /* Un fondo ligeramente gris */
-    }
-    .navbar-fixed-top { 
-        border: 0; 
-    }
-    .navbar.navbar-custom { /* Clase personalizada para nuestra navbar */
-        background-color: #343a40; /* Bootstrap dark theme color */
-        border-bottom: 3px solid #007bff; /* Un acento azul */
-        position: fixed; /* Mantenla fija en la parte superior */
-        top: 0;
-        width: 100%;
-        z-index: 1030; /* Para que esté sobre otros elementos */
-    }
-    .navbar-custom .navbar-brand { 
-        color: #ffffff; 
-        font-weight: bold;
-        font-size: 1.4em;
-        padding-top:18px; /* Ajustar para alinear verticalmente */
-        padding-bottom:18px;
-    }
-    .navbar-custom .navbar-brand:hover,
-    .navbar-custom .navbar-brand:focus { 
-        color: #f8f9fa;
-    }
-    
-    .navbar-custom .navbar-nav > li > a,
-    .navbar-custom .navbar-nav > li > .navbar-text,
-    .navbar-custom .navbar-nav > li > .nav-link-button {
-        color: #adb5bd; /* Gris claro para enlaces */
-        padding-top: 18px; /* Alineación vertical */
-        padding-bottom: 18px;
-        line-height: 20px;
-    }
-    .navbar-custom .navbar-nav > li > a:hover,
-    .navbar-custom .navbar-nav > li > a:focus,
-    .navbar-custom .navbar-nav > li > .nav-link-button:hover,
-    .navbar-custom .navbar-nav > li > .nav-link-button:focus {
-        color: #ffffff;
-        background-color: #495057; /* Un gris un poco más oscuro para hover */
-    }
-    .navbar-custom .navbar-nav > li > .nav-link-button {
-        background: none; border: none; cursor: pointer; display: block; text-align: left;
-    }
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-1ycn6IcaQQ40/MKBW2W4Rhis/DbILU74C1vSrLJxCq57o941Ym01SwNsOMqvEBFlcgUa6xLiPY/NS5R+E6ztJQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
-    /* Estilos específicos para Dropdowns de Bootstrap */
-    .navbar-custom .navbar-nav > li.dropdown > .dropdown-menu {
-        background-color: #343a40; /* Mismo fondo que la navbar */
-        border: 1px solid #495057; /* Borde sutil */
-        border-top: none; /* Quitar borde superior si la navbar ya lo tiene */
-        border-radius: 0 0 4px 4px; /* Bordes redondeados abajo */
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-        margin-top: 0; /* Para que se alinee bien con el item padre */
-        padding:0;
-    }
-    .navbar-custom .navbar-nav > li.dropdown .dropdown-menu > li > a {
-        color: #adb5bd;
-        padding: 10px 20px;
-        display: block; /* Asegurar que ocupen todo el ancho */
-        white-space: nowrap;
-    }
-    .navbar-custom .navbar-nav > li.dropdown .dropdown-menu > li > a:hover {
-        color: #ffffff;
-        background-color: #495057;
-    }
-    .navbar-custom .navbar-nav > li.dropdown .dropdown-menu .divider {
-        height: 1px;
-        margin: 9px 0;
-        overflow: hidden;
-        background-color: #495057;
-    }
-    .navbar-custom .admin-menu-item > a.dropdown-toggle { 
-        font-weight:bold; 
-        color: #ffc107 !important; /* Amarillo para destacar Admin */
-    }
-     .navbar-custom .admin-menu-item:hover > a.dropdown-toggle,
-     .navbar-custom .admin-menu-item.open > a.dropdown-toggle /* Cuando el dropdown está abierto */
-     { 
-        background-color: #495057 !important; 
-    }
+    <style>
+        body { 
+            padding-top: 55px; 
+            padding-bottom: 20px; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            font-size: 14px; 
+            background-color: #f4f8f9;
+            margin: 0;
+            transition: margin-left .3s cubic-bezier(0.4, 0, 0.2, 1); 
+        }
+        .top-navbar {
+            background-color: #343a40; 
+            color: #f8f9fa; 
+            padding: 0 10px 0 0; 
+            height: 55px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1030; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .top-navbar .left-section { display: flex; align-items: center; }
+        .top-navbar .menu-toggle-btn {
+            font-size: 20px; color: #f8f9fa; background: none;
+            border: none; cursor: pointer; padding: 0 15px; height: 55px; line-height:55px;
+        }
+        .top-navbar .menu-toggle-btn:hover { background-color: #495057; }
+        .top-navbar .brand { 
+            font-size: 18px; font-weight: 600; color: #f8f9fa; text-decoration:none; padding-left:15px;
+        }
+        .top-navbar .brand:hover { color: #ffffff; }
+        .top-navbar .user-info { display: flex; align-items: center; padding-right:15px; }
+        .top-navbar .user-info .navbar-text-custom,
+        .top-navbar .user-info .nav-link-button,
+        .top-navbar .user-info a { 
+            color: #adb5bd; margin-left: 15px; text-decoration: none; 
+            background: none; border: none; cursor: pointer; padding:0;
+            font-size: 14px;
+        }
+        .top-navbar .user-info .nav-link-button:hover,
+        .top-navbar .user-info a:hover { color: #ffffff; }
+        .navbar-text-custom { padding: 0 !important; } 
 
-    .caret {
-        display: inline-block; width: 0; height: 0;
-        margin-left: 2px; vertical-align: middle;
-        border-top: 4px dashed; border-top: 4px solid;
-        border-right: 4px solid transparent; border-left: 4px solid transparent;
-    }
-    .navbar-toggle { border-color: #6c757d; } /* Color del botón hamburguesa */
-    .navbar-toggle .icon-bar { background-color: #f8f9fa; } /* Color de las barras */
+        .sidebar {
+            height: calc(100% - 55px); 
+            width: 260px; 
+            position: fixed;
+            z-index: 1020; 
+            top: 55px; 
+            left: 0;
+            background-color: #343a40; 
+            overflow-x: hidden;
+            overflow-y: auto; 
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            padding-top: 15px;
+            box-shadow: inset -1px 0 0 rgba(0, 0, 0, .1);
+        }
+        .sidebar.collapsed { width: 60px; }
+        .sidebar.collapsed .nav-text,
+        .sidebar.collapsed .nav-item .caret { display: none; } 
+        .sidebar.collapsed .nav-item > a > i, 
+        .sidebar.collapsed .nav-item > .dropdown-toggle-link > i {
+            font-size: 1.6em; padding: 12px 0; width: 60px; text-align: center; margin-right:0;
+        }
+        .sidebar.collapsed .nav-item:hover > a > .nav-text-tooltip,
+        .sidebar.collapsed .nav-item:hover > .dropdown-toggle-link > .nav-text-tooltip { 
+            display:inline-block; position:absolute; left: 60px; top: 50%; 
+            transform: translateY(-50%);
+            background-color: #212529; color:white; padding:5px 10px; 
+            border-radius: 3px; white-space:nowrap;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3); z-index: 1025;
+            font-size:0.9em;
+        }
+        .sidebar .nav-text-tooltip { display:none; } 
+        .sidebar .nav-menu { list-style-type: none; padding: 0; margin: 0; }
+        .sidebar .nav-item { position: relative; } 
+        .sidebar .nav-item a, .sidebar .nav-item .dropdown-toggle-link {
+            padding: 10px 20px; /* Reducido padding vertical */
+            text-decoration: none; font-size: 15px; color: #adb5bd; 
+            display: flex; align-items: center; 
+            transition: background-color 0.2s, color 0.2s; 
+            white-space: nowrap; overflow:hidden; text-overflow:ellipsis;
+            border-left: 3px solid transparent; 
+        }
+        .sidebar .nav-item a i, .sidebar .nav-item .dropdown-toggle-link i {
+            margin-right: 12px; width:24px; text-align:center; font-size: 1.1em;
+        }
+        /* Ocultar el caret si los submenús están siempre desplegados */
+        .sidebar .nav-item.has-submenu > .dropdown-toggle-link > .caret { 
+            /* display: none; */ /* Descomenta si no quieres ver el caret */
+            /* Si lo dejas, ya no rotará con la clase .open */
+        }
+        .sidebar .nav-item a:hover, .sidebar .nav-item .dropdown-toggle-link:hover {
+            color: #ffffff; background-color: #495057; 
+        }
+        .sidebar .nav-item.active > a, .sidebar .nav-item.active > .dropdown-toggle-link {
+             background-color: #007bff; color: #fff; font-weight:500; 
+             border-left-color: #0056b3;
+        }
 
-    .body-content {
-        padding: 15px;
-        margin-top: 20px; /* Espacio adicional si la navbar es alta */
-    }
-</style>
+        /* Dropdown Menus dentro del Sidebar - SIEMPRE VISIBLES */
+        .sidebar .nav-item .dropdown-menu {
+            background-color: transparent; /* o #282c30; un poco más oscuro que el padre */
+            list-style-type: none;
+            padding-left: 0; 
+            margin:0;
+            display: block !important; /* Forzar a que sea visible */
+            max-height: none !important; /* Permitir toda la altura */
+            overflow: visible !important; /* Que el contenido no se corte */
+            position: static !important; /* Para que fluya como acordeón */
+            box-shadow: none; /* Quitar sombra si es estático */
+            border: none; /* Quitar borde si es estático */
+        }
+        .sidebar .dropdown-menu a {
+            font-size: 0.9em; padding: 8px 15px 8px 45px; /* Mayor indentación */
+            color: #9fa6ad; /* Un poco más claro para subitems */
+        }
+         .sidebar .dropdown-menu a i { font-size: 0.9em; margin-right: 8px; }
+        .sidebar .dropdown-menu a:hover { background-color: #495057; color: #ffffff; }
+        .sidebar .nav-menu .divider { height:1px; margin: 8px 20px; background-color: #495057; }
+
+        .main-content {
+            margin-left: 260px; 
+            padding: 25px;
+            transition: margin-left .3s cubic-bezier(0.4, 0, 0.2, 1);
+            background-color: #ffffff;
+            min-height: calc(100vh - 55px - 51px); 
+            box-sizing: border-box;
+            border-radius: 8px;
+            margin-right:15px; 
+            margin-top:15px; 
+            margin-bottom:15px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.07);
+        }
+        body.sidebar-collapsed .main-content {
+            margin-left: 75px; /* 60px del sidebar + 15px de margen */
+        }
+        footer { 
+            text-align: center; padding:15px 0; 
+            background-color: #f8f9fa; border-top: 1px solid #dee2e6; 
+            font-size:0.9em; color: #6c757d; 
+        }
+    </style>
 </head>
-<body>
+<body class="">
     <form id="form1" runat="server">
         <asp:ScriptManager runat="server">
             <Scripts>
                 <asp:ScriptReference Name="MsAjaxBundle" />
                 <asp:ScriptReference Name="jquery" />
-                <asp:ScriptReference Path="~/Scripts/bootstrap.js" />
+                <asp:ScriptReference Path="~/Scripts/bootstrap.js" /> 
                 <asp:ScriptReference Name="WebForms.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebForms.js" />
                 <asp:ScriptReference Name="WebUIValidation.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebUIValidation.js" />
                 <asp:ScriptReference Name="WebParts.js" Assembly="System.Web" Path="~/Scripts/WebForms/WebParts.js" />
@@ -129,87 +178,122 @@
             </Scripts>
         </asp:ScriptManager>
 
-       <nav class="navbar navbar-custom navbar-fixed-top"> 
-       <nav class="navbar navbar-custom navbar-fixed-top"> 
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-main-collapse" title="Navegación">
-                <span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" runat="server" href="~/">Hotel Aurora Dreams</a>
-        </div>
-        <div class="navbar-collapse collapse navbar-main-collapse">
-            <ul class="nav navbar-nav">
-                <li><a runat="server" href="~/">Inicio</a></li>
-                
-                <asp:PlaceHolder ID="phOperationsMenu" runat="server" Visible="false">
-                    <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Reservas <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a runat="server" href="~/Reservas/NuevaReserva.aspx">Nueva Reserva Habitación</a></li>
-                            <li><a runat="server" href="~/Reservas/VerReservas.aspx">Ver Reservas Habitación</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a runat="server" href="~/Eventos/NuevaReservaEvento.aspx">Nueva Reserva Evento</a></li>
-                            <li><a runat="server" href="~/Eventos/VerReservasEvento.aspx">Ver Reservas Evento</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a runat="server" href="~/Restaurante/NuevaReservaRestaurante.aspx">Nueva Reserva Restaurante</a></li>
-                            <li><a runat="server" href="~/Restaurante/VerReservasRestaurante.aspx">Ver Reservas Restaurante</a></li>
-                        </ul>
-                    </li>
-                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Operaciones Hotel <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a runat="server" href="~/Operaciones/CheckIn.aspx">Check-In</a></li>
-                            <li><a runat="server" href="~/Operaciones/CheckOut.aspx">Check-Out</a></li>
-                        </ul>
-                    </li>
-                     <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Facturación <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                             <li><a runat="server" href="~/Facturacion/VerFacturasAlojamiento.aspx">Facturas Alojamiento</a></li>
-                             <li><a runat="server" href="~/Facturacion/VerFacturasEvento.aspx">Facturas Eventos</a></li>
-                        </ul>
-                    </li>
-                </asp:PlaceHolder>
-            </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <asp:PlaceHolder ID="phAdminMenu" runat="server" Visible="false">
-                     <li class="dropdown admin-menu-item">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Administración <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a runat="server" href="~/Admin/GestionClientes.aspx">Gest. Clientes</a></li>
-                            <li><a runat="server" href="~/Admin/GestionEmpleados.aspx">Gest. Empleados</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a runat="server" href="~/Admin/GestionTiposHabitacion.aspx">Gest. Tipos Habitación</a></li>
-                            <li><a runat="server" href="~/Admin/GestionHabitaciones.aspx">Gest. Habitaciones</a></li>
-                            <li role="separator" class="divider"></li>
-                            <li><a runat="server" href="~/Admin/GestionSalonesEvento.aspx">Gest. Salones Evento</a></li>
-                            <li><a runat="server" href="~/Admin/GestionTiposEvento.aspx">Gest. Tipos de Evento</a></li>
-                            <li><a runat="server" href="~/Admin/GestionServiciosAdicionales.aspx">Gest. Servicios Eventos</a></li>
-                        </ul>
-                    </li>
-                </asp:PlaceHolder>
-                
+        <header class="top-navbar">
+            <div class="left-section">
+                <button type="button" id="sidebarToggle" class="menu-toggle-btn" title="Alternar Menú">
+                    &#9776;
+                </button>
+                <a class="brand" runat="server" href="~/">Hotel Aurora Dreams</a>
+            </div>
+            <div class="user-info">
                 <asp:PlaceHolder ID="phUserInfo" runat="server" Visible="false">
-                    <li><asp:Label ID="lblUserFullNameMaster" runat="server" CssClass="navbar-text" /></li>
-                    <li><asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click" Text="Cerrar Sesión" CssClass="nav-link-button" /></li>
+                    <span class="navbar-text navbar-text-custom"><asp:Label ID="lblUserFullNameMaster" runat="server" /></span>
+                    <asp:LinkButton ID="lnkLogout" runat="server" OnClick="lnkLogout_Click" Text="Cerrar Sesión" CssClass="nav-link-button" />
                 </asp:PlaceHolder>
                 <asp:PlaceHolder ID="phLogin" runat="server">
-                     <li><a runat="server" href="~/Login.aspx">Iniciar Sesión</a></li>
+                     <a runat="server" href="~/Login.aspx">Iniciar Sesión</a>
+                </asp:PlaceHolder>
+            </div>
+        </header>
+
+        <aside class="sidebar" id="sidebar">
+            <ul class="nav-menu">
+                <li class="nav-item active"><a runat="server" href="~/Default.aspx"><i class="fas fa-tachometer-alt"></i> <span class="nav-text">Dashboard</span><span class="nav-text-tooltip">Dashboard</span></a></li>
+                
+                <asp:PlaceHolder ID="phOperationsMenu" runat="server" Visible="false">
+                    <li class="nav-item has-submenu">
+                        <%-- El href="#" es para que el estilo del enlace se aplique, pero el JS prevendrá la navegación --%>
+                        <a href="#" class="dropdown-toggle-link"><i class="fas fa-calendar-alt"></i> <span class="nav-text">Reservas</span> <span class="caret"></span><span class="nav-text-tooltip">Reservas</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a runat="server" href="~/Reservas/NuevaReserva.aspx"><i class="fas fa-plus"></i> <span class="nav-text">Habitación</span></a></li>
+                            <li><a runat="server" href="~/Reservas/VerReservas.aspx"><i class="fas fa-list"></i> <span class="nav-text">Ver Habitaciones</span></a></li>
+                            <li class="divider"></li>
+                            <li><a runat="server" href="~/Eventos/NuevaReservaEvento.aspx"><i class="fas fa-calendar-plus"></i> <span class="nav-text">Evento</span></a></li>
+                            <li><a runat="server" href="~/Eventos/VerReservasEvento.aspx"><i class="fas fa-calendar-check"></i> <span class="nav-text">Ver Eventos</span></a></li>
+                            <li class="divider"></li>
+                            <li><a runat="server" href="~/Restaurante/NuevaReservaRestaurante.aspx"><i class="fas fa-utensils"></i> <span class="nav-text">Restaurante</span></a></li>
+                            <li><a runat="server" href="~/Restaurante/VerReservasRestaurante.aspx"><i class="fas fa-book-open"></i> <span class="nav-text">Ver Restaurante</span></a></li>
+                        </ul>
+                    </li>
+                     <li class="nav-item has-submenu">
+                        <a href="#" class="dropdown-toggle-link"><i class="fas fa-concierge-bell"></i> <span class="nav-text">Operaciones</span> <span class="caret"></span><span class="nav-text-tooltip">Operaciones</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a runat="server" href="~/Operaciones/CheckIn.aspx"><i class="fas fa-key"></i> <span class="nav-text">Check-In</span></a></li>
+                            <li><a runat="server" href="~/Operaciones/CheckOut.aspx"><i class="fas fa-sign-out-alt"></i> <span class="nav-text">Check-Out</span></a></li>
+                        </ul>
+                    </li>
+                     <li class="nav-item has-submenu">
+                        <a href="#" class="dropdown-toggle-link"><i class="fas fa-file-invoice-dollar"></i> <span class="nav-text">Facturación</span> <span class="caret"></span><span class="nav-text-tooltip">Facturación</span></a>
+                        <ul class="dropdown-menu">
+                             <li><a runat="server" href="~/Facturacion/VerFacturasAlojamiento.aspx"><i class="fas fa-file-alt"></i> <span class="nav-text">Facturas Alojamiento</span></a></li>
+                             <li><a runat="server" href="~/Facturacion/VerFacturasEvento.aspx"><i class="fas fa-file-invoice"></i> <span class="nav-text">Facturas Eventos</span></a></li>
+                        </ul>
+                    </li>
+                </asp:PlaceHolder>
+
+                <asp:PlaceHolder ID="phAdminMenu" runat="server" Visible="false">
+                     <li class="nav-item has-submenu">
+                        <a href="#" class="dropdown-toggle-link admin-menu-item"><i class="fas fa-cogs"></i> <span class="nav-text">Administración</span> <span class="caret"></span><span class="nav-text-tooltip">Administración</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a runat="server" href="~/Admin/GestionClientes.aspx"><i class="fas fa-users"></i> <span class="nav-text">Clientes</span></a></li>
+                            <li><a runat="server" href="~/Admin/GestionEmpleados.aspx"><i class="fas fa-user-tie"></i> <span class="nav-text">Empleados</span></a></li>
+                            <li class="divider"></li>
+                            <li><a runat="server" href="~/Admin/GestionTiposHabitacion.aspx"><i class="fas fa-door-closed"></i> <span class="nav-text">Tipos Habitación</span></a></li>
+                            <li><a runat="server" href="~/Admin/GestionHabitaciones.aspx"><i class="fas fa-bed"></i> <span class="nav-text">Habitaciones</span></a></li>
+                            <li class="divider"></li>
+                            <li><a runat="server" href="~/Admin/GestionSalonesEvento.aspx"><i class="fas fa-building"></i> <span class="nav-text">Salones Evento</span></a></li>
+                            <li><a runat="server" href="~/Admin/GestionTiposEvento.aspx"><i class="fas fa-calendar-day"></i> <span class="nav-text">Tipos de Evento</span></a></li>
+                            <li><a runat="server" href="~/Admin/GestionServiciosAdicionales.aspx"><i class="fas fa-concierge-bell"></i> <span class="nav-text">Servicios Eventos</span></a></li>
+                        </ul>
+                    </li>
                 </asp:PlaceHolder>
             </ul>
-        </div>
-    </div>
-</nav>
+        </aside>
         
-        <div class="container body-content">
+        <main class="main-content" id="mainContent">
             <asp:ContentPlaceHolder ID="MainContent" runat="server">
             </asp:ContentPlaceHolder>
-            <hr />
-            <footer>
-                <p>&copy; <%: DateTime.Now.Year %> - Hotel Aurora Dreams Resort & Spa</p>
-            </footer>
-        </div>
+        </main>
+
+        <footer class="footer">
+             <div class="container">
+                <p>&copy; <%: DateTime.Now.Year %> - Hotel Aurora Dreams Resort & Spa. Todos los derechos reservados.</p>
+            </div>
+        </footer>
     </form>
+
+    <script type="text/javascript">
+        if (window.jQuery) {
+            $(document).ready(function () {
+                var sidebar = $('.sidebar');
+                var body = $('body');
+
+                $('#sidebarToggle').on('click', function () {
+                    sidebar.toggleClass('collapsed');
+                    body.toggleClass('sidebar-collapsed');
+                });
+
+                $('.sidebar .nav-item.has-submenu > a.dropdown-toggle-link[href="#"]').on('click', function (e) {
+                    e.preventDefault();
+                });
+
+                sidebar.on('mouseenter', '.nav-item > a, .nav-item > .dropdown-toggle-link', function () {
+                    if (sidebar.hasClass('collapsed') && $(this).find('.nav-text').length > 0) {
+                        var tooltipText = $(this).find('.nav-text').first().text();
+                        if (tooltipText) {
+                            var $tooltip = $('<span class="nav-text-tooltip"></span>').text(tooltipText);
+                            $(this).append($tooltip);
+                        }
+                    }
+                }).on('mouseleave', '.nav-item > a, .nav-item > .dropdown-toggle-link', function () {
+                    if (sidebar.hasClass('collapsed')) {
+                        $(this).find('.nav-text-tooltip').remove();
+                    }
+                });
+            });
+        } else {
+            console.error("jQuery no está cargado. Funcionalidades del menú podrían no operar.");
+        }
+    </script>
 </body>
 </html>

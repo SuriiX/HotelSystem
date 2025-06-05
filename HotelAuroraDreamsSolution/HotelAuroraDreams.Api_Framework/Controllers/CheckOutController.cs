@@ -60,9 +60,9 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             {
                 return NotFoundResultWithMessage($"Reserva con ID {model.ReservaID} no encontrada.");
             }
-            if (reserva.Estado != "Hospedado") // Solo se puede hacer check-out si está "Hospedado"
+            if (reserva.estado != "Hospedado") // Solo se puede hacer check-out si está "Hospedado"
             {
-                return BadRequest($"La reserva ID {model.ReservaID} no está en estado 'Hospedado'. Estado actual: {reserva.Estado}.");
+                return BadRequest($"La reserva ID {model.ReservaID} no está en estado 'Hospedado'. Estado actual: {reserva.estado}.");
             }
 
 
@@ -92,7 +92,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 try
                 {
                     decimal subtotalHabitaciones = 0;
-                    int noches = Math.Max(1, (reserva.fecha_salida.Date - reserva.FechaEntrada.Date).Days); // Noches reservadas
+                    int noches = Math.Max(1, (reserva.fecha_salida.Date - reserva.fecha_entrada.Date).Days); // Noches reservadas
 
                     foreach (var rh in reserva.Reserva_Habitacion)
                     {
@@ -113,7 +113,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     Factura nuevaFactura = new Factura
                     {
                         reserva_id = reserva.reserva_id,
-                        cliente_id = reserva.ClienteID,
+                        cliente_id = reserva.cliente_id,
                         fecha_emision = DateTime.Now,
                         subtotal = subtotalGeneral,
                         impuestos = impuestosCalculados,
@@ -166,7 +166,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                         observaciones = model.Observaciones
                     };
                     db.CheckOuts.Add(nuevoCheckOut);
-                    reserva.Estado = "Completada";
+                    reserva.estado = "Completada";
                     db.Entry(reserva).State = EntityState.Modified;
 
                     foreach (var reservaHabitacion in reserva.Reserva_Habitacion)

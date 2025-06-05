@@ -1,7 +1,6 @@
-﻿// File: Site.Master.cs
-using System;
-using System.Collections.Generic; // Para IList<string>
-using System.Linq; // Para .Contains()
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
@@ -18,18 +17,16 @@ namespace HotelAuroraDreams.WebApp_Framework
                 bool isAdmin = false;
                 bool isEmployee = false;
 
-                // Verificar si el usuario está autenticado (cookie Y UserFullName en Sesión)
                 if (Request.Cookies["AuthTokenHotel"] != null &&
                     !string.IsNullOrEmpty(Request.Cookies["AuthTokenHotel"].Value) &&
                     Session["UserFullName"] != null)
                 {
                     isAuthenticated = true;
-                    if (lblUserFullNameMaster != null) // Siempre verificar que el control exista
+                    if (lblUserFullNameMaster != null)
                     {
                         lblUserFullNameMaster.Text = $"Hola, {Session["UserFullName"]}";
                     }
 
-                    // Obtener roles de la Sesión (deberían haberse establecido después del login)
                     var userRoles = Session["UserRoles"] as IList<string>;
                     if (userRoles != null)
                     {
@@ -37,7 +34,6 @@ namespace HotelAuroraDreams.WebApp_Framework
                         {
                             isAdmin = true;
                         }
-                        // Un Administrador también puede ser considerado Empleado para ciertos menús
                         if (userRoles.Contains("Empleado") || isAdmin)
                         {
                             isEmployee = true;
@@ -45,34 +41,34 @@ namespace HotelAuroraDreams.WebApp_Framework
                     }
                 }
 
-                // Configurar visibilidad de placeholders de Login/Logout
                 if (isAuthenticated)
                 {
                     if (phLogin != null) phLogin.Visible = false;
                     if (phUserInfo != null) phUserInfo.Visible = true;
+
+                    if (isAdmin)
+                    {
+                        if (phAdminMenu != null) phAdminMenu.Visible = true;
+                        if (phOperationsMenu != null) phOperationsMenu.Visible = true;
+                    }
+                    else if (isEmployee)
+                    {
+                        if (phAdminMenu != null) phAdminMenu.Visible = false;
+                        if (phOperationsMenu != null) phOperationsMenu.Visible = true;
+                    }
+                    else
+                    {
+                        if (phAdminMenu != null) phAdminMenu.Visible = false;
+                        if (phOperationsMenu != null) phOperationsMenu.Visible = false;
+                    }
                 }
                 else
                 {
                     if (phLogin != null) phLogin.Visible = true;
                     if (phUserInfo != null) phUserInfo.Visible = false;
-                }
-
-                // Configurar visibilidad de placeholders de Menús de Operaciones y Administración
-                // Asegurarse de que los placeholders existan antes de intentar acceder a .Visible
-                if (phAdminMenu != null) phAdminMenu.Visible = false;
-                if (phOperationsMenu != null) phOperationsMenu.Visible = false;
-
-                if (isAdmin) // Si es Administrador, tiene acceso a todo
-                {
-                    if (phAdminMenu != null) phAdminMenu.Visible = true;
-                    if (phOperationsMenu != null) phOperationsMenu.Visible = true;
-                }
-                else if (isEmployee) // Si es Empleado (pero no Admin), solo ve operaciones
-                {
                     if (phAdminMenu != null) phAdminMenu.Visible = false;
-                    if (phOperationsMenu != null) phOperationsMenu.Visible = true;
+                    if (phOperationsMenu != null) phOperationsMenu.Visible = false;
                 }
-                // Si no es ni Admin ni Empleado (o no está autenticado), ambos menús específicos de rol permanecen ocultos (su valor por defecto o el false que se les asignó arriba).
             }
         }
 

@@ -1,4 +1,4 @@
-﻿// File: ~/Controllers/ReservasEventoController.csMore actions
+﻿// File: ~/Controllers/ReservasEventoController.cs
 using HotelAuroraDreams.Api_Framework.IdentityModels;
 using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
@@ -18,7 +18,7 @@ using System.Web.Http.Description;
 namespace HotelAuroraDreams.Api_Framework.Controllers
 {
     [RoutePrefix("api/ReservasEvento")]
-    [Authorize(Roles = "Empleado, Administrador")] // Empleados pueden crear y ver, Admin puede todo
+    [Authorize(Roles = "Empleado, Administrador")]
     public class ReservasEventoController : ApiController
     {
         private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
@@ -31,9 +31,12 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         }
 
         public ReservasEventoController() { }
-        public ReservasEventoController(ApplicationUserManager userManager) { UserManager = userManager; }
 
-        // POST: api/ReservasEvento/DisponibilidadSalon
+        public ReservasEventoController(ApplicationUserManager userManager)
+        {
+            UserManager = userManager;
+        }
+
         [HttpPost]
         [Route("DisponibilidadSalon")]
         [ResponseType(typeof(SalonDisponibleViewModel))]
@@ -50,6 +53,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
 
             try
             {
+                // Asume DbSet: db.SalonEventoes
                 var salon = await db.SalonEventoes.FindAsync(requestDto.SalonEventoID);
 
                 if (salon == null || salon.EstaActivo != true)
@@ -63,12 +67,10 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     });
                 }
 
-                // Verificar solapamientos de fecha y hora
-                // Un salón está ocupado si: (InicioEventoExistente < FinSolicitado) Y (FinEventoExistente > InicioSolicitado) en la misma fecha.
-                bool ocupado = await db.ReservaEventoes
+                bool ocupado = await db.ReservaEventoes // Asume DbSet: db.ReservaEventoes
                     .AnyAsync(re => re.SalonEventoID == requestDto.SalonEventoID &&
                                    re.FechaEvento == requestDto.FechaEvento.Date &&
-                                   (re.Estado == "Confirmada" || re.Estado == "En Curso") && // Solo contra reservas activas
+                                   (re.Estado == "Confirmada" || re.Estado == "En Curso") &&
                                    (re.HoraInicio < requestDto.HoraFin && re.HoraFin > requestDto.HoraInicio)
                               );
 
@@ -85,8 +87,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-
-        // POST: api/ReservasEvento
         [HttpPost]
         [Route("")]
         [ResponseType(typeof(ReservaEventoViewModel))]
@@ -103,6 +103,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
 
             string empleadoAspNetUserId = User.Identity.GetUserId();
             var empleadoAppUser = await UserManager.FindByIdAsync(empleadoAspNetUserId);
+            // Asume DbSet: db.Empleadoes
             var empleadoDb = await db.Empleadoes.FirstOrDefaultAsync(e => e.email == empleadoAppUser.Email);
             if (empleadoDb == null)
             {
@@ -110,8 +111,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
             int empleadoResponsableIdInt = empleadoDb.empleado_id;
 
-            // Re-verificar disponibilidad del salón
-            bool salonOcupado = await db.ReservaEventoes
+            bool salonOcupado = await db.ReservaEventoes // Asume DbSet: db.ReservaEventoes
                     .AnyAsync(re => re.SalonEventoID == model.SalonEventoID &&
                                    re.FechaEvento == model.FechaEvento.Date &&
                                    (re.Estado == "Confirmada" || re.Estado == "En Curso") &&
@@ -122,10 +122,9 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return Content(HttpStatusCode.Conflict, new { Message = $"El salón ya no está disponible para la fecha y hora seleccionadas." });
             }
 
-
+            // Asume DbSet: db.SalonEventoes
             var salon = await db.SalonEventoes.FindAsync(model.SalonEventoID);
             if (salon == null) return BadRequest("Salón no válido.");
-
 
             using (var transaction = db.Database.BeginTransaction())
             {
@@ -143,7 +142,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                         HoraFin = model.HoraFin,
                         NumeroAsistentesEstimado = model.NumeroAsistentesEstimado,
                         EmpleadoResponsableID = empleadoResponsableIdInt,
-                        Estado = "Solicitada", // O "Confirmada" directamente si el flujo lo permite
+                        Estado = "Solicitada",
                         Notas = model.NotasGenerales,
                         MontoEstimadoSalon = salon.PrecioPorHora.HasValue ?
                                             Convert.ToDecimal((model.HoraFin - model.HoraInicio).TotalHours) * salon.PrecioPorHora.Value :
@@ -151,13 +150,14 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     };
 
                     decimal montoEstimadoServicios = 0;
-                    db.ReservaEventoes.Add(nuevaReservaEvento);
-                    await db.SaveChangesAsync(); // Guardar para obtener nuevaReservaEvento.ReservaEventoID
+                    db.ReservaEventoes.Add(nuevaReservaEvento); // Asume DbSet: db.ReservaEventoes
+                    await db.SaveChangesAsync();
 
                     if (model.ServiciosAdicionales != null)
                     {
                         foreach (var servicioInput in model.ServiciosAdicionales)
                         {
+                            // Asume DbSet: db.ServicioAdicionalEventoes
                             var servicioCatalogo = await db.ServicioAdicionalEventoes.FindAsync(servicioInput.ServicioAdicionalID);
                             if (servicioCatalogo == null) throw new Exception($"Servicio adicional ID {servicioInput.ServicioAdicionalID} no encontrado.");
 
@@ -166,21 +166,19 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                                 ReservaEventoID = nuevaReservaEvento.ReservaEventoID,
                                 ServicioAdicionalID = servicioInput.ServicioAdicionalID,
                                 Cantidad = servicioInput.Cantidad,
-                                PrecioCobradoPorUnidad = servicioInput.PrecioCobradoPorUnidad, // Usar el precio del input
+                                PrecioCobradoPorUnidad = servicioInput.PrecioCobradoPorUnidad,
                                 Notas = servicioInput.Notas
-                                // El subtotal es una columna calculada en la BD
                             };
                             db.ReservaEvento_Servicio.Add(res_srv);
                             montoEstimadoServicios += (servicioInput.PrecioCobradoPorUnidad * servicioInput.Cantidad);
                         }
                     }
                     nuevaReservaEvento.MontoEstimadoServicios = montoEstimadoServicios;
-                    db.Entry(nuevaReservaEvento).State = EntityState.Modified; // Para guardar el monto de servicios
+                    db.Entry(nuevaReservaEvento).State = EntityState.Modified;
 
                     await db.SaveChangesAsync();
                     transaction.Commit();
 
-                    // Construir y devolver el ViewModel completo
                     var viewModel = await GetReservaEventoViewModelById(nuevaReservaEvento.ReservaEventoID);
                     return CreatedAtRoute("GetReservaEventoById", new { id = nuevaReservaEvento.ReservaEventoID }, viewModel);
                 }
@@ -192,33 +190,43 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-        // GET: api/ReservasEvento
         [HttpGet]
         [Route("")]
-        public async Task<IHttpActionResult> GetReservasEvento([FromUri] int? clienteId = null, [FromUri] int? salonId = null, [FromUri] DateTime? fecha = null)
+        [ResponseType(typeof(List<ReservaEventoListItemDto>))]
+        public async Task<IHttpActionResult> GetReservasEvento(
+            [FromUri] int? clienteId = null,
+            [FromUri] int? salonId = null,
+            [FromUri] DateTime? fecha = null,
+            [FromUri] string estado = null)
         {
             try
             {
-                var query = db.ReservaEventoes.AsQueryable();
+                var query = db.ReservaEventoes // Asume DbSet: db.ReservaEventoes
+                              .Include(re => re.Cliente)
+                              .Include(re => re.SalonEvento)
+                              .AsQueryable();
+
                 if (clienteId.HasValue) query = query.Where(re => re.ClienteID == clienteId.Value);
                 if (salonId.HasValue) query = query.Where(re => re.SalonEventoID == salonId.Value);
-                if (fecha.HasValue) query = query.Where(re => re.FechaEvento == fecha.Value.Date);
+                if (fecha.HasValue) query = query.Where(re => DbFunctions.TruncateTime(re.FechaEvento) == DbFunctions.TruncateTime(fecha.Value));
+                if (!string.IsNullOrWhiteSpace(estado)) query = query.Where(re => re.Estado.ToLower() == estado.ToLower());
 
-                var reservas = await query
-                    .OrderByDescending(re => re.FechaEvento).ThenByDescending(re => re.HoraInicio)
-                    .Select(re => new // Proyección simplificada para la lista
+                var reservasViewModel = await query
+                    .OrderByDescending(re => re.FechaEvento)
+                    .ThenByDescending(re => re.HoraInicio)
+                    .Select(re => new ReservaEventoListItemDto
                     {
-                        re.ReservaEventoID,
-                        re.NombreEvento,
-                        re.Cliente.nombre,
-                        re.Cliente.apellido,
-                        NombreSalon = re.SalonEvento.Nombre,
-                        re.FechaEvento,
-                        re.HoraInicio,
-                        re.Estado
+                        ReservaEventoID = re.ReservaEventoID,
+                        NombreEvento = re.NombreEvento,
+                        NombreCliente = (re.Cliente != null) ? (re.Cliente.nombre + " " + re.Cliente.apellido) : "N/A",
+                        NombreSalon = (re.SalonEvento != null) ? re.SalonEvento.Nombre : "N/A",
+                        FechaEvento = re.FechaEvento,
+                        HoraInicio = re.HoraInicio, // HoraInicio es TimeSpan
+                        Estado = re.Estado
                     })
                     .ToListAsync();
-                return Ok(reservas);
+
+                return Ok(reservasViewModel);
             }
             catch (Exception ex)
             {
@@ -226,7 +234,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-        // GET: api/ReservasEvento/5
         [HttpGet]
         [Route("{id:int}", Name = "GetReservaEventoById")]
         [ResponseType(typeof(ReservaEventoViewModel))]
@@ -237,7 +244,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             return Ok(viewModel);
         }
 
-        // PUT: api/ReservasEvento/5
         [HttpPut]
         [Route("{id:int}")]
         [ResponseType(typeof(void))]
@@ -245,7 +251,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             if (model == null || !ModelState.IsValid) return BadRequest(ModelState);
 
-            var reservaEvento = await db.ReservaEventoes
+            var reservaEvento = await db.ReservaEventoes // Asume DbSet
                                         .Include(re => re.ReservaEvento_Servicio)
                                         .FirstOrDefaultAsync(re => re.ReservaEventoID == id);
 
@@ -264,15 +270,15 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     reservaEvento.NumeroAsistentesEstimado = model.NumeroAsistentesEstimado;
                     reservaEvento.NumeroAsistentesConfirmado = model.NumeroAsistentesConfirmado;
                     reservaEvento.Notas = model.NotasGenerales;
-                    reservaEvento.Estado = model.Estado; // Validar que sea un estado permitido
+                    reservaEvento.Estado = model.Estado;
 
-                    // Actualizar servicios: eliminar los existentes y añadir los nuevos
                     db.ReservaEvento_Servicio.RemoveRange(reservaEvento.ReservaEvento_Servicio);
                     decimal nuevoMontoServicios = 0;
                     if (model.ServiciosAdicionales != null)
                     {
                         foreach (var servicioInput in model.ServiciosAdicionales)
                         {
+                            // Asume DbSet: db.ServicioAdicionalEventoes
                             var servicioCatalogo = await db.ServicioAdicionalEventoes.FindAsync(servicioInput.ServicioAdicionalID);
                             if (servicioCatalogo == null) throw new Exception($"Servicio adicional ID {servicioInput.ServicioAdicionalID} no encontrado.");
 
@@ -288,7 +294,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                         }
                     }
                     reservaEvento.MontoEstimadoServicios = nuevoMontoServicios;
-                    // Recalcular MontoEstimadoSalon si la duración o el salón cambiaran (no permitido en este DTO simple)
 
                     db.Entry(reservaEvento).State = EntityState.Modified;
                     await db.SaveChangesAsync();
@@ -303,12 +308,11 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-
-        // POST: api/ReservasEvento/{id}/Cancelar
         [HttpPost]
         [Route("{id:int}/Cancelar")]
         public async Task<IHttpActionResult> CancelarReservaEvento(int id)
         {
+            // Asume DbSet: db.ReservaEventoes
             var reservaEvento = await db.ReservaEventoes.FindAsync(id);
             if (reservaEvento == null) return NotFound();
 
@@ -322,14 +326,14 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             return Ok(new { Message = "Reserva de evento cancelada exitosamente." });
         }
 
-
         private async Task<ReservaEventoViewModel> GetReservaEventoViewModelById(int id)
         {
+            // Asume DbSet: db.ReservaEventoes
             var re = await db.ReservaEventoes
                 .Include(r => r.Cliente)
-                .Include(r => r.SalonEvento.Hotel) // Para nombre del hotel
+                .Include(r => r.SalonEvento.Hotel)
                 .Include(r => r.TipoEvento)
-                .Include(r => r.Empleado) // Empleado responsable
+                .Include(r => r.Empleado)
                 .Include(r => r.ReservaEvento_Servicio.Select(rs => rs.ServicioAdicionalEvento))
                 .FirstOrDefaultAsync(r => r.ReservaEventoID == id);
 
@@ -337,12 +341,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
 
             decimal montoTotalServicios = re.ReservaEvento_Servicio.Sum(rs => rs.Cantidad * rs.PrecioCobradoPorUnidad);
             decimal montoSalon = re.MontoEstimadoSalon ?? 0;
-            // Si el precio del salón es por hora y se quiere calcular aquí:
-            // if (re.SalonEvento.PrecioPorHora.HasValue)
-            // {
-            //     montoSalon = Convert.ToDecimal((re.HoraFin - re.HoraInicio).TotalHours) * re.SalonEvento.PrecioPorHora.Value;
-            // }
-
 
             return new ReservaEventoViewModel
             {
@@ -354,7 +352,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 TipoEventoID = re.TipoEventoID,
                 NombreTipoEvento = re.TipoEvento?.NombreTipo,
                 NombreEvento = re.NombreEvento,
-                FechaSolicitud = (DateTime)re.FechaSolicitud,
+                FechaSolicitud = (DateTime)re.FechaSolicitud, // Quitado el casting (DateTime)
                 FechaEvento = re.FechaEvento,
                 HoraInicio = re.HoraInicio,
                 HoraFin = re.HoraFin,
@@ -365,14 +363,14 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 NotasGenerales = re.Notas,
                 MontoEstimadoSalon = montoSalon,
                 MontoEstimadoServicios = montoTotalServicios,
-                MontoTotalEvento = montoSalon + montoTotalServicios, // Simplificado, añadir impuestos si aplica
+                MontoTotalEvento = montoSalon + montoTotalServicios,
                 ServiciosAdicionales = re.ReservaEvento_Servicio.Select(rs => new ReservaEventoServicioViewModel
                 {
                     ServicioAdicionalID = rs.ServicioAdicionalID,
                     NombreServicio = rs.ServicioAdicionalEvento.NombreServicio,
                     Cantidad = rs.Cantidad,
                     PrecioCobradoPorUnidad = rs.PrecioCobradoPorUnidad,
-                    Subtotal = (decimal)rs.Subtotal, // Ya es calculado
+                    Subtotal = (decimal)rs.Subtotal, // Quitado el casting (decimal)
                     Notas = rs.Notas
                 }).ToList()
             };

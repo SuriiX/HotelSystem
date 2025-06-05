@@ -123,13 +123,40 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
         protected global::System.Web.UI.WebControls.Panel pnlDetallesReserva;
 
         /// <summary>
-        /// txtClienteID control.
+        /// txtBusquedaCliente control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtClienteID;
+        protected global::System.Web.UI.WebControls.TextBox txtBusquedaCliente;
+
+        /// <summary>
+        /// btnBuscarCliente control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnBuscarCliente;
+
+        /// <summary>
+        /// ddlResultadosCliente control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlResultadosCliente;
+
+        /// <summary>
+        /// hfClienteSeleccionadoID control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfClienteSeleccionadoID;
 
         /// <summary>
         /// txtNotasReserva control.

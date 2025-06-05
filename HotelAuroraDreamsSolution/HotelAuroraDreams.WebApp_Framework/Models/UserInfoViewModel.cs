@@ -1,8 +1,9 @@
 ﻿
+using System;
 using System.Collections.Generic;
 
-
-    public class UserInfoViewModel
+[Serializable]
+public class UserInfoViewModel
     {
         public string Id { get; set; }
         public string Email { get; set; }

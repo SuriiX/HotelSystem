@@ -56,11 +56,11 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             {
                 return NotFoundResultWithMessage($"Reserva con ID {model.ReservaID} no encontrada.");
             }
-            if (reserva.Estado != "Confirmada")
+            if (reserva.estado != "Confirmada")
             {
-                return BadRequest($"La reserva ID {model.ReservaID} no está en estado 'Confirmada'. Estado actual: {reserva.Estado}.");
+                return BadRequest($"La reserva ID {model.ReservaID} no está en estado 'Confirmada'. Estado actual: {reserva.estado}.");
             }
-            if (reserva.FechaEntrada.Date > DateTime.Today)
+            if (reserva.fecha_entrada.Date > DateTime.Today)
             {
             }
             if (await db.CheckIns.AnyAsync(ci => ci.reserva_id == model.ReservaID))
@@ -95,7 +95,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             db.CheckIns.Add(nuevoCheckIn);
 
             // 3. Actualizar Estado de la Reserva
-            reserva.Estado = "Hospedado"; // Nuevo estado
+            reserva.estado = "Hospedado"; // Nuevo estado
             db.Entry(reserva).State = EntityState.Modified;
 
             // 4. Actualizar Estado de las Habitaciones a "Ocupada"
@@ -122,7 +122,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return InternalServerError(new Exception($"Error general al procesar check-in: {ex.ToString()}"));
             }
 
-            var cliente = await db.Clientes.FindAsync(reserva.ClienteID);
+            var cliente = await db.Clientes.FindAsync(reserva.cliente_id);
 
             var viewModel = new CheckInViewModel
             {

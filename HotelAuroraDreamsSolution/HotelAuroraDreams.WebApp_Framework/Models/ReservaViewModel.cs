@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 namespace HotelAuroraDreams.WebApp_Framework.Models
 {
+    [Serializable]
     public class ReservaHabitacionViewModel
     {
         public int ReservaHabitacionID { get; set; }
@@ -13,7 +14,7 @@ namespace HotelAuroraDreams.WebApp_Framework.Models
         public decimal PrecioNocheCobrado { get; set; }
         public string EstadoAsignacion { get; set; }
     }
-
+    [Serializable]
     public class ReservaViewModel
     {
         public int ReservaID { get; set; }

@@ -106,7 +106,7 @@ namespace HotelAuroraDreams.WebApp_Framework.Eventos
                 var queryParams = new List<string>();
                 if (!string.IsNullOrWhiteSpace(clienteId) && clienteId != "0") queryParams.Add($"clienteId={clienteId}");
                 if (!string.IsNullOrWhiteSpace(salonId) && salonId != "0") queryParams.Add($"salonId={salonId}");
-                if (!string.IsNullOrWhiteSpace(fechaEvento)) queryParams.Add($"fecha={HttpUtility.UrlEncode(fechaEvento)}");
+                if (!string.IsNullOrWhiteSpace(fechaEvento)) queryParams.Add($"fecha={HttpUtility.UrlEncode(fechaEvento)}"); // 'fecha' es el nombre del parámetro en la API
                 if (!string.IsNullOrWhiteSpace(estado)) queryParams.Add($"estado={HttpUtility.UrlEncode(estado)}");
 
                 string queryString = queryParams.Any() ? "?" + string.Join("&", queryParams) : "";
@@ -116,12 +116,17 @@ namespace HotelAuroraDreams.WebApp_Framework.Eventos
                 if (response.IsSuccessStatusCode)
                 {
                     var jsonResponse = await response.Content.ReadAsStringAsync();
-                    // La API devuelve una lista simplificada para el grid (NombreEvento, Cliente, Salon, Fecha, Estado)
-                    var reservas = JsonConvert.DeserializeObject<List<object>>(jsonResponse); // O un DTO específico si la API lo devuelve
+                    // ***** CAMBIO IMPORTANTE AQUÍ *****
+                    var reservas = JsonConvert.DeserializeObject<List<ReservaEventoListItemDto>>(jsonResponse);
+
                     gvReservasEvento.DataSource = reservas;
                     gvReservasEvento.DataBind();
                 }
-                else { ShowError($"Error al cargar reservas de evento: {response.StatusCode}"); }
+                else
+                {
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    ShowError($"Error al cargar reservas de evento: {response.StatusCode} - {errorContent.Substring(0, Math.Min(errorContent.Length, 200))}");
+                }
             }
             catch (Exception ex) { ShowError($"Error de conexión: {ex.Message}"); }
         }

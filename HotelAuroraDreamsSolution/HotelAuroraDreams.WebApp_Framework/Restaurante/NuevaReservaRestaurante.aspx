@@ -12,7 +12,6 @@
                 <asp:Label runat="server" AssociatedControlID="ddlClienteRestaurante" CssClass="col-md-2 control-label">Cliente:</asp:Label>
                 <div class="col-md-10">
                     <asp:DropDownList ID="ddlClienteRestaurante" runat="server" CssClass="form-control" DataTextField="NombreCompleto" DataValueField="ClienteID" AppendDataBoundItems="true">
-                         <asp:ListItem Text="-- Seleccione Cliente --" Value="0"></asp:ListItem>
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlClienteRestaurante" ErrorMessage="Cliente es requerido." CssClass="text-danger" Display="Dynamic" InitialValue="0" ValidationGroup="ReservaRestVal"/>
                 </div>
@@ -21,7 +20,6 @@
                 <asp:Label runat="server" AssociatedControlID="ddlRestaurante" CssClass="col-md-2 control-label">Restaurante:</asp:Label>
                 <div class="col-md-10">
                     <asp:DropDownList ID="ddlRestaurante" runat="server" CssClass="form-control" DataTextField="Nombre" DataValueField="RestauranteID" AutoPostBack="true" OnSelectedIndexChanged="ddlRestaurante_SelectedIndexChanged" AppendDataBoundItems="true">
-                         <asp:ListItem Text="-- Seleccione Restaurante --" Value="0"></asp:ListItem>
                     </asp:DropDownList>
                      <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlRestaurante" ErrorMessage="Restaurante es requerido." CssClass="text-danger" Display="Dynamic" InitialValue="0" ValidationGroup="ReservaRestVal"/>
                 </div>
@@ -48,7 +46,7 @@
                     <asp:RangeValidator runat="server" ControlToValidate="txtNumComensalesRestaurante" MinimumValue="1" MaximumValue="100" Type="Integer" ErrorMessage="N° comensales inválido." CssClass="text-danger" Display="Dynamic" ValidationGroup="ReservaRestVal"/>
                 </div>
             </div>
-             <div class="form-group">
+             <div class="form-group">s
                  <div class="col-md-offset-2 col-md-10">
                     <asp:Button ID="btnVerificarDisponibilidadRestaurante" runat="server" Text="Verificar Disponibilidad" OnClick="btnVerificarDisponibilidadRestaurante_Click" CssClass="btn btn-info" ValidationGroup="ReservaRestValFechas" />
                     <asp:Label ID="lblDisponibilidadRestaurante" runat="server" EnableViewState="false" style="margin-left:10px; font-weight:bold;"></asp:Label>

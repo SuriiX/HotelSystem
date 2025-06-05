@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HotelAuroraDreams.WebApp_Framework.Models
 {
+    [Serializable]
     public class SalonDisponibilidadRequestDto
     {
         [Required]

@@ -1,4 +1,4 @@
-﻿// T4 code generation is enabled for model 'C:\Users\Admin\Desktop\Servicios web\HotelAuroraDreamsSolution\HotelAuroraDreams.Api_Framework\Models\HotelDBModel.edmx'. 
+﻿// T4 code generation is enabled for model 'C:\Users\Admin\Desktop\Proyecto\HotelAuroraDreamsSolution\HotelAuroraDreams.Api_Framework\Models\HotelDBModel.edmx'. 
 // To enable legacy code generation, change the value of the 'Code Generation Strategy' designer
 // property to 'Legacy ObjectContext'. This property is available in the Properties Window when the model
 // is open in the designer.

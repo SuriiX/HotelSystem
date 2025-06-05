@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="713abb0d23eb474eb22dd8bdc2cca660" Name="Diagram1">
+      <Diagram DiagramId="713abb0d23eb474eb22dd8bdc2cca660" Name="Diagram1" ZoomLevel="74">
         <EntityTypeShape EntityType="HotelManagementSystemModel.Cadena_Hotelera" Width="1.5" PointX="0.75" PointY="26.375" IsExpanded="true" />
         <EntityTypeShape EntityType="HotelManagementSystemModel.Cargo" Width="1.5" PointX="6" PointY="19.625" IsExpanded="true" />
         <EntityTypeShape EntityType="HotelManagementSystemModel.CheckIn" Width="1.5" PointX="13.5" PointY="27.375" IsExpanded="true" />
@@ -98,6 +98,14 @@
         <AssociationConnector Association="HotelManagementSystemModel.FK__ReservaEv__Servi__73852659" ManuallyRouted="false" />
         <AssociationConnector Association="HotelManagementSystemModel.FK__Servicio__tipo_s__74AE54BC" ManuallyRouted="false" />
         <AssociationConnector Association="HotelManagementSystemModel.FK__Transport__tipo___1332DBDC" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.C__MigrationHistory" Width="1.5" PointX="5.75" PointY="0.75" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.AspNetRole" Width="1.5" PointX="0.75" PointY="7.375" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.AspNetUserClaim" Width="1.5" PointX="5.25" PointY="8.375" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.AspNetUserLogin" Width="1.5" PointX="5.25" PointY="5.875" />
+        <EntityTypeShape EntityType="HotelManagementSystemModel.AspNetUser" Width="1.5" PointX="3" PointY="5.125" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK_dbo_AspNetUserClaims_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="HotelManagementSystemModel.FK_dbo_AspNetUserLogins_dbo_AspNetUsers_UserId" />
+        <AssociationConnector Association="HotelManagementSystemModel.AspNetUserRoles" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

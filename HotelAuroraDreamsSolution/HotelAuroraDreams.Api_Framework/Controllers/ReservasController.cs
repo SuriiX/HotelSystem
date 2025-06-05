@@ -1,18 +1,19 @@
-﻿using HotelAuroraDreams.Api_Framework.IdentityModels;
-using HotelAuroraDreams.Api_Framework.Models.DTO;
+﻿// File: ~/Controllers/ReservasController.cs
+using HotelAuroraDreams.Api_Framework.IdentityModels;
 using HotelAuroraDreams.Api_Framework.Models;
+using HotelAuroraDreams.Api_Framework.Models.DTO;
 using Microsoft.AspNet.Identity;
-using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity;
-using System.Net;
-using System.Threading.Tasks;
-using System.Web.Http.Description;
-using System.Web.Http;
-using System;
-using System.Linq;
-using System.Web;
 using Microsoft.AspNet.Identity.Owin;
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Http.Description;
 
 namespace HotelAuroraDreams.Api_Framework.Controllers
 {
@@ -25,7 +26,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
 
         public ApplicationUserManager UserManager
         {
-            get => _userManager ?? System.Web.HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+            get => _userManager ?? Request.GetOwinContext().GetUserManager<ApplicationUserManager>();
             private set => _userManager = value;
         }
 
@@ -72,20 +73,20 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     {
                         h.habitacion_id,
                         h.numero,
+                        h.piso,
+                        h.vista,
                         h.Tipo_Habitacion.tipo_habitacion_id,
                         NombreTipoHabitacion = h.Tipo_Habitacion.nombre,
                         DescripcionTipoHabitacion = h.Tipo_Habitacion.descripcion,
                         PrecioNoche = h.Tipo_Habitacion.precio_base,
                         h.Tipo_Habitacion.capacidad,
-                        h.Tipo_Habitacion.comodidades,
-                        h.vista,
-                        h.piso
+                        h.Tipo_Habitacion.comodidades
                     })
                     .ToListAsync();
 
                 var idsHabitacionesOcupadas = await db.Reserva_Habitacion
                     .Where(rh =>
-                        (rh.Reserva.estado == "Confirmada" || rh.Reserva.estado == "Completada") &&
+                        (rh.Reserva.estado == "Confirmada" || rh.Reserva.estado == "Hospedado" || rh.Reserva.estado == "Completada") &&
                         rh.Reserva.hotel_id == requestDto.HotelID &&
                         (rh.Reserva.fecha_entrada < requestDto.FechaSalida && rh.Reserva.fecha_salida > requestDto.FechaEntrada)
                     )
@@ -141,6 +142,13 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return BadRequest("Debe seleccionar al menos una habitación.");
             }
 
+            var clienteExiste = await db.Clientes.AnyAsync(c => c.cliente_id == model.ClienteID);
+            if (!clienteExiste)
+            {
+                ModelState.AddModelError("ClienteID", $"El cliente con ID {model.ClienteID} no existe.");
+                return BadRequest(ModelState);
+            }
+
             string empleadoAspNetUserId = User.Identity.GetUserId();
             var empleadoAppUser = await UserManager.FindByIdAsync(empleadoAspNetUserId);
             if (empleadoAppUser == null)
@@ -155,24 +163,13 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
             int empleadoRegistroIdInt = empleadoDb.empleado_id;
 
-            Reserva nuevaReserva = new Reserva
-            {
-                ClienteID = model.ClienteID,
-                HotelID = model.HotelID,
-                FechaReserva = DateTime.Now,
-                FechaEntrada = model.FechaEntrada,
-                fecha_salida = model.FechaSalida,
-                Estado = "Confirmada",
-                numero_huespedes = model.NumeroHuespedes,
-                notas = model.Notas,
-                empleado_registro_id = empleadoRegistroIdInt
-            };
+            Reserva nuevaReserva = null;
 
             try
             {
                 var idsHabitacionesOcupadas = await db.Reserva_Habitacion
                     .Where(rh => model.HabitacionIDsSeleccionadas.Contains(rh.habitacion_id) &&
-                                 (rh.Reserva.estado == "Confirmada") &&
+                                 (rh.Reserva.estado == "Confirmada" || rh.Reserva.estado == "Hospedado") &&
                                  (rh.Reserva.fecha_entrada < model.FechaSalida && rh.Reserva.fecha_salida > model.FechaEntrada))
                     .Select(rh => rh.habitacion_id)
                     .Distinct()
@@ -183,9 +180,22 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     var habitacionesNoDisponiblesNros = await db.Habitacions
                         .Where(h => idsHabitacionesOcupadas.Contains(h.habitacion_id))
                         .Select(h => h.numero).ToListAsync();
-                    return Content(HttpStatusCode.Conflict, new { Message = $"Una o más habitaciones seleccionadas ({string.Join(", ", habitacionesNoDisponiblesNros)}) ya no están disponibles para estas fechas." });
+                    string msgHabitaciones = string.Join(", ", habitacionesNoDisponiblesNros);
+                    return Content(HttpStatusCode.Conflict, new { Message = $"Una o más habitaciones seleccionadas ({msgHabitaciones}) ya no están disponibles para estas fechas." });
                 }
 
+                nuevaReserva = new Reserva
+                {
+                    cliente_id = model.ClienteID,
+                    hotel_id = model.HotelID,
+                    fecha_reserva = DateTime.Now,
+                    fecha_entrada = model.FechaEntrada,
+                    fecha_salida = model.FechaSalida,
+                    estado = "Confirmada",
+                    numero_huespedes = model.NumeroHuespedes,
+                    notas = model.Notas,
+                    empleado_registro_id = empleadoRegistroIdInt
+                };
                 db.Reservas.Add(nuevaReserva);
                 await db.SaveChangesAsync();
 
@@ -198,7 +208,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                                          .FirstOrDefaultAsync(h => h.habitacion_id == habitacionId);
                     if (habitacion == null)
                     {
-                        throw new Exception($"Habitación ID {habitacionId} no encontrada durante la asignación a la reserva.");
+                        throw new Exception($"Habitación ID {habitacionId} no encontrada durante la asignación. Reserva principal ID: {nuevaReserva?.reserva_id}");
                     }
                     decimal precioNoche = habitacion.Tipo_Habitacion.precio_base;
                     montoTotalReserva += precioNoche * noches;
@@ -214,33 +224,33 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 }
                 await db.SaveChangesAsync();
 
-                var cliente = await db.Clientes.FindAsync(nuevaReserva.ClienteID);
-                var hotel = await db.Hotels.FindAsync(nuevaReserva.HotelID);
+                var cliente = await db.Clientes.FindAsync(nuevaReserva.cliente_id);
+                var hotel = await db.Hotels.FindAsync(nuevaReserva.hotel_id);
                 var habitacionesReservadasVM = await db.Reserva_Habitacion
                     .Where(r => r.reserva_id == nuevaReserva.reserva_id)
-                    .Select(rh => new ReservaHabitacionViewModel
+                    .Select(rh_db => new ReservaHabitacionViewModel
                     {
-                        ReservaHabitacionID = rh.reserva_habitacion_id,
-                        HabitacionID = rh.habitacion_id,
-                        NumeroHabitacion = rh.Habitacion.numero,
-                        NombreTipoHabitacion = rh.Habitacion.Tipo_Habitacion.nombre,
-                        PrecioNocheCobrado = rh.precio_noche_cobrado,
-                        EstadoAsignacion = rh.estado_asignacion
+                        ReservaHabitacionID = rh_db.reserva_habitacion_id,
+                        HabitacionID = rh_db.habitacion_id,
+                        NumeroHabitacion = rh_db.Habitacion.numero,
+                        NombreTipoHabitacion = rh_db.Habitacion.Tipo_Habitacion.nombre,
+                        PrecioNocheCobrado = rh_db.precio_noche_cobrado,
+                        EstadoAsignacion = rh_db.estado_asignacion
                     }).ToListAsync();
 
                 var viewModel = new ReservaViewModel
                 {
                     ReservaID = nuevaReserva.reserva_id,
-                    ClienteID = nuevaReserva.ClienteID,
+                    ClienteID = nuevaReserva.cliente_id,
                     NombreCliente = cliente != null ? $"{cliente.nombre} {cliente.apellido}" : "N/A",
                     EmailCliente = cliente?.email,
                     TelefonoCliente = cliente?.telefono,
-                    HotelID = nuevaReserva.HotelID,
+                    HotelID = nuevaReserva.hotel_id,
                     NombreHotel = hotel?.nombre,
-                    FechaReserva = nuevaReserva.FechaReserva,
-                    FechaEntrada = nuevaReserva.FechaEntrada,
+                    FechaReserva = (DateTime)nuevaReserva.fecha_reserva,
+                    FechaEntrada = nuevaReserva.fecha_entrada,
                     FechaSalida = nuevaReserva.fecha_salida,
-                    Estado = nuevaReserva.Estado,
+                    Estado = nuevaReserva.estado,
                     NumeroHuespedes = nuevaReserva.numero_huespedes,
                     Notas = nuevaReserva.notas,
                     NombreEmpleadoRegistro = empleadoDb != null ? $"{empleadoDb.nombre} {empleadoDb.apellido}" : "N/A",
@@ -251,13 +261,43 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
             catch (DbUpdateException dbEx)
             {
-                return InternalServerError(new Exception($"DbUpdateException: {dbEx.ToString()}"));
+                if (nuevaReserva != null && nuevaReserva.reserva_id > 0 && db.Entry(nuevaReserva).State != EntityState.Detached)
+                {
+                    var entry = db.Entry(nuevaReserva);
+                    if (entry.State == EntityState.Added || entry.State == EntityState.Unchanged) // Only try to remove if it might be in context
+                    {
+                        // Check if it was actually saved to DB before attempting removal
+                        var existingInDb = db.Reservas.AsNoTracking().FirstOrDefault(r => r.reserva_id == nuevaReserva.reserva_id);
+                        if (existingInDb != null)
+                        {
+                            db.Reservas.Attach(nuevaReserva); // Re-attach if detached due to error
+                            db.Reservas.Remove(nuevaReserva);
+                            try { await db.SaveChangesAsync(); } catch { /* Log rollback failure */ }
+                        }
+                    }
+                }
+                return InternalServerError(new Exception($"DbUpdateException al procesar reserva: {dbEx.ToString()}"));
             }
             catch (Exception ex)
             {
+                if (nuevaReserva != null && nuevaReserva.reserva_id > 0 && db.Entry(nuevaReserva).State != EntityState.Detached)
+                {
+                    var entry = db.Entry(nuevaReserva);
+                    if (entry.State == EntityState.Added || entry.State == EntityState.Unchanged)
+                    {
+                        var existingInDb = db.Reservas.AsNoTracking().FirstOrDefault(r => r.reserva_id == nuevaReserva.reserva_id);
+                        if (existingInDb != null)
+                        {
+                            db.Reservas.Attach(nuevaReserva);
+                            db.Reservas.Remove(nuevaReserva);
+                            try { await db.SaveChangesAsync(); } catch { /* Log rollback failure */ }
+                        }
+                    }
+                }
                 return InternalServerError(new Exception($"Error general al crear reserva: {ex.ToString()}"));
             }
         }
+
 
         [HttpGet]
         [Route("")]
@@ -265,36 +305,44 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var query = db.Reservas.AsQueryable();
-                if (clienteId.HasValue) query = query.Where(r => r.ClienteID == clienteId.Value);
-                if (hotelId.HasValue) query = query.Where(r => r.HotelID == hotelId.Value);
-                if (fechaDesde.HasValue) query = query.Where(r => r.FechaEntrada >= fechaDesde.Value);
+
+                var query = db.Reservas
+                              .Include(r => r.Cliente) 
+                              .Include(r => r.Hotel)  
+                              .Include(r => r.Empleado) 
+                              .AsQueryable();
+
+                if (clienteId.HasValue) query = query.Where(r => r.cliente_id == clienteId.Value);
+                if (hotelId.HasValue) query = query.Where(r => r.hotel_id == hotelId.Value);
+                if (fechaDesde.HasValue) query = query.Where(r => r.fecha_entrada >= fechaDesde.Value);
                 if (fechaHasta.HasValue)
                 {
                     DateTime fechaHastaFinDia = fechaHasta.Value.Date.AddDays(1).AddTicks(-1);
-                    query = query.Where(r => r.FechaEntrada <= fechaHastaFinDia);
+                    query = query.Where(r => r.fecha_entrada <= fechaHastaFinDia);
                 }
-                if (!string.IsNullOrWhiteSpace(estado)) query = query.Where(r => r.Estado.ToLower() == estado.ToLower());
+                if (!string.IsNullOrWhiteSpace(estado)) query = query.Where(r => r.estado.ToLower() == estado.ToLower());
 
-                var reservas = await query
-                    .OrderByDescending(r => r.FechaReserva)
+                var reservasViewModel = await query
+                    .OrderByDescending(r => r.fecha_reserva)
                     .Select(r => new ReservaViewModel
                     {
                         ReservaID = r.reserva_id,
-                        ClienteID = r.ClienteID,
-                        NombreCliente = r.Cliente.nombre + " " + r.Cliente.apellido,
-                        HotelID = r.HotelID,
-                        NombreHotel = r.Hotel.nombre,
-                        FechaReserva = r.FechaReserva,
-                        FechaEntrada = r.FechaEntrada,
+                        ClienteID = r.cliente_id,
+                        NombreCliente = (r.Cliente != null) ? (r.Cliente.nombre + " " + r.Cliente.apellido) : "N/A",
+                        HotelID = r.hotel_id,
+                        NombreHotel = (r.Hotel != null) ? r.Hotel.nombre : "N/A",
+                        FechaReserva = (DateTime)r.fecha_reserva,
+                        FechaEntrada = r.fecha_entrada,
                         FechaSalida = r.fecha_salida,
-                        Estado = r.Estado,
+                        Estado = r.estado,
                         NumeroHuespedes = r.numero_huespedes,
                         Notas = r.notas,
-                        NombreEmpleadoRegistro = r.Empleado != null ? r.Empleado.nombre + " " + r.Empleado.apellido : null
+                        NombreEmpleadoRegistro = (r.Empleado != null) ? (r.Empleado.nombre + " " + r.Empleado.apellido) : "N/A"
+
                     })
                     .ToListAsync();
-                return Ok(reservas);
+
+                return Ok(reservasViewModel);
             }
             catch (Exception ex)
             {
@@ -304,7 +352,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
 
         [HttpGet]
         [Route("{id:int}", Name = "GetReservaById")]
-        [ResponseType(typeof(ReservaViewModel))]
         public async Task<IHttpActionResult> GetReserva(int id)
         {
             try
@@ -313,7 +360,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     .Include(r => r.Cliente)
                     .Include(r => r.Hotel)
                     .Include(r => r.Empleado)
-                    .Include("Reserva_Habitacion.Habitacion.Tipo_Habitacion")
+                    .Include(r => r.Reserva_Habitacion.Select(rh => rh.Habitacion.Tipo_Habitacion))
                     .FirstOrDefaultAsync(r => r.reserva_id == id);
 
                 if (reservaEntity == null)
@@ -322,7 +369,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 }
 
                 decimal montoTotal = 0;
-                int noches = Math.Max(1, (reservaEntity.fecha_salida.Date - reservaEntity.FechaEntrada.Date).Days);
+                int noches = Math.Max(1, (reservaEntity.fecha_salida.Date - reservaEntity.fecha_entrada.Date).Days);
 
                 var habitacionesReservadasVM = reservaEntity.Reserva_Habitacion.Select(rh =>
                 {
@@ -341,16 +388,16 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 var viewModel = new ReservaViewModel
                 {
                     ReservaID = reservaEntity.reserva_id,
-                    ClienteID = reservaEntity.ClienteID,
+                    ClienteID = reservaEntity.cliente_id,
                     NombreCliente = $"{reservaEntity.Cliente.nombre} {reservaEntity.Cliente.apellido}",
                     EmailCliente = reservaEntity.Cliente.email,
                     TelefonoCliente = reservaEntity.Cliente.telefono,
-                    HotelID = reservaEntity.HotelID,
+                    HotelID = reservaEntity.hotel_id,
                     NombreHotel = reservaEntity.Hotel.nombre,
-                    FechaReserva = reservaEntity.FechaReserva,
-                    FechaEntrada = reservaEntity.FechaEntrada,
+                    FechaReserva = (DateTime)reservaEntity.fecha_reserva,
+                    FechaEntrada = reservaEntity.fecha_entrada,
                     FechaSalida = reservaEntity.fecha_salida,
-                    Estado = reservaEntity.Estado,
+                    Estado = reservaEntity.estado,
                     NumeroHuespedes = reservaEntity.numero_huespedes,
                     Notas = reservaEntity.notas,
                     NombreEmpleadoRegistro = reservaEntity.Empleado != null ? $"{reservaEntity.Empleado.nombre} {reservaEntity.Empleado.apellido}" : "N/A",
@@ -383,22 +430,27 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return NotFound();
             }
 
-            if (reserva.Estado == "Cancelada" || reserva.Estado == "Completada")
+            if (reserva.estado == "Cancelada" || reserva.estado == "Completada")
             {
-                return BadRequest($"La reserva no se puede modificar porque su estado es '{reserva.Estado}'.");
+                return BadRequest($"La reserva no se puede modificar porque su estado es '{reserva.estado}'.");
             }
 
             if (model.NumeroHuespedes != reserva.numero_huespedes)
             {
-                int capacidadTotalHabitacionesAsignadas = reserva.Reserva_Habitacion.Sum(rh => rh.Habitacion.Tipo_Habitacion.capacidad);
-                if (model.NumeroHuespedes > capacidadTotalHabitacionesAsignadas)
+                int capacidadTotalHabitacionesAsignadas = 0;
+                if (reserva.Reserva_Habitacion.Any())
+                {
+                    capacidadTotalHabitacionesAsignadas = reserva.Reserva_Habitacion.Sum(rh => rh.Habitacion.Tipo_Habitacion.capacidad);
+                }
+
+                if (model.NumeroHuespedes > capacidadTotalHabitacionesAsignadas && capacidadTotalHabitacionesAsignadas > 0)
                 {
                     return BadRequest($"El nuevo número de huéspedes ({model.NumeroHuespedes}) excede la capacidad de las habitaciones asignadas ({capacidadTotalHabitacionesAsignadas}).");
                 }
                 reserva.numero_huespedes = model.NumeroHuespedes;
             }
             reserva.notas = model.Notas;
-            reserva.Estado = model.Estado;
+            reserva.estado = model.Estado;
 
             db.Entry(reserva).State = EntityState.Modified;
             try
@@ -427,12 +479,12 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return NotFound();
             }
 
-            if (reserva.Estado == "Cancelada" || reserva.Estado == "Completada")
+            if (reserva.estado == "Cancelada" || reserva.estado == "Completada")
             {
-                return Ok(new { Message = $"La reserva ya estaba {reserva.Estado.ToLower()}." });
+                return Ok(new { Message = $"La reserva ya estaba {reserva.estado.ToLower()}." });
             }
 
-            reserva.Estado = "Cancelada";
+            reserva.estado = "Cancelada";
             foreach (var rh in reserva.Reserva_Habitacion)
             {
                 rh.estado_asignacion = "cancelada";

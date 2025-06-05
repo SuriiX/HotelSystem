@@ -331,6 +331,18 @@
       <DependentUpon>202506020106091_InitialIdentitySchema.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\IdentityMigrations\Configuration.cs" />
+    <Compile Include="Models\AspNetRole.cs">
+      <DependentUpon>HotelDBModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUser.cs">
+      <DependentUpon>HotelDBModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserClaim.cs">
+      <DependentUpon>HotelDBModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\AspNetUserLogin.cs">
+      <DependentUpon>HotelDBModel.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Cadena_Hotelera.cs">
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
@@ -350,6 +362,9 @@
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Consumo_Servicio.cs">
+      <DependentUpon>HotelDBModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\C__MigrationHistory.cs">
       <DependentUpon>HotelDBModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\DetalleFacturaEvento.cs">
@@ -373,6 +388,7 @@
     <Compile Include="Models\DTO\CheckOutBindingModel.cs" />
     <Compile Include="Models\DTO\CheckOutViewModel.cs" />
     <Compile Include="Models\DTO\ClienteBindingModel.cs" />
+    <Compile Include="Models\DTO\ClienteListItemDto.cs" />
     <Compile Include="Models\DTO\ClienteViewModel.cs" />
     <Compile Include="Models\DTO\DetalleFacturaEventoViewModel.cs" />
     <Compile Include="Models\DTO\DetalleFacturaViewModel.cs" />
@@ -388,6 +404,7 @@
     <Compile Include="Models\DTO\RegisterBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaCreacionBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaEventoCreacionBindingModel.cs" />
+    <Compile Include="Models\DTO\ReservaEventoListItemDto.cs" />
     <Compile Include="Models\DTO\ReservaEventoUpdateBindingModel.cs" />
     <Compile Include="Models\DTO\ReservaEventoViewModel.cs" />
     <Compile Include="Models\DTO\ReservaHabitacionViewModel.cs" />

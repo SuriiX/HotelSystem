@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace HotelAuroraDreams.Api_Framework.Models.DTO
 {
+    [Serializable]
     public class ReservaUpdateBindingModel
     {
         [Required]

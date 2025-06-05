@@ -12,7 +12,6 @@
                 <asp:Label runat="server" AssociatedControlID="ddlClienteEvento" CssClass="col-md-2 control-label">Cliente:</asp:Label>
                 <div class="col-md-10">
                     <asp:DropDownList ID="ddlClienteEvento" runat="server" CssClass="form-control" DataTextField="NombreCompleto" DataValueField="ClienteID" AppendDataBoundItems="true">
-                         <asp:ListItem Text="-- Seleccione Cliente --" Value="0"></asp:ListItem>
                     </asp:DropDownList>
                     <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlClienteEvento" ErrorMessage="Cliente es requerido." CssClass="text-danger" Display="Dynamic" InitialValue="0" ValidationGroup="EventoVal"/>
                 </div>
@@ -28,7 +27,6 @@
                 <asp:Label runat="server" AssociatedControlID="ddlSalonEvento" CssClass="col-md-2 control-label">Salón:</asp:Label>
                 <div class="col-md-10">
                     <asp:DropDownList ID="ddlSalonEvento" runat="server" CssClass="form-control" DataTextField="Nombre" DataValueField="SalonEventoID" AutoPostBack="true" OnSelectedIndexChanged="ddlSalonEvento_SelectedIndexChanged" AppendDataBoundItems="true">
-                         <asp:ListItem Text="-- Seleccione Salón --" Value="0"></asp:ListItem>
                     </asp:DropDownList>
                      <asp:RequiredFieldValidator runat="server" ControlToValidate="ddlSalonEvento" ErrorMessage="Salón es requerido." CssClass="text-danger" Display="Dynamic" InitialValue="0" ValidationGroup="EventoVal"/>
                 </div>
@@ -37,7 +35,6 @@
                 <asp:Label runat="server" AssociatedControlID="ddlTipoEvento" CssClass="col-md-2 control-label">Tipo de Evento (Opc):</asp:Label>
                 <div class="col-md-10">
                     <asp:DropDownList ID="ddlTipoEvento" runat="server" CssClass="form-control" DataTextField="NombreTipo" DataValueField="TipoEventoID" AppendDataBoundItems="true">
-                        <asp:ListItem Text="-- Seleccione Tipo --" Value="0"></asp:ListItem>
                     </asp:DropDownList>
                 </div>
             </div>

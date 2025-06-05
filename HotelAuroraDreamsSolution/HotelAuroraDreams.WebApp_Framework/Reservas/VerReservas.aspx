@@ -13,7 +13,6 @@
         <div class="form-group" style="margin-left:10px;">
             <asp:Label runat="server" AssociatedControlID="ddlFiltroHotel" Text="Hotel:" CssClass="control-label" />
             <asp:DropDownList ID="ddlFiltroHotel" runat="server" CssClass="form-control" DataTextField="Nombre" DataValueField="HotelID" AppendDataBoundItems="true">
-                <asp:ListItem Text="-- Todos --" Value="0"></asp:ListItem>
             </asp:DropDownList>
         </div>
         <div class="form-group" style="margin-left:10px;">

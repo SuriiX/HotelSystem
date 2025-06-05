@@ -19,8 +19,6 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
     {
         private static readonly string _apiBaseUrl = ConfigurationManager.AppSettings["ApiBaseUrl"];
         private static readonly HttpClient client = new HttpClient();
-
-        // Propiedad para almacenar los detalles de las habitaciones disponibles para el CheckBoxList
         protected List<HabitacionDisponibleParaSeleccion> HabitacionesParaSeleccion { get; set; }
 
         protected void Page_Load(object sender, EventArgs e)
@@ -45,7 +43,7 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
             }
         }
 
-        private async Task<bool> IsUserAuthorizedAsync()
+        private async Task<bool> IsUserAuthorizedAsync() // Asegúrate que esta lógica sea correcta
         {
             HttpCookie authTokenCookie = Request.Cookies["AuthTokenHotel"];
             if (authTokenCookie == null || string.IsNullOrEmpty(authTokenCookie.Value)) return false;
@@ -91,9 +89,9 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
                     ddlHotelBusqueda.DataBind();
                     ddlHotelBusqueda.Items.Insert(0, new ListItem("-- Seleccione Hotel --", "0"));
                 }
-                else { ShowError($"Error cargando hoteles: {response.StatusCode}"); }
+                else { ShowError($"Error cargando hoteles (DDL): {response.StatusCode}"); }
             }
-            catch (Exception ex) { ShowError("Excepción cargando hoteles: " + ex.Message); }
+            catch (Exception ex) { ShowError("Excepción cargando hoteles (DDL): " + ex.Message); }
         }
 
         private async Task LoadTiposHabitacionDropdownAsync()
@@ -113,20 +111,70 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
                     ddlTipoHabitacionBusqueda.DataBind();
                     ddlTipoHabitacionBusqueda.Items.Insert(0, new ListItem("-- Todos los Tipos --", "0"));
                 }
-                else { ShowError($"Error cargando tipos de habitación: {response.StatusCode}"); }
+                else { ShowError($"Error cargando tipos de habitación (DDL): {response.StatusCode}"); }
             }
-            catch (Exception ex) { ShowError("Excepción cargando tipos habitación: " + ex.Message); }
+            catch (Exception ex) { ShowError("Excepción cargando tipos habitación (DDL): " + ex.Message); }
         }
+
+        // ***** NUEVO MÉTODO PARA BUSCAR CLIENTES *****
+        protected async void btnBuscarCliente_Click(object sender, EventArgs e)
+        {
+            ClearMessages();
+            string terminoBusqueda = txtBusquedaCliente.Text.Trim();
+            if (string.IsNullOrWhiteSpace(terminoBusqueda))
+            {
+                ShowError("Ingrese un término para buscar el cliente.");
+                return;
+            }
+
+            HttpCookie authTokenCookie = Request.Cookies["AuthTokenHotel"];
+            if (authTokenCookie == null) { ShowError("No autenticado."); return; }
+            SetAuthorizationHeader(authTokenCookie.Value);
+
+            try
+            {
+                string apiUrl = $"{_apiBaseUrl.TrimEnd('/')}/api/Clientes/Buscar?terminoBusqueda={HttpUtility.UrlEncode(terminoBusqueda)}";
+                HttpResponseMessage response = await client.GetAsync(apiUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    var clientesEncontrados = JsonConvert.DeserializeObject<List<ClienteListItemDto>>(await response.Content.ReadAsStringAsync());
+                    ddlResultadosCliente.DataSource = clientesEncontrados;
+                    ddlResultadosCliente.DataTextField = "NombreCompleto"; // Asegúrate que ClienteListItemDto tenga esta propiedad
+                    ddlResultadosCliente.DataValueField = "ClienteID";
+                    ddlResultadosCliente.DataBind();
+                    if (!clientesEncontrados.Any())
+                    {
+                        ddlResultadosCliente.Items.Insert(0, new ListItem("-- No se encontraron clientes --", "0"));
+                        ShowError("No se encontraron clientes con ese criterio. Puede crearlo en la sección de Gestión de Clientes.");
+                    }
+                    else
+                    {
+                        ddlResultadosCliente.Items.Insert(0, new ListItem("-- Seleccione un Cliente --", "0"));
+                    }
+                }
+                else
+                {
+                    ShowError($"Error al buscar clientes: {response.StatusCode}");
+                }
+            }
+            catch (Exception ex)
+            {
+                ShowError($"Error de conexión al buscar clientes: {ex.Message}");
+            }
+        }
+        // **********************************************
 
         protected async void btnVerificarDisponibilidad_Click(object sender, EventArgs e)
         {
+            // ... (código existente, sin cambios) ...
+            // Solo asegúrate de llamar a ClearMessages() al inicio
             ClearMessages();
             pnlResultadosDisponibilidad.Visible = false;
-            pnlDetallesReserva.Visible = false;
+            pnlDetallesReserva.Visible = false; // Ocultar esto también hasta que se seleccionen habitaciones
             cblHabitacionesDisponibles.Items.Clear();
             lblNoDisponibilidad.Visible = false;
 
-            if (!Page.IsValid) return; // Para validadores del grupo "BusquedaVal"
+            if (!Page.IsValid) return;
 
             HttpCookie authTokenCookie = Request.Cookies["AuthTokenHotel"];
             if (authTokenCookie == null || string.IsNullOrEmpty(authTokenCookie.Value))
@@ -145,9 +193,7 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
                 TipoHabitacionID = ddlTipoHabitacionBusqueda.SelectedValue == "0" ? (int?)null : Convert.ToInt32(ddlTipoHabitacionBusqueda.SelectedValue)
             };
 
-            // Guardar criterios para usarlos al confirmar reserva
             ViewState["DisponibilidadRequest"] = requestDto;
-
 
             try
             {
@@ -175,7 +221,7 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
                         cblHabitacionesDisponibles.DataBind();
 
                         pnlResultadosDisponibilidad.Visible = true;
-                        pnlDetallesReserva.Visible = true; // Mostrar el panel para confirmar
+                        pnlDetallesReserva.Visible = true;
                     }
                     else
                     {
@@ -183,21 +229,15 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
                         pnlResultadosDisponibilidad.Visible = true;
                     }
                 }
-                else
-                {
-                    ShowError($"Error al verificar disponibilidad: {response.StatusCode} - {responseContent.Substring(0, Math.Min(responseContent.Length, 200))}");
-                }
+                else { ShowError($"Error al verificar disponibilidad: {response.StatusCode} - {responseContent.Substring(0, Math.Min(responseContent.Length, 200))}"); }
             }
-            catch (Exception ex)
-            {
-                ShowError($"Error de conexión al verificar disponibilidad: {ex.Message}");
-            }
+            catch (Exception ex) { ShowError($"Error de conexión al verificar disponibilidad: {ex.Message}"); }
         }
 
         protected async void btnConfirmarReserva_Click(object sender, EventArgs e)
         {
             ClearMessages();
-            if (!Page.IsValid) return; // Para validadores del grupo "ReservaVal"
+            if (!Page.IsValid) return;
 
             HttpCookie authTokenCookie = Request.Cookies["AuthTokenHotel"];
             if (authTokenCookie == null || string.IsNullOrEmpty(authTokenCookie.Value))
@@ -210,7 +250,7 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
             var disponibilidadRequest = ViewState["DisponibilidadRequest"] as DisponibilidadRequestDto;
             if (disponibilidadRequest == null)
             {
-                ShowError("No se encontraron los criterios de búsqueda de disponibilidad. Por favor, verifique la disponibilidad nuevamente.");
+                ShowError("Criterios de búsqueda no encontrados. Verifique disponibilidad de nuevo.");
                 return;
             }
 
@@ -225,23 +265,25 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
 
             if (!habitacionesSeleccionadasIDs.Any())
             {
-                ShowError("Debe seleccionar al menos una habitación para reservar.");
-                pnlResultadosDisponibilidad.Visible = true; // Mantener visible para que puedan seleccionar
-                pnlDetallesReserva.Visible = true;
-                return;
-            }
-            if (string.IsNullOrWhiteSpace(txtClienteID.Text) || !int.TryParse(txtClienteID.Text, out int clienteIdParsed) || clienteIdParsed <= 0)
-            {
-                ShowError("ID de Cliente inválido o no proporcionado.");
+                ShowError("Debe seleccionar al menos una habitación.");
                 pnlResultadosDisponibilidad.Visible = true;
                 pnlDetallesReserva.Visible = true;
                 return;
             }
-
+            // ***** MODIFICACIÓN: Obtener ClienteID del DropDownList *****
+            if (ddlResultadosCliente.SelectedValue == "0" || string.IsNullOrWhiteSpace(ddlResultadosCliente.SelectedValue))
+            {
+                ShowError("Debe buscar y seleccionar un cliente.");
+                pnlResultadosDisponibilidad.Visible = true;
+                pnlDetallesReserva.Visible = true;
+                return;
+            }
+            int clienteIdSeleccionado = Convert.ToInt32(ddlResultadosCliente.SelectedValue);
+            // **********************************************************
 
             var reservaData = new ReservaCreacionBindingModel
             {
-                ClienteID = clienteIdParsed,
+                ClienteID = clienteIdSeleccionado, // <--- Usar el ID del cliente seleccionado
                 HotelID = disponibilidadRequest.HotelID,
                 FechaEntrada = disponibilidadRequest.FechaEntrada,
                 FechaSalida = disponibilidadRequest.FechaSalida,
@@ -262,17 +304,20 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
                 if (response.IsSuccessStatusCode)
                 {
                     var reservaCreada = JsonConvert.DeserializeObject<ReservaViewModel>(responseContent);
-                    ShowSuccess($"¡Reserva #{reservaCreada.ReservaID} creada exitosamente para el cliente {reservaCreada.NombreCliente} por un monto de {reservaCreada.MontoTotalReserva:C}!");
+                    ShowSuccess($"¡Reserva #{reservaCreada.ReservaID} creada exitosamente para {reservaCreada.NombreCliente}!");
                     pnlResultadosDisponibilidad.Visible = false;
                     pnlDetallesReserva.Visible = false;
                     cblHabitacionesDisponibles.Items.Clear();
-                    txtClienteID.Text = "";
+                    txtBusquedaCliente.Text = ""; // Limpiar campo de búsqueda de cliente
+                    ddlResultadosCliente.Items.Clear();
+                    ddlResultadosCliente.Items.Insert(0, new ListItem("-- Busque y seleccione un cliente --", "0"));
                     txtNotasReserva.Text = "";
+                    ViewState.Remove("DisponibilidadRequest"); // Limpiar el estado
                 }
                 else
                 {
                     ShowError($"Error al crear la reserva: {response.StatusCode} - {responseContent.Substring(0, Math.Min(responseContent.Length, 300))}");
-                    pnlResultadosDisponibilidad.Visible = true; // Mantener visible para que puedan reintentar o ajustar
+                    pnlResultadosDisponibilidad.Visible = true;
                     pnlDetallesReserva.Visible = true;
                 }
             }
@@ -286,35 +331,23 @@ namespace HotelAuroraDreams.WebApp_Framework.Reservas
 
         protected void btnCancelarProceso_Click(object sender, EventArgs e)
         {
+            // ... (código existente, sin cambios) ...
             pnlResultadosDisponibilidad.Visible = false;
             pnlDetallesReserva.Visible = false;
             cblHabitacionesDisponibles.Items.Clear();
-            txtClienteID.Text = "";
+            txtBusquedaCliente.Text = "";
+            ddlResultadosCliente.Items.Clear();
+            ddlResultadosCliente.Items.Insert(0, new ListItem("-- Busque y seleccione un cliente --", "0"));
             txtNotasReserva.Text = "";
             ClearMessages();
+            ViewState.Remove("DisponibilidadRequest");
         }
 
-
-        private void ClearMessages()
-        {
-            lblMessage.Text = "";
-            lblSuccessMessage.Text = "";
-        }
-        private void ShowError(string message)
-        {
-            lblMessage.Text = message;
-            lblSuccessMessage.Text = "";
-        }
-        private void ShowSuccess(string message)
-        {
-            lblSuccessMessage.Text = message;
-            lblMessage.Text = "";
-        }
+        private void ClearMessages() { lblMessage.Text = ""; lblSuccessMessage.Text = ""; }
+        private void ShowError(string message) { lblMessage.Text = message; lblSuccessMessage.Text = ""; }
+        private void ShowSuccess(string message) { lblSuccessMessage.Text = message; lblMessage.Text = ""; }
     }
 
-    public class HabitacionDisponibleParaSeleccion
-    {
-        public int HabitacionID { get; set; }
-        public string DisplayText { get; set; }
-    }
+    // Clase auxiliar para el CheckBoxList (ya la tenías, asegúrate que esté definida)
+    // public class HabitacionDisponibleParaSeleccion { public int HabitacionID { get; set; } public string DisplayText { get; set; } }
 }
