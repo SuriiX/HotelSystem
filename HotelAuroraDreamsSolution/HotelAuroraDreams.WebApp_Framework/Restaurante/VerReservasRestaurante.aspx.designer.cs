@@ -42,13 +42,22 @@ namespace HotelAuroraDreams.WebApp_Framework.Restaurante
         protected global::System.Web.UI.WebControls.Panel pnlFiltrosReservasRest;
 
         /// <summary>
-        /// txtFiltroClienteIDRest control.
+        /// txtFiltroClienteTermino control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFiltroClienteIDRest;
+        protected global::System.Web.UI.WebControls.TextBox txtFiltroClienteTermino;
+
+        /// <summary>
+        /// lblClienteFiltradoInfo control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblClienteFiltradoInfo;
 
         /// <summary>
         /// ddlFiltroRestaurante control.

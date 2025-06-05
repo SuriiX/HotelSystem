@@ -3,6 +3,7 @@ using System;
 
 namespace HotelAuroraDreams.WebApp_Framework.Models
 {
+    [Serializable]
     public class ReservaRestauranteViewModel
     {
         public int ReservaRestauranteID { get; set; }

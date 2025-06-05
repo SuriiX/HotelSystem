@@ -5,10 +5,11 @@
     <asp:Label ID="lblMessage" runat="server" CssClass="text-danger" EnableViewState="false"></asp:Label>
     <asp:Label ID="lblSuccessMessage" runat="server" CssClass="text-success" EnableViewState="false"></asp:Label>
 
-    <asp:Panel ID="pnlFiltrosReservasRest" runat="server" CssClass="form-inline" style="margin-bottom: 20px;">
+    <asp:Panel ID="pnlFiltrosReservasRest" runat="server" CssClass="form-inline" style="margin-bottom: 20px; padding: 10px; border: 1px solid #eee;">
         <div class="form-group">
-            <asp:Label runat="server" AssociatedControlID="txtFiltroClienteIDRest" Text="ID Cliente:" CssClass="control-label" />
-            <asp:TextBox ID="txtFiltroClienteIDRest" runat="server" CssClass="form-control" TextMode="Number" Width="80px" />
+            <asp:Label runat="server" AssociatedControlID="txtFiltroClienteTermino" Text="Buscar Cliente:" CssClass="control-label" />
+            <asp:TextBox ID="txtFiltroClienteTermino" runat="server" CssClass="form-control" placeholder="Nombre, Apellido o Documento" Width="200px" />
+            <asp:Label ID="lblClienteFiltradoInfo" runat="server" CssClass="text-info small" style="margin-left: 5px;" EnableViewState="false" />
         </div>
         <div class="form-group" style="margin-left:10px;">
             <asp:Label runat="server" AssociatedControlID="ddlFiltroRestaurante" Text="Restaurante:" CssClass="control-label" />
@@ -20,8 +21,8 @@
             <asp:Label runat="server" AssociatedControlID="txtFiltroFechaRest" Text="Fecha Reserva:" CssClass="control-label" />
             <asp:TextBox ID="txtFiltroFechaRest" runat="server" CssClass="form-control" TextMode="Date" />
         </div>
-        <asp:Button ID="btnFiltrarReservasRest" runat="server" Text="Filtrar Reservas" OnClick="btnFiltrarReservasRest_Click" CssClass="btn btn-info" style="margin-left:10px;" />
-        <asp:Button ID="btnLimpiarFiltrosReservasRest" runat="server" Text="Limpiar" OnClick="btnLimpiarFiltrosReservasRest_Click" CssClass="btn btn-default" style="margin-left:5px;" CausesValidation="false" />
+        <asp:Button ID="btnFiltrarReservasRest" runat="server" Text="Filtrar" OnClick="btnFiltrarReservasRest_Click" CssClass="btn btn-primary" style="margin-left:10px;" />
+        <asp:Button ID="btnLimpiarFiltrosReservasRest" runat="server" Text="Limpiar Filtros" OnClick="btnLimpiarFiltrosReservasRest_Click" CssClass="btn btn-default" style="margin-left:5px;" CausesValidation="false" />
     </asp:Panel>
 
     <asp:GridView ID="gvReservasRestaurante" runat="server" AutoGenerateColumns="False" CssClass="table table-striped table-bordered table-hover"
@@ -45,11 +46,11 @@
             No se encontraron reservas de restaurante con los criterios seleccionados.
         </EmptyDataTemplate>
     </asp:GridView>
-
+    
     <asp:Panel ID="pnlEditarReservaRestaurante" runat="server" Visible="false" CssClass="form-horizontal" style="margin-top: 20px; padding:15px; border: 1px solid #f0ad4e; border-radius:5px;">
         <h3>Editar Reserva de Restaurante #<asp:Literal ID="litReservaRestIDEditar" runat="server"></asp:Literal></h3>
         <asp:HiddenField ID="hfReservaRestIDEditar" runat="server" />
-
+        
         <div class="form-group">
             <asp:Label runat="server" CssClass="col-md-3 control-label">Cliente:</asp:Label>
             <div class="col-md-9"><asp:Literal ID="litClienteReservaRestEditar" runat="server" /></div>
@@ -83,7 +84,7 @@
                     <asp:ListItem Text="Confirmada" Value="Confirmada"></asp:ListItem>
                     <asp:ListItem Text="Atendida" Value="Atendida"></asp:ListItem>
                     <asp:ListItem Text="No Show" Value="No_Show"></asp:ListItem>
-                    <%-- "Cancelada" se maneja con un botón aparte --%>
+                    <asp:ListItem Text="Cancelada" Value="Cancelada"></asp:ListItem>
                 </asp:DropDownList>
             </div>
         </div>

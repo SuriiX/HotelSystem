@@ -1,6 +1,9 @@
 ﻿// File: ~/Models/RestauranteDisponibleViewModel.cs (WebApp)
+using System;
+
 namespace HotelAuroraDreams.WebApp_Framework.Models
 {
+    [Serializable]
     public class RestauranteDisponibleViewModel
     {
         public int RestauranteID { get; set; }

@@ -202,15 +202,15 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                     {
                         ReservaRestauranteID = rr.reserva_restaurante_id,
                         ClienteID = rr.cliente_id,
-                        NombreCliente = rr.Cliente.nombre + " " + rr.Cliente.apellido,
+                        NombreCliente = rr.Cliente.nombre + " " + rr.Cliente.apellido, 
                         RestauranteID = rr.restaurante_id,
-                        NombreRestaurante = rr.Restaurante.nombre,
-                        FechaReserva = rr.fecha_reserva,
-                        HoraReserva = rr.hora_reserva,
+                        NombreRestaurante = rr.Restaurante.nombre, 
+                        FechaReserva = rr.fecha_reserva, 
+                        HoraReserva = rr.hora_reserva,   
                         NumeroComensales = rr.numero_comensales,
                         Estado = rr.estado,
                         Notas = rr.notas,
-                        NombreEmpleadoRegistro = rr.Empleado != null ? rr.Empleado.nombre + " " + rr.Empleado.apellido : null
+                        NombreEmpleadoRegistro = rr.Empleado != null ? rr.Empleado.nombre + " " + rr.Empleado.apellido : null // Necesita Include(rr => rr.Empleado)
                     })
                     .ToListAsync();
                 return Ok(reservas);

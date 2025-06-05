@@ -314,6 +314,7 @@
     <Compile Include="Controllers\ReservasController.cs" />
     <Compile Include="Controllers\ReservasEventoController.cs" />
     <Compile Include="Controllers\ReservasRestauranteController.cs" />
+    <Compile Include="Controllers\RestaurantesController.cs" />
     <Compile Include="Controllers\SalonesEventoController.cs" />
     <Compile Include="Controllers\ServiciosAdicionalesEventoController.cs" />
     <Compile Include="Controllers\TiposEventoController.cs" />
@@ -415,6 +416,7 @@
     <Compile Include="Models\DTO\ReservaViewModel.cs" />
     <Compile Include="Models\DTO\RestauranteDisponibilidadRequestDto.cs" />
     <Compile Include="Models\DTO\RestauranteDisponibleViewModel.cs" />
+    <Compile Include="Models\DTO\RestauranteListItemDto.cs" />
     <Compile Include="Models\DTO\SalonDisponibilidadRequestDto.cs" />
     <Compile Include="Models\DTO\SalonDisponibleViewModel.cs" />
     <Compile Include="Models\DTO\SalonEventoBindingModel.cs" />

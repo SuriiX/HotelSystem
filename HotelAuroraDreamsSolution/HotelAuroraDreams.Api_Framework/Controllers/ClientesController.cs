@@ -2,7 +2,7 @@
 using HotelAuroraDreams.Api_Framework.Models;
 using HotelAuroraDreams.Api_Framework.Models.DTO;
 using System;
-using System.Collections.Generic; // Para List<T>
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
@@ -19,7 +19,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
     {
         private HotelManagementSystemEntities db = new HotelManagementSystemEntities();
 
-        // GET: api/Clientes
         [HttpGet]
         [Route("")]
         [ResponseType(typeof(List<ClienteViewModel>))]
@@ -27,7 +26,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
         {
             try
             {
-                var clientes = await db.Clientes // Usando plural Clientes
+                var clientes = await db.Clientes
                     .Select(c => new ClienteViewModel
                     {
                         ClienteID = c.cliente_id,
@@ -41,7 +40,7 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                         CiudadResidenciaID = c.ciudad_residencia_id,
                         NombreCiudadResidencia = c.Ciudad != null ? c.Ciudad.nombre_ciudad : null,
                         FechaNacimiento = c.fecha_nacimiento,
-                        FechaRegistro = (DateTime)c.fecha_registro // Asumiendo que fecha_registro en la entidad es DateTime (no nullable)
+                        FechaRegistro = (DateTime)c.fecha_registro
                     })
                     .OrderBy(c => c.Apellido)
                     .ThenBy(c => c.Nombre)
@@ -54,15 +53,14 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-        // GET: api/Clientes/5
         [HttpGet]
-        [Route("{id:int}", Name = "GetClienteById")] // Nombre de ruta para CreatedAtRoute
+        [Route("{id:int}", Name = "GetClienteById")]
         [ResponseType(typeof(ClienteViewModel))]
         public async Task<IHttpActionResult> GetCliente(int id)
         {
             try
             {
-                var clienteViewModel = await db.Clientes // Usando plural Clientes
+                var clienteViewModel = await db.Clientes
                     .Where(c => c.cliente_id == id)
                     .Select(c => new ClienteViewModel
                     {
@@ -93,7 +91,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-        // GET: api/Clientes/Buscar?terminoBusqueda=texto
         [HttpGet]
         [Route("Buscar")]
         [ResponseType(typeof(List<ClienteListItemDto>))]
@@ -107,12 +104,12 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             try
             {
                 string busquedaLower = terminoBusqueda.ToLower().Trim();
-                var clientesEncontrados = await db.Clientes // Usando plural Clientes
+                var clientesEncontrados = await db.Clientes
                     .Where(c =>
                         (c.nombre + " " + c.apellido).ToLower().Contains(busquedaLower) ||
                         (c.apellido + " " + c.nombre).ToLower().Contains(busquedaLower) ||
-                        c.numero_documento.Contains(terminoBusqueda) || // Asumiendo que terminoBusqueda podría ser un Nro Doc.
-                        c.email.ToLower().Contains(busquedaLower)
+                        c.numero_documento.Contains(terminoBusqueda) ||
+                        (c.email != null && c.email.ToLower().Contains(busquedaLower))
                     )
                     .Select(c => new ClienteListItemDto
                     {
@@ -133,8 +130,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             }
         }
 
-
-        // POST: api/Clientes
         [HttpPost]
         [Route("")]
         [ResponseType(typeof(ClienteViewModel))]
@@ -179,7 +174,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             string nombreCiudad = null;
             if (clienteEntity.ciudad_residencia_id.HasValue)
             {
-                // Asumiendo que tu DbSet para Ciudad es Ciudads (plural)
                 var ciudad = await db.Ciudads.FindAsync(clienteEntity.ciudad_residencia_id.Value);
                 nombreCiudad = ciudad?.nombre_ciudad;
             }
@@ -203,7 +197,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             return CreatedAtRoute("GetClienteById", new { id = clienteEntity.cliente_id }, viewModel);
         }
 
-        // PUT: api/Clientes/5
         [HttpPut]
         [Route("{id:int}")]
         [ResponseType(typeof(void))]
@@ -254,7 +247,6 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
             return StatusCode(HttpStatusCode.NoContent);
         }
 
-        // DELETE: api/Clientes/5
         [HttpDelete]
         [Route("{id:int}")]
         [Authorize(Roles = "Administrador")]
@@ -266,11 +258,18 @@ namespace HotelAuroraDreams.Api_Framework.Controllers
                 return NotFound();
             }
 
-            bool tieneReservas = await db.Reservas.AnyAsync(r => r.cliente_id == id);
+            bool tieneReservas = await db.Reservas.AnyAsync(r => r.cliente_id == id); // Asumiendo DbSet Reserva
             if (tieneReservas)
             {
-                return Content(HttpStatusCode.Conflict, new { Message = "No se puede eliminar el cliente porque tiene reservas asociadas." });
+                return Content(HttpStatusCode.Conflict, new { Message = "No se puede eliminar el cliente porque tiene reservas de habitación asociadas." });
             }
+            // Añadir verificación similar para ReservaEvento si es necesario
+            bool tieneReservasEvento = await db.ReservaEventoes.AnyAsync(re => re.ClienteID == id); // Asumiendo DbSet ReservaEventoes
+            if (tieneReservasEvento)
+            {
+                return Content(HttpStatusCode.Conflict, new { Message = "No se puede eliminar el cliente porque tiene reservas de evento asociadas." });
+            }
+
 
             db.Clientes.Remove(cliente);
             try
